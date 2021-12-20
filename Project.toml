@@ -1,0 +1,6 @@
+name = "BONs"
+
+[deps]
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+NeutralLandscapes = "71847384-8354-4223-ac08-659a5128069f"
+SimpleSDMLayers = "2c645270-77db-11e9-22c3-0f302a89c64c"
