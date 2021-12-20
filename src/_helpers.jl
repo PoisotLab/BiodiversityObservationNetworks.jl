@@ -2,10 +2,10 @@ function makeenv(;H = 0.8, dims=(100,100))
 	sdm = rand(MidpointDisplacement(H), dims...)
 end
 
-function makesdm(;H = 0.8, dims=(100,100), cutoff= 0.25) 
+function makesdm(;H = 0.8, dims=(100,100), cutoff= 0.75) 
 	sdm = rand(MidpointDisplacement(H), dims...)
 	sdm = sdm ./ sum(sdm)
-	ind = findall(x->x==1, sdm .>= quantile(vec(sdm), cutoff))
+	ind = findall(x->x==1, sdm .<= quantile(vec(sdm), cutoff))
 	sdm[ind] .= 0
 	sdm = sdm ./ sum(sdm)
 	sdm
