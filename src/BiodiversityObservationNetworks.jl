@@ -3,6 +3,7 @@ module BiodiversityObservationNetworks
     using Distributions
     using NeutralLandscapes 
     using Random
+    using HaltonSequences
     using Base: @kwdef
 
     include("types.jl")
@@ -11,8 +12,8 @@ module BiodiversityObservationNetworks
     include("sampler.jl")
     export rand, rand!
 
-    include("fractaltriad.jl")
-    export FractalTriad
+    include("balancedacceptance.jl")
+    export BalancedAcceptance
 
     include("_helpers.jl")
     export makesdm, makeoccurrence, makebon, makeenv
