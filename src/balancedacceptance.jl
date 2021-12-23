@@ -9,7 +9,10 @@ function _generate!(piv::BalancedAcceptance, uncertainty::M) where {M<:AbstractM
     np, α = piv.numpoints, piv.α
 
     x,y = size(uncertainty)
-    reluncert = broadcast(x->exp(α*x)/(1+exp(α*x)), uncertainty ./ max(vec(uncertainty)...))
+
+    stduncert = StatsBase.transform(StatsBase.fit(ZScoreTransform, uncertainty, dims=2), uncertainty)
+
+    reluncert = broadcast(x->exp(α*x)/(1+exp(α*x)), stduncert)
 
     coords = []
 

@@ -4,6 +4,7 @@ module BiodiversityObservationNetworks
     using NeutralLandscapes 
     using Random
     using HaltonSequences
+    using StatsBase
     using Base: @kwdef
 
     include("types.jl")
