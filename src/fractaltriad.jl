@@ -3,10 +3,12 @@
     padding::FT = 0.1
 end
 
-function _generate!(response::M, ft::FractalTriad, sdm::M) where {M<:AbstractMatrix}
-    @assert size(response) == size(sdm)
+function _generate!(ft::FractalTriad, sdm::M) where {M<:AbstractMatrix}
+    response = zeros(ft.numpoints, 2)    
 
+    
 
+    return response
 end
 
 
