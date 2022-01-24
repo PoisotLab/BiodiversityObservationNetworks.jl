@@ -21,16 +21,17 @@ function matérn(d, ρ, ν, σ²)
 end
 
 function h(d, ρ, ν, σ²)
-    m₁ = length(d) # Number of cells in the current pool
-    return (0.5 * log(2 * π * ℯ)^m₁) * sum([matérn(i, ρ, ν, σ²) for i in d])
+    K = [matérn(i, ρ, ν, σ²) for i in d]
+    return (0.5 * log(2 * π * ℯ)^length(d)) * sum(filter(!isnan, K))
 end
 
 #=
 using SpecialFunctions
 using Statistics
 using NeutralLandscapes
+using Plots
 
-u = rand(DiamondSquare(), (60, 60))
+u = rand(PerlinNoise(octaves=3), (60, 60))
 heatmap(u, c=:viridis)
 
 pool = vcat(CartesianIndices(u)...)
@@ -51,7 +52,7 @@ t = length(s)
 st = zeros(Float64, length(candidates_s))
 for (ci, cs) in enumerate(candidates_s)
     d = reduce(vcat, [[D(cs[i], cs[j]) for j in (i+1):length(cs)] for i in 1:(length(cs)-1)])
-    st[ci] = H(u[last(cs)], u) + log(t) * h(d, 1.0, 0.5, var(u[cs]))
+    st[ci] = H(u[last(cs)], u) + log(t) * h(d, 1.0, 0.5, var(u))
 end
 push!(s, popat!(pool, last(findmax(st))))
 scatter!([reverse(x.I) for x in s], lab="", c=:white)
