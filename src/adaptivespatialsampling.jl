@@ -9,6 +9,7 @@ end
 function H(threshold::T, uncertainty::Matrix{T}) where {T<:Number}
     p = mean(uncertainty .> threshold)
     q = 1.0 - p
+    (isone(q) | iszero(q)) && return 0.0
     return -p * log2(p) - q * log2(q)
 end
 
@@ -23,3 +24,15 @@ function h(d, ρ, ν, σ²)
     m₁ = length(d) # Number of cells in the current pool
     return (0.5 * log(2 * π * ℯ)^m₁) * sum(matérn(d, ρ, ν, σ²))
 end
+
+#=
+using SpecialFunctions
+using Statistics
+using NeutralLandscapes
+
+u = rand(DiamondSquare(), (20, 20))
+pool = vcat(CartesianIndices(u)...)
+s = eltype(pool)[]
+imax = last(findmax([H(u[i], u) for i in pool]))
+push!(s, popat!(pool, imax))
+=#
