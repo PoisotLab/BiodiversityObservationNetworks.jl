@@ -8,6 +8,3 @@ end
 abstract type SpatialSampler end 
 
 struct SpatialSimulatedAnnealing <: SpatialSampler end
-
-struct AdaptiveSpatialSampling <: SpatialSampler end
-

@@ -16,6 +16,9 @@ module BiodiversityObservationNetworks
     include("balancedacceptance.jl")
     export BalancedAcceptance
 
+    include("adaptivespatialsampling.jl")
+    export AdaptiveSpatialSampling
+
     include("_helpers.jl")
     export makesdm, makeoccurrence, makebon, makeenv
 
