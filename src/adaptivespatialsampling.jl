@@ -13,7 +13,13 @@ function H(threshold::T, uncertainty::Matrix{T}) where {T<:Number}
 end
 
 function matérn(d, ρ, ν, σ²)
+    # ν = 0.5 to have the exponential version
     return σ² * (2.0^(1.0 - ν)) / gamma(ν) *
            (sqrt(2ν) * (d / ρ))^ν *
            bessely(ν, sqrt(2ν) * (d / ρ))
+end
+
+function h(m₁, d, ρ, ν, σ²)
+
+    0.5*log(2*π*ℯ)^m₁
 end
