@@ -17,7 +17,7 @@ function matérn(d, ρ, ν, σ²)
     # ν = 0.5 to have the exponential version
     return σ² * (2.0^(1.0 - ν)) / gamma(ν) *
            (sqrt(2ν) * (d / ρ))^ν *
-           bessely(ν, sqrt(2ν) * (d / ρ))
+           besselk(ν, sqrt(2ν) * (d / ρ))
 end
 
 function h(d, ρ, ν, σ²)
