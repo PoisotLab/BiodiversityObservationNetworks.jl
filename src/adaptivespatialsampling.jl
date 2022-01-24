@@ -19,7 +19,7 @@ function matérn(d, ρ, ν, σ²)
            bessely(ν, sqrt(2ν) * (d / ρ))
 end
 
-function h(m₁, d, ρ, ν, σ²)
-
-    0.5*log(2*π*ℯ)^m₁
+function h(d, ρ, ν, σ²)
+    m₁ = length(d) # Number of cells in the current pool
+    return (0.5 * log(2 * π * ℯ)^m₁) * sum(matérn(d, ρ, ν, σ²))
 end
