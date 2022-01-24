@@ -22,7 +22,7 @@ end
 
 function h(d, ρ, ν, σ²)
     m₁ = length(d) # Number of cells in the current pool
-    return (0.5 * log(2 * π * ℯ)^m₁) * sum(matérn(d, ρ, ν, σ²))
+    return (0.5 * log(2 * π * ℯ)^m₁) * sum([matérn(i, ρ, ν, σ²) for i in d])
 end
 
 #=
@@ -30,9 +30,32 @@ using SpecialFunctions
 using Statistics
 using NeutralLandscapes
 
-u = rand(DiamondSquare(), (20, 20))
+u = rand(DiamondSquare(), (60, 60))
+heatmap(u, c=:viridis)
+
 pool = vcat(CartesianIndices(u)...)
 s = eltype(pool)[]
 imax = last(findmax([H(u[i], u) for i in pool]))
 push!(s, popat!(pool, imax))
+
+scatter!([reverse(x.I) for x in s], lab="", c=:white)
+
+function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
+    x1, y1 = first(a1.I), first(a2.I)
+    x2, y2 = last(a1.I), last(a2.I)
+    return sqrt((x1-x2)^2.0+(y1-y2)^2.0)
+end
+
+candidates_s = [push!(copy(s), p) for p in pool]
+t = length(s)
+st = zeros(Float64, length(candidates_s))
+for (ci, cs) in enumerate(candidates_s)
+    d = reduce(vcat, [[D(cs[i], cs[j]) for j in (i+1):length(cs)] for i in 1:(length(cs)-1)])
+    st[ci] = H(u[last(cs)], u) + log(t) * h(d, 1.0, 0.5, var(u[cs]))
+end
+push!(s, popat!(pool, last(findmax(st))))
+scatter!([reverse(x.I) for x in s], lab="", c=:white)
+
+heatmap([H(x,u) for x in u], c=:Spectral)
+scatter!([reverse(x.I) for x in s], lab="", c=:white)
 =#
