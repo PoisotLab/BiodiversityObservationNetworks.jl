@@ -28,17 +28,8 @@ end
 #=
 using SpecialFunctions
 using Statistics
+using Plots
 using NeutralLandscapes
-
-u = rand(DiamondSquare(), (60, 60))
-heatmap(u, c=:viridis)
-
-pool = vcat(CartesianIndices(u)...)
-s = eltype(pool)[]
-imax = last(findmax([H(u[i], u) for i in pool]))
-push!(s, popat!(pool, imax))
-
-scatter!([reverse(x.I) for x in s], lab="", c=:white)
 
 function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     x1, y1 = first(a1.I), first(a2.I)
@@ -46,16 +37,24 @@ function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     return sqrt((x1-x2)^2.0+(y1-y2)^2.0)
 end
 
-candidates_s = [push!(copy(s), p) for p in pool]
-t = length(s)
-st = zeros(Float64, length(candidates_s))
-for (ci, cs) in enumerate(candidates_s)
-    d = reduce(vcat, [[D(cs[i], cs[j]) for j in (i+1):length(cs)] for i in 1:(length(cs)-1)])
-    st[ci] = H(u[last(cs)], u) + log(t) * h(d, 1.0, 0.5, var(u[cs]))
-end
-push!(s, popat!(pool, last(findmax(st))))
+u = rand(PerlinNoise((4,4)), (60, 60))
+heatmap(u, c=:viridis)
+
+pool = vcat(CartesianIndices(u)...)
+s = eltype(pool)[]
+
+imax = last(findmax([u[i] for i in pool]))
+push!(s, popat!(pool, imax))
 scatter!([reverse(x.I) for x in s], lab="", c=:white)
 
-heatmap([H(x,u) for x in u], c=:Spectral)
+for t in 1:10
+    candidates_s = [push!(copy(s), p) for p in pool]
+    st = zeros(Float32, length(candidates_s))
+    for (ci, cs) in enumerate(candidates_s)
+        d = reduce(vcat, [[D(cs[i], cs[j]) for j in (i+1):length(cs)] for i in 1:(length(cs)-1)])
+        st[ci] = u[last(cs)] + sqrt(log(t)) * h(d, 1.0, 0.5, var(u[cs]))
+    end
+    push!(s, popat!(pool, last(findmax(st))))
+end
 scatter!([reverse(x.I) for x in s], lab="", c=:white)
 =#
