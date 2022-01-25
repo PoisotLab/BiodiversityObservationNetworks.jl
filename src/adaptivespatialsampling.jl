@@ -21,8 +21,8 @@ function matérn(d, ρ, ν, σ²)
 end
 
 function h(d, ρ, ν, σ²)
-    m₁ = length(d) # Number of cells in the current pool
-    return (0.5 * log(2 * π * ℯ)^m₁) * sum([matérn(i, ρ, ν, σ²) for i in d])
+    K = [matérn(i, ρ, ν, σ²) for i in d]
+    return (0.5 * log(2 * π * ℯ)^length(d)) * sum(filter(!isnan, K))
 end
 
 #=
@@ -30,6 +30,7 @@ using SpecialFunctions
 using Statistics
 using Plots
 using NeutralLandscapes
+using Plots
 
 function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     x1, y1 = first(a1.I), first(a2.I)
