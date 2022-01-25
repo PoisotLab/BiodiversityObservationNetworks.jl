@@ -55,7 +55,7 @@ for t in 1:10
         d = reduce(vcat, [[D(cs[i], cs[j]) for j in (i+1):length(cs)] for i in 1:(length(cs)-1)])
         st[ci] = u[last(cs)] + sqrt(log(t)) * h(d, 1.0, 0.5, var(u[cs]))
     end
-    push!(s, popat!(pool, last(findmax(st))))
+    push!(s, popat!(candidate_s[end], last(findmax(st))))
 end
 scatter!([reverse(x.I) for x in s], lab="", c=:white)
 =#
