@@ -25,18 +25,17 @@ function h(d, ρ, ν, σ²)
     return (0.5 * log(2 * π * ℯ)^length(d)) * sum(filter(!isnan, K))
 end
 
-#=
-using SpecialFunctions
-using Statistics
-using Plots
-using NeutralLandscapes
-using Plots
-
 function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     x1, y1 = first(a1.I), first(a2.I)
     x2, y2 = last(a1.I), last(a2.I)
     return sqrt((x1-x2)^2.0+(y1-y2)^2.0)
 end
+
+#=
+using SpecialFunctions
+using Statistics
+using Plots
+using NeutralLandscapes
 
 u = rand(PerlinNoise((4,4)), (60, 60))
 heatmap(u, c=:viridis)
@@ -48,14 +47,15 @@ imax = last(findmax([u[i] for i in pool]))
 push!(s, popat!(pool, imax))
 scatter!([reverse(x.I) for x in s], lab="", c=:white)
 
-for t in 1:10
+for t in 1:20
+    @info t
     candidates_s = [push!(copy(s), p) for p in pool]
     st = zeros(Float32, length(candidates_s))
     for (ci, cs) in enumerate(candidates_s)
         d = reduce(vcat, [[D(cs[i], cs[j]) for j in (i+1):length(cs)] for i in 1:(length(cs)-1)])
         st[ci] = u[last(cs)] + sqrt(log(t)) * h(d, 1.0, 0.5, var(u[cs]))
     end
-    push!(s, popat!(candidate_s[end], last(findmax(st))))
+    push!(s, popat!(pool, last(findmax(st))))
 end
 scatter!([reverse(x.I) for x in s], lab="", c=:white)
 =#
