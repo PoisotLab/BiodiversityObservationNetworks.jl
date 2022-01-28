@@ -13,16 +13,17 @@ function H(threshold::T, uncertainty::Matrix{T}) where {T<:Number}
     return -p * log2(p) - q * log2(q)
 end
 
-function matérn(d, ρ, ν, σ²)
+function matérn(d, ρ, ν)
+    # This is the version from the supp mat
     # ν = 0.5 to have the exponential version
-    return σ² * (2.0^(1.0 - ν)) / gamma(ν) *
-           (sqrt(2ν) * (d / ρ))^ν *
-           besselk(ν, sqrt(2ν) * (d / ρ))
+    return 1.0 * (2.0^(1.0 - ν)) / gamma(ν) *
+           (sqrt(2ν) * d / ρ)^ν *
+           besselk(ν, sqrt(2ν) * d / ρ)
 end
 
-function h(d, ρ, ν, σ²)
-    K = [matérn(i, ρ, ν, σ²) for i in d]
-    return (0.5 * log(2 * π * ℯ)^length(d)) * sum(filter(!isnan, K))
+function h(d, ρ, ν)
+    K = [matérn(i, ρ, ν) for i in d]
+    return (0.5 * log(2 * π * ℯ)^length(d)) * sum(K)
 end
 
 function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
@@ -60,7 +61,7 @@ s[1] = popat!(pool, imax)
             d[d_positions[ti]] = D(cs, s[ti])
         end
         # Get the score
-        score = u[cs] + sqrt(log(t)) * h(d[1:end_at], 1.0, 0.5, var(u[s[1:t]]))
+        score = u[cs] + sqrt(log(t)) * h(d[1:end_at], 1.0, 0.5)
         if score > best_score
             best_score = score
             best_s = ci
