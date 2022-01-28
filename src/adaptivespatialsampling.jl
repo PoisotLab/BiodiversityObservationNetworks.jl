@@ -36,11 +36,16 @@ using SpecialFunctions
 using Statistics
 using Plots
 using NeutralLandscapes
+using StatsBase
 
-u = rand(PerlinNoise((4,4)), (60, 60))
+u = rand(DiamondSquare(), (60, 60))
 heatmap(u, c=:viridis, cbar=false, frame=:none, aspectratio=1, dpi=500)
 
 pool = vcat(CartesianIndices(u)...)
+pool = sample(pool, 200, replace=false)
+
+scatter!([reverse(x.I) for x in pool], lab="", c=:black)
+
 steps = 25
 s = Vector{eltype(pool)}(undef, steps)
 d = zeros(Float64, Int((steps*(steps-1))/2))
