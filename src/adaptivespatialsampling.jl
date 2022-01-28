@@ -26,8 +26,8 @@ function h(d, ρ, ν, σ²)
 end
 
 function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
-    x1, y1 = first(a1.I), first(a2.I)
-    x2, y2 = last(a1.I), last(a2.I)
+    x1, y1 = a1.I
+    x2, y2 = a2.I
     return sqrt((x1-x2)^2.0+(y1-y2)^2.0)
 end
 
@@ -38,24 +38,30 @@ using Plots
 using NeutralLandscapes
 
 u = rand(PerlinNoise((4,4)), (60, 60))
-heatmap(u, c=:viridis)
+heatmap(u, c=:viridis, cbar=false, frame=:none, aspectratio=1, dpi=500)
 
 pool = vcat(CartesianIndices(u)...)
-s = eltype(pool)[]
+s = Vector{eltype(pool)}(undef, 250)
 
 imax = last(findmax([u[i] for i in pool]))
-push!(s, popat!(pool, imax))
-scatter!([reverse(x.I) for x in s], lab="", c=:white)
+s[1] = popat!(pool, imax)
 
-for t in 1:20
-    @info t
-    candidates_s = [push!(copy(s), p) for p in pool]
-    st = zeros(Float32, length(candidates_s))
-    for (ci, cs) in enumerate(candidates_s)
-        d = reduce(vcat, [[D(cs[i], cs[j]) for j in (i+1):length(cs)] for i in 1:(length(cs)-1)])
-        st[ci] = u[last(cs)] + sqrt(log(t)) * h(d, 1.0, 0.5, var(u[cs]))
+@time for t in 2:length(s)
+    best_score = 0.0
+    best_s = 1
+    for (ci, cs) in enumerate(pool)
+        s[t] = cs
+        d = reduce(vcat, [[D(s[i], s[j]) for j in (i+1):t] for i in 1:(t-1)])
+        score = u[cs] + sqrt(log(t)) * h(d, 1.0, 0.5, var(u[s[1:t]]))
+        if score > best_score
+            best_score = score
+            best_s = ci
+        end
     end
-    push!(s, popat!(pool, last(findmax(st))))
+    s[t] = popat!(pool, best_s)
 end
-scatter!([reverse(x.I) for x in s], lab="", c=:white)
+
+scatter!([reverse(x.I) for x in s], lab="", c=:white, cbar=false)
+
+savefig(joinpath(homedir(), "lol.png"))
 =#
