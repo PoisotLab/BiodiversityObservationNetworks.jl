@@ -31,7 +31,6 @@ function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     return sqrt((x1-x2)^2.0+(y1-y2)^2.0)
 end
 
-#=
 using SpecialFunctions
 using Statistics
 using Plots
@@ -41,7 +40,9 @@ u = rand(PerlinNoise((4,4)), (60, 60))
 heatmap(u, c=:viridis, cbar=false, frame=:none, aspectratio=1, dpi=500)
 
 pool = vcat(CartesianIndices(u)...)
-s = Vector{eltype(pool)}(undef, 250)
+steps = 25
+s = Vector{eltype(pool)}(undef, steps)
+d = zeros(Float64, Int((steps*(steps-1))/2))
 
 imax = last(findmax([u[i] for i in pool]))
 s[1] = popat!(pool, imax)
@@ -51,8 +52,15 @@ s[1] = popat!(pool, imax)
     best_s = 1
     for (ci, cs) in enumerate(pool)
         s[t] = cs
-        d = reduce(vcat, [[D(s[i], s[j]) for j in (i+1):t] for i in 1:(t-1)])
-        score = u[cs] + sqrt(log(t)) * h(d, 1.0, 0.5, var(u[s[1:t]]))
+        # Distance update
+        start_from = Int((t-1)*(t-2)/2)+1
+        end_at = start_from+Int(t-2)
+        d_positions = start_from:end_at
+        for ti in 1:(t-1)
+            d[d_positions[ti]] = D(cs, s[ti])
+        end
+        # Get the score
+        score = u[cs] + sqrt(log(t)) * h(d[1:end_at], 1.0, 0.5, var(u[s[1:t]]))
         if score > best_score
             best_score = score
             best_s = ci
@@ -62,6 +70,3 @@ s[1] = popat!(pool, imax)
 end
 
 scatter!([reverse(x.I) for x in s], lab="", c=:white, cbar=false)
-
-savefig(joinpath(homedir(), "lol.png"))
-=#
