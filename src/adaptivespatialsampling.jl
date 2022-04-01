@@ -38,15 +38,15 @@ using Plots
 using NeutralLandscapes
 using StatsBase
 
-u = rand(DiamondSquare(), (60, 60))
+u = rand(DiamondSquare(), (80, 80))
 heatmap(u, c=:viridis, cbar=false, frame=:none, aspectratio=1, dpi=500)
 
 pool = vcat(CartesianIndices(u)...)
-pool = sample(pool, 200, replace=false)
+pool = sample(pool, 500, replace=false)
 
-scatter!([reverse(x.I) for x in pool], lab="", c=:black)
+scatter!([reverse(x.I) for x in pool], lab="", c=:black, ms=1)
 
-steps = 25
+steps = 75
 s = Vector{eltype(pool)}(undef, steps)
 d = zeros(Float64, Int((steps*(steps-1))/2))
 
