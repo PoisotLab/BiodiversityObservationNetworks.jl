@@ -1,4 +1,4 @@
 # BiodiversityObservationNetworks.jl
-Methods for optimizing the spatial location of biodiversity-observation-networks
+Methods for optimizing the spatial sampling of ecosystem processes. 
 
-🚧 🏗️ 👷‍♂️ 👷‍♀️  work in progress 🚧
+🚧 🏗️ 👷‍♂️ 👷‍♀️  Highly volatile, still in beta, use at own risk  👷‍♂️ 👷‍♀️🏗️ 🚧
