@@ -15,7 +15,9 @@ export BalancedAcceptance
 include("adaptivespatialsampling.jl")
 export AdaptiveSpatialSampling
 
+include("seed.jl")
 export seed, seed!
+
 export refine, refine!
 
 end
