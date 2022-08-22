@@ -1,8 +1,8 @@
 using Test
-using BONs
+using BiodiversityObservationNetworks
 
 tests = [
-    "Fractal Triad" => "fractaltriad.jl",
+    "Balance Acceptance Sampling" => "balancedacceptance.jl",
 ]
  
 global anyerrors = false

@@ -1,5 +1,5 @@
 @kwdef mutable struct BalancedAcceptance{I <: Integer} <: BONSeeder
-    const numpoints::I = 50
+    numpoints::I = 50
     α = 1.0
 end
 
@@ -9,7 +9,7 @@ function _validate(sampler::BalancedAcceptance)
     return nothing
 end
 
-function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance, uncertainty::Matrix{T})
+function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance, uncertainty::Matrix{T}) where {T<:AbstractFloat}
     seed = Int32.([floor(10^7 * rand()), floor(10^7 * rand())])
     np, α = sampler.numpoints, sampler.α
     x, y = size(uncertainty)
