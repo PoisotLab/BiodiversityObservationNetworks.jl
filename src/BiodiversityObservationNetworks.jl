@@ -1,25 +1,21 @@
 module BiodiversityObservationNetworks
-    using SimpleSDMLayers
-    using Distributions
-    using NeutralLandscapes 
-    using Random
-    using HaltonSequences
-    using StatsBase
-    using Base: @kwdef
+using SimpleSDMLayers
+using Distributions
+using Random
+using HaltonSequences
+using StatsBase
+using Base: @kwdef
 
-    include("types.jl")
-    export SpatialSampler
+include("types.jl")
+export BONSeeder, BONRefiner, BONSampler
 
-    include("sampler.jl")
-    export rand, rand!
+include("balancedacceptance.jl")
+export BalancedAcceptance
 
-    include("balancedacceptance.jl")
-    export BalancedAcceptance
+include("adaptivespatialsampling.jl")
+export AdaptiveSpatialSampling
 
-    include("_helpers.jl")
-    export makesdm, makeoccurrence, makebon, makeenv
+export seed, seed!
+export refine, refine!
 
 end
-
-# makebon(makesdm())
-

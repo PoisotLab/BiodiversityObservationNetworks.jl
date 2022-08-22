@@ -1,11 +1,14 @@
-
 @kwdef mutable struct BiodiversityObservationNetwork{IT<:Integer,M<:AbstractMatrix}
     numobservatories::IT = 50
     coordinates::M = missing
 end
 
+abstract type BONSeeder end
+abstract type BONRefiner end
 
-abstract type SpatialSampler end 
+BONSampler = Union{BONSeeder, BONRefiner}
 
-struct SpatialSimulatedAnnealing <: SpatialSampler end
-
+function _checknumpoints(sampler::T) where {T <: BONSampler}
+    getfield(sampler, :numpoints) > 0 || throw(ArgumentError("numpoints boooooo"))
+    return nothing
+end
