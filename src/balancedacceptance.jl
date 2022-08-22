@@ -22,8 +22,10 @@ function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance,
         i, j = haltonvalue(seed[1] + ptct, 2), haltonvalue(seed[2] + ptct, 3)
         candcoord = CartesianIndex(convert.(Int32, [ceil(x * i), ceil(y * j)])...)
         prob = reluncert[candcoord]
-        rand() < prob && push!(coords, candcoord)
-        ptct += 1
+        if  rand() < prob 
+            coords[ptct] = candcoord
+            ptct += 1
+        end 
     end
 
     return coords
