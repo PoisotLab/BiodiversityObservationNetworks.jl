@@ -1,3 +1,13 @@
+"""
+    seed!(coords::Vector{CartesianIndex}, sampler::ST, uncertainty::Matrix{T})
+
+
+Creates a set of candidate sampling locations from a raster `uncertainty` using 
+`sampler`, where `sampler` is a [`BONSeeder`](@ref)
+
+
+- Seeder's work on rasters, refiners work on set of coordinates.
+"""
 function seed!(coords::Vector{CartesianIndex}, sampler::ST, uncertainty::Matrix{T}) where {ST<:BONSampler,T<:AbstractFloat}
     if length(coords) != sampler.numpoints
         throw(DimensionMismatch("The length of the coordinate vector must match the `numpoints` fields of the sampler"))
