@@ -1,4 +1,4 @@
-Base.@kwdef mutable struct BalancedAcceptance{I <: Integer}# <: BONSeeder
+Base.@kwdef mutable struct BalancedAcceptance{I <: Integer} <: BONSeeder
     numpoints::I = 50
     α = 1.0
     function BalancedAcceptance(numpoints, α)
