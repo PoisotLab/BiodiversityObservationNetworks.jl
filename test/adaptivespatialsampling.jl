@@ -27,7 +27,7 @@ smpl = AdaptiveSpatialSampling(length(c))
 @test length(refine(AdaptiveSpatialSampling(numpoints=12))(pool, U)) == 12
 
 # Test the curried allocating version
-@test length(refine!(c, BalancedAcceptance(numpoints=length(c)))(U)) == length(c)
-@test_throws DimensionMismatch refine!(c, BalancedAcceptance(numpoints=length(c) - 1))(U)
+@test length(refine!(c, AdaptiveSpatialSampling(numpoints=length(c)))(pool, U)) == length(c)
+@test_throws DimensionMismatch refine!(c, AdaptiveSpatialSampling(numpoints=length(c) - 1))(pool, U)
 
 end
