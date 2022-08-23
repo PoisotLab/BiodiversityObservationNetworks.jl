@@ -1,15 +1,27 @@
-@kwdef mutable struct BalancedAcceptance{I <: Integer} <: BONSeeder
-    const numpoints::I = 50
-    α = 1.0
+"""
+    BalancedAcceptance
+
+...
+
+**numpoints**, an Integer (def. 50), specifying the number of points to use.
+
+**α**, an AbstractFloat (def. 1.0), specifying ...
+"""
+Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} <: BONSeeder
+    numpoints::I = 50
+    α::F = 1.0
+    function BalancedAcceptance(numpoints, α)
+        if numpoints < one(numpoints)
+            throw(ArgumentError("You cannot have a BalancedAcceptance with fewer than one point"))
+        end
+        if α <= zero(α)
+            throw(ArgumentError("The value of α for BalancedAcceptance must be larger than 0"))
+        end
+        return new{typeof(numpoints), typeof(α)}(numpoints, α)
+    end
 end
 
-function _validate(sampler::BalancedAcceptance)
-    sampler.α < zero(sampler.α) || throw(ArgumentError("yada yada yada"))
-    _checknumpoints(sampler)
-    return nothing
-end
-
-function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance, uncertainty::Matrix{T})
+function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance, uncertainty::Matrix{T}) where {T<:AbstractFloat}
     seed = Int32.([floor(10^7 * rand()), floor(10^7 * rand())])
     np, α = sampler.numpoints, sampler.α
     x, y = size(uncertainty)
