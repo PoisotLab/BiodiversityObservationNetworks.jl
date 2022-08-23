@@ -22,15 +22,16 @@ Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} 
 end
 
 function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance, uncertainty::Matrix{T}) where {T<:AbstractFloat}
-    seed = Int32.([floor(10^7 * rand()), floor(10^7 * rand())])
+
+    seed = rand(Int32.(1e0:1e7), 2)
     np, α = sampler.numpoints, sampler.α
     x, y = size(uncertainty)
 
     stduncert = StatsBase.transform(StatsBase.fit(ZScoreTransform, uncertainty, dims=2), uncertainty)
     reluncert = broadcast(x -> exp(α * x) / (1 + exp(α * x)), stduncert)
 
-    ptct = 0
-    while length(coords) < np
+    ptct = 1
+    while ptct <= length(coords)
         i, j = haltonvalue(seed[1] + ptct, 2), haltonvalue(seed[2] + ptct, 3)
         candcoord = CartesianIndex(convert.(Int32, [ceil(x * i), ceil(y * j)])...)
         prob = reluncert[candcoord]
