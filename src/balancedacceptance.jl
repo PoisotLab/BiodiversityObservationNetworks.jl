@@ -7,7 +7,7 @@
 
 **α**, an AbstractFloat (def. 1.0), specifying ...
 """
-Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat}# <: BONSeeder
+Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} <: BONSeeder
     numpoints::I = 50
     α::F = 1.0
     function BalancedAcceptance(numpoints, α)
