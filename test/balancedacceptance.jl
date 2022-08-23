@@ -12,4 +12,8 @@ using Test
 # Parametric constructor
 @test typeof(BalancedAcceptance(2, 0.2f0)) == BalancedAcceptance{Int64,Float32}
 
+# Correct subtype
+@test typeof(BalancedAcceptance(2, 0.2f0)) <: BONSeeder
+@test typeof(BalancedAcceptance(2, 0.2f0)) <: BONSampler
+
 end
