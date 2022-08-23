@@ -31,7 +31,7 @@ function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance,
     reluncert = broadcast(x -> exp(α * x) / (1 + exp(α * x)), stduncert)
 
     ptct = 1
-    while ptct < length(coords)
+    while ptct <= length(coords)
         i, j = haltonvalue(seed[1] + ptct, 2), haltonvalue(seed[2] + ptct, 3)
         candcoord = CartesianIndex(convert.(Int32, [ceil(x * i), ceil(y * j)])...)
         prob = reluncert[candcoord]
