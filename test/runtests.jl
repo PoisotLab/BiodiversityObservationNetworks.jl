@@ -2,7 +2,8 @@ using Test
 using BiodiversityObservationNetworks
 
 tests = [
-    "Balance Acceptance Sampling" => "balancedacceptance.jl",
+    "\033[1m\033[34mSEEDER\033[0m  Balance Acceptance Sampling" => "balancedacceptance.jl",
+    "\033[1m\033[35mREFINER\033[0m Adaptive Spatial Sampling" => "adaptivespatialsampling.jl",
 ]
  
 global anyerrors = false

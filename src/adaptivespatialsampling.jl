@@ -1,12 +1,58 @@
-@kwdef mutable struct AdaptiveSpatialSampling{I<:Integer} <: BONRefiner
-    const numpoints::I = 50
+"""
+    AdaptiveSpatialSampling
+
+...
+
+**numpoints**, an Integer (def. 50), specifying the number of points to use.
+
+**α**, an AbstractFloat (def. 1.0), specifying ...
+"""
+Base.@kwdef mutable struct AdaptiveSpatialSampling{T <: Integer} <: BONRefiner
+    numpoints::T = 50
+    function AdaptiveSpatialSampling(numpoints)
+        if numpoints < one(numpoints)
+            throw(ArgumentError("You cannot have an AdaptiveSpatialSampling with fewer than one point"))
+        end
+        return new{typeof(numpoints)}(numpoints)
+    end
 end
 
-function _generate!(ass::AdaptiveSpatialSampling, uncertainty::M) where {M<:AbstractMatrix}
+function _generate!(coords::Vector{CartesianIndex}, pool::Vector{CartesianIndex}, sampler::AdaptiveSpatialSampling, uncertainty::Matrix{T}) where {T<:AbstractFloat}
+
+    # Distance matrix (inlined)
+    d = zeros(Float64, Int((sampler.numpoints * (sampler.numpoints - 1)) / 2))
+
+    # Start with the point with maximum entropy
+    imax = last(findmax([uncertainty[i] for i in pool]))
+    # Add it to the stack
+    coords[1] = popat!(pool, imax)
+
+    best_score = 0.0
+    best_s = 1
+    
+    for i in 2:sampler.numpoints
+        for (ci, cs) in enumerate(pool)
+            coords[i] = cs
+            # Distance update
+            start_from = Int((i - 1) * (i - 2) / 2) + 1
+            end_at = start_from + Int(i - 2)
+            d_positions = start_from:end_at
+            for ti in 1:(i-1)
+                d[d_positions[ti]] = D(cs, coords[ti])
+            end
+            # Get the score
+            score = uncertainty[cs] + sqrt(log(i)) * h(d[1:end_at], 1.0, 0.5)
+            if score > best_score
+                best_score = score
+                best_s = ci
+            end
+        end
+        coords[i] = popat!(pool, best_s)
+    end
     return coords
 end
 
-function H(threshold::T, uncertainty::Matrix{T}) where {T<:Number}
+function H(threshold::T, uncertainty::Matrix{T}) where {T<:AbstractFloat}
     p = mean(uncertainty .> threshold)
     q = 1.0 - p
     (isone(q) | iszero(q)) && return 0.0
@@ -31,48 +77,3 @@ function D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     x2, y2 = a2.I
     return sqrt((x1-x2)^2.0+(y1-y2)^2.0)
 end
-
-using SpecialFunctions
-using Statistics
-using Plots
-using NeutralLandscapes
-using StatsBase
-
-u = rand(DiamondSquare(), (80, 80))
-heatmap(u, c=:viridis, cbar=false, frame=:none, aspectratio=1, dpi=500)
-
-pool = vcat(CartesianIndices(u)...)
-pool = sample(pool, 500, replace=false)
-
-scatter!([reverse(x.I) for x in pool], lab="", c=:black, ms=1)
-
-steps = 75
-s = Vector{eltype(pool)}(undef, steps)
-d = zeros(Float64, Int((steps*(steps-1))/2))
-
-imax = last(findmax([u[i] for i in pool]))
-s[1] = popat!(pool, imax)
-
-@time for t in 2:length(s)
-    best_score = 0.0
-    best_s = 1
-    for (ci, cs) in enumerate(pool)
-        s[t] = cs
-        # Distance update
-        start_from = Int((t-1)*(t-2)/2)+1
-        end_at = start_from+Int(t-2)
-        d_positions = start_from:end_at
-        for ti in 1:(t-1)
-            d[d_positions[ti]] = D(cs, s[ti])
-        end
-        # Get the score
-        score = u[cs] + sqrt(log(t)) * h(d[1:end_at], 1.0, 0.5)
-        if score > best_score
-            best_score = score
-            best_s = ci
-        end
-    end
-    s[t] = popat!(pool, best_s)
-end
-
-scatter!([reverse(x.I) for x in s], lab="", c=:white, cbar=false)
