@@ -4,7 +4,6 @@ using Distributions
 using Random
 using HaltonSequences
 using StatsBase
-using Base: @kwdef
 
 include("types.jl")
 export BONSeeder, BONRefiner, BONSampler
