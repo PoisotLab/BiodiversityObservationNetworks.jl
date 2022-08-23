@@ -3,7 +3,20 @@ Base.@kwdef mutable struct BiodiversityObservationNetwork{IT<:Integer,M<:Abstrac
     coordinates::M = missing
 end
 
+"""
+    abstract type BONSeeder end
+
+A `BONSeeder` is an algorithm for proposing sampling locations
+using a raster of weights in each cell.
+"""
 abstract type BONSeeder end
+
+"""
+    abstract type BONRefiner end 
+"""
 abstract type BONRefiner end
 
-BONSampler = Union{BONSeeder,BONRefiner}
+"""
+    
+"""
+const BONSampler = Union{BONSeeder,BONRefiner}

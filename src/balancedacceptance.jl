@@ -1,11 +1,8 @@
 """
     BalancedAcceptance
 
-...
-
-**numpoints**, an Integer (def. 50), specifying the number of points to use.
-
-**α**, an AbstractFloat (def. 1.0), specifying ...
+A `BONSeeder` that uses Balanced-Acceptance Sampling (Van-dem-Bates et al. 2017 
+https://doi.org/10.1111/2041-210X.13003)
 """
 Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} <: BONSeeder
     numpoints::I = 50
