@@ -1,4 +1,4 @@
-@kwdef mutable struct BiodiversityObservationNetwork{IT<:Integer,M<:AbstractMatrix}
+Base.@kwdef mutable struct BiodiversityObservationNetwork{IT<:Integer,M<:AbstractMatrix}
     numobservatories::IT = 50
     coordinates::M = missing
 end
