@@ -9,7 +9,7 @@ U = rand(MidpointDisplacement(0.5), (100, 100))
 
 # seed the initial set of points
 
-candidates, _ = seed(BalancedAcceptance(numpoints=200)), U)
+candidates, _ = seed(BalancedAcceptance(numpoints=200), U)
 
 # refine the points
 
