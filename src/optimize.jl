@@ -32,7 +32,6 @@ struct Weights{F <: AbstractFloat}
     α::Vector{F}
 end
 
-
 function optimize(layers, simulator; numtargets = 3, fixed_W = false)
     numlayers = length(layers)
 
@@ -43,23 +42,34 @@ function optimize(layers, simulator; numtargets = 3, fixed_W = false)
     loss = simulator(score)
     @info loss
 
-    gradient()
-
+    return gradient()
 end
-
-dims, nl = (50, 50), 5
-layers = [rand(MidpointDisplacement(), dims) for i in 1:nl]
-
-optimize(layers, x->entropy(x))
-
 
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
     return mapslices(x -> x * W, layers; dims = (2, 3))
 end
 
-function _squish(layers::Array{T, 3}, α::Vector{T}) where T <: AbstractFloat
+function _squish(layers::Array{T, 3}, α::Vector{T}) where {T <: AbstractFloat}
     return reshape(mapslices(x -> x * α, layers; dims = (2, 3)), size(layers)[1:2]...)
 end
 
+# ...?
 
-heatmap(sl)
+dims, nl, nt = (50, 50), 5, 3
+W = rand(nl, nt)
+α = rand(nt)
+layers = zeros(dims..., nl)
+for i in 1:nl
+    layers[:, :, i] = rand(MidpointDisplacement(), dims)
+end
+
+optimize(layers, x -> entropy(x))
+
+using Statistics
+using NeutralLandscapes
+
+model = (W, α) -> StatsBase.entropy(_squish(_squish(layers, W), α))
+
+model(W, α)
+
+heatmap(model(W, α))
