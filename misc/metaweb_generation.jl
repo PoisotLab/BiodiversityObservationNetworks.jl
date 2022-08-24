@@ -1,3 +1,20 @@
+# ===============================================
+#      
+#   This file contains methods to simulate the 
+#   process of observing a set of local ecological
+#   networks at a site of proposed coordinates. It
+#   then returns the "true" metaweb, and the observed
+#   metaweb, which can then be fed into a loss function
+#   that measures the difference between the two using 
+#   a handfull of metrics. 
+# 
+#   What should these loss metrics be? Necessary conversation
+#   to have. Just like |κ_true - κ_obs | and | connectance_true - connectance_obs|?
+# 
+#   
+# 
+# ===============================================
+
 using Distributions
 using EcologicalNetworks
 using BiodiversityObservationNetworks
