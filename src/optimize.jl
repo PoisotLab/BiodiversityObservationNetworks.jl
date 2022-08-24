@@ -32,6 +32,52 @@ struct Weights{F<:AbstractFloat}
     α::Vector{F}
 end
 
-function optimize(layers, proposer, loss)
+"""
+    optimize
+"""
 
+matrixloss(M) = -entropy(vec(M))
+
+"""
+
+"""
+function _squish(layers::Vector{M}, W::Matrix{F}) where {F<:AbstractFloat,M<:AbstractMatrix}
+    stack = zeros(size(layers[begin])..., length(layers))
+
+    for (i,layer) in enumerate(layers)
+        stack[:,:,i] .= layers[i]
+    end
+
+    x,y = size(layers[begin])
+
+    squished_layers = zeros(size(layers[begin])..., size(W,2))
+    @info vec(stack[1,1,:])
+
+    
+    for i in 1:x, j in 1:y
+        squished_layers[i,j,:] .= ((stack[i,j,:])'*W)'
+    end
+
+    return squished_layers
 end
+sl = _squish(layers, Matrix(1.0I, 5,3))
+
+function _squish(layers, α::Vector{F}) where {F<:AbstractFloat}
+end
+
+function optimize(layers, simulator; numtargets = 3, fixed_W=false)
+    numlayers = length(layers)
+
+    W = rand(numlayers, numtargets)
+    α = rand(numtargets)
+
+
+
+    tensor = zeros(size(layers), l)
+end
+
+dims, nl = (50,50), 5
+layers = [rand(MidpointDisplacement(), dims) for i in 1:nl]
+
+optimize(layers, matrixloss)
+
