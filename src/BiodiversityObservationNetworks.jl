@@ -13,8 +13,8 @@ export BONSeeder, BONRefiner, BONSampler
 include("balancedacceptance.jl")
 export BalancedAcceptance
 
-include("adaptivespatialsampling.jl")
-export AdaptiveSpatialSampling
+include("adaptivespatial.jl")
+export AdaptiveSpatial
 
 include("seed.jl")
 export seed, seed!
