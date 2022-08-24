@@ -13,10 +13,16 @@ abstract type BONSeeder end
 
 """
     abstract type BONRefiner end 
+
+A `BONRefiner` is an algorithm for proposing sampling locations
+by _refining_ a set of candidate points to a smaller set 
+of 'best' points.
 """
 abstract type BONRefiner end
 
 """
-    
+    BONSampler
+
+A combination of the abstract types `BONSeeder` and `BONRefiner`.
 """
 const BONSampler = Union{BONSeeder,BONRefiner}

@@ -1,4 +1,4 @@
-using Documenter, NeutralLandscapes
+using Documenter, BiodiversityObservationNetworks 
 
 # For GR docs bug
 ENV["GKSwstype"] = "100"
@@ -16,7 +16,7 @@ makedocs(
 
 deploydocs(
     deps=Deps.pip("pygments", "python-markdown-math"),
-    repo="github.com/EcoJulia/NeutralLandscapes.jl.git",
+    repo="github.com/EcoJulia/BiodiversityObservationNetworks.jl.git",
     devbranch="main",
     push_preview=true
 )
