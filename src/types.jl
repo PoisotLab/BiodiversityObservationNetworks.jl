@@ -26,3 +26,12 @@ abstract type BONRefiner end
 A combination of the abstract types `BONSeeder` and `BONRefiner`.
 """
 const BONSampler = Union{BONSeeder,BONRefiner}
+
+"""
+     Base.:∘(seeder::BONSeeder, refiner::BONRefiner)
+
+An overload of ∘ to chain together the refine and seed functions
+"""
+function Base.:∘(seeder::BONSeeder, refiner::BONRefiner)
+    return (u) -> refine(seed(seeder, u), refiner)
+end 
