@@ -22,7 +22,9 @@ end
 
 function refine(sampler::ST) where {ST <: BONRefiner}
     coords = Vector{CartesianIndex}(undef, sampler.numpoints)
-    return (p, u) -> refine!(coords, copy(p), sampler, u)
+    _inner(p,u) = refine!(coords, copy(p), sampler, u)
+    _inner(p) = refine!(coords, first(p), sampler, last(p))
+    return _inner
 end
 
 function refine(pack::Tuple{Vector{CartesianIndex}, Matrix{Float64}}, sampler::ST) where {ST <: BONRefiner}
