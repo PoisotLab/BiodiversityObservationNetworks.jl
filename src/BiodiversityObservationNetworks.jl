@@ -1,9 +1,11 @@
 module BiodiversityObservationNetworks
+
 using SimpleSDMLayers
 using Distributions
 using Random
 using HaltonSequences
 using StatsBase
+using SpecialFunctions
 
 include("types.jl")
 export BONSeeder, BONRefiner, BONSampler
@@ -11,13 +13,13 @@ export BONSeeder, BONRefiner, BONSampler
 include("balancedacceptance.jl")
 export BalancedAcceptance
 
-#include("adaptivespatialsampling.jl")
-#export AdaptiveSpatialSampling
+include("adaptivespatial.jl")
+export AdaptiveSpatial
 
 include("seed.jl")
 export seed, seed!
 
-# TODO define these
-# export refine, refine!
+include("refine.jl")
+export refine, refine!
 
 end
