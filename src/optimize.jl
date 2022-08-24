@@ -32,24 +32,35 @@ struct Weights{F <: AbstractFloat}
     α::Vector{F}
 end
 
-function optimize(layers, simulator; numtargets = 3, fixed_W = false)
-    numlayers = length(layers)
+function optimize(layers, loss; numtargets = 3, fixed_W = false, numsteps=10)
+    numlayers = size(layers, 3)
 
     W = rand(numlayers, numtargets)
     α = rand(numtargets)
 
-    score = _squish(_squish(layers, Matrix(1.0I, 5, 3)), [0.3, 0.4, 0.3])
-    loss = simulator(score)
-    @info loss
+    η = 10^-4
 
-    return gradient()
+    losses = zeros(numsteps)
+
+
+    @showprogress for step in 1:numsteps
+        grad = gradient(loss, W, α)
+        ∂W, ∂α = η .* gradient(loss, W, α)
+        W += ∂W
+        α += ∂α
+
+        losses[step] = loss(W,α)
+    end
+    return losses
 end
 
 # ...?
 
 using Statistics, StatsBase
+using ProgressMeter
 using NeutralLandscapes
 using Zygote, SliceMap
+using ProgressMeter
 
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
     return convert(Array, slicemap(x -> x * W, layers; dims = (2, 3)))
@@ -67,15 +78,38 @@ for i in 1:nl
     layers[:, :, i] = rand(MidpointDisplacement(), dims)
 end
 
+
+
+
+
 model = (W, α) -> StatsBase.entropy(_squish(_squish(layers, W), α))/prod(size(layers[:,:,1]))
+model(W, α)
+
+optimize(layers, model; numsteps=10^4)
+
 
 # Test run
 x = _squish(layers, W)
 typeof(x)
 _squish(_squish(layers, W), α)
 
-model(W, α)
 
-gradient(model, W, α)
+a = 10^-4 .* gradient(model, W, α)
+
+numsteps = 10^5
+losses = zeros(numsteps)
+η = 10^-4
+@showprogress for step in 1:numsteps
+    grad = gradient(model, W, α)
+    ∂W, ∂α = η .* gradient(model, W, α)
+    W += ∂W
+    α += ∂α
+
+    losses[step] = model(W,α)
+
+
+end
+
+plot(1:length(losses), losses)
 
 heatmap(model(W, α))
