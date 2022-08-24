@@ -1,6 +1,6 @@
-using Distributions: BetaBinomial
-using EcologicalNetworks: nichemodel
-using BiodiversityObservation 
+using Distributions
+using EcologicalNetworks
+using BiodiversityObservationNetworks
 
 function flexiblelinks(S)
     # MAP estimates from Macdonald et al 2020
@@ -27,9 +27,13 @@ function simulate_sampling(
     metaweb = flexiblelinks(richness)
     ra = getabundances(metaweb)
 
-    for coord in coords
-        observe(metaweb, coords, ra, numobs)
+    locals = [UnipartiteNetwork(rand(Bool,5,5)) for _ in 1:length(coords)]
+    for (i,coord) in enumerate(coords)
+        locals[i] = observe(metaweb, coord, ra, numobs)
     end
+
+    observed_metaweb = reduce(∪, locals)
+    return observed_metaweb
 end 
 
 
@@ -52,18 +56,20 @@ function observe(metaweb, coord, relativeabundances, numobservations, )
         counts[ind] += 1
     end
 
-    observed_metaweb = zeros(size(adjacency(metaweb)))
+    observed_net = zeros(size(adjacency(metaweb)))
 
     S = richness(metaweb)
 
     for i in 1:S, j in 1:S
-        if metaweb[i,j] == 1 && observations[i] > 0 && observations[j] > 0
-            observed_metaweb[i,j] = 1
+        if metaweb[i,j] == 1 && counts[i] > 0 && counts[j] > 0
+            observed_net[i,j] = 1
         end
     end
-    return UnipartiteNetwork(observed_metaweb)
+    return UnipartiteNetwork(Bool.(observed_net))
 end
 
 
 
-simulate_sampling()
+pts = rand(50,50) |> seed(BalancedAcceptance())
+
+obsmat = simulate_sampling(pts)
