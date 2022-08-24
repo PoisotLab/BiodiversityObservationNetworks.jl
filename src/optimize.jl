@@ -32,24 +32,21 @@ struct Weights{F <: AbstractFloat}
     α::Vector{F}
 end
 
-function optimize(layers, loss; numtargets = 3, fixed_W = false, numsteps=10)
-    numlayers = size(layers, 3)
-
-    W = rand(numlayers, numtargets)
-    α = rand(numtargets)
-
-    η = 10^-4
+function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
+    W = rand(size(layers, 3), targets)
+    α = rand(targets)
 
     losses = zeros(numsteps)
 
-
     @showprogress for step in 1:numsteps
-        grad = gradient(loss, W, α)
-        ∂W, ∂α = η .* gradient(loss, W, α)
+        ∂W, ∂α = learningrate .* gradient(loss, W, α)
         W += ∂W
         α += ∂α
+        W = clamp.(W, 0, 1)
+        α = clamp.(α, 0, 1)
+        α ./= sum(α)
 
-        losses[step] = loss(W,α)
+        losses[step] = loss(W, α)
     end
     return losses
 end
@@ -78,38 +75,8 @@ for i in 1:nl
     layers[:, :, i] = rand(MidpointDisplacement(), dims)
 end
 
+model =
+    (W, α) ->
+        StatsBase.entropy(_squish(_squish(layers, W), α)) / prod(size(layers[:, :, 1]))
 
-
-
-
-model = (W, α) -> StatsBase.entropy(_squish(_squish(layers, W), α))/prod(size(layers[:,:,1]))
-model(W, α)
-
-optimize(layers, model; numsteps=10^4)
-
-
-# Test run
-x = _squish(layers, W)
-typeof(x)
-_squish(_squish(layers, W), α)
-
-
-a = 10^-4 .* gradient(model, W, α)
-
-numsteps = 10^5
-losses = zeros(numsteps)
-η = 10^-4
-@showprogress for step in 1:numsteps
-    grad = gradient(model, W, α)
-    ∂W, ∂α = η .* gradient(model, W, α)
-    W += ∂W
-    α += ∂α
-
-    losses[step] = model(W,α)
-
-
-end
-
-plot(1:length(losses), losses)
-
-heatmap(model(W, α))
+optimize(layers, model; numsteps = 10^4)
