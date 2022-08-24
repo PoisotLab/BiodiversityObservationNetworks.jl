@@ -12,22 +12,30 @@ using Test
 
 # Test with a random uncertainty matrix
 U = rand(20, 20)
-pool = seed(BalancedAcceptance(numpoints=30), U)
+pack = seed(BalancedAcceptance(; numpoints = 30), U)
 c = Vector{CartesianIndex}(undef, 15)
 smpl = AdaptiveSpatial(length(c))
 
 # Length and element type
-@test length(refine(pool, smpl, U)) == smpl.numpoints
-@test eltype(refine(pool, smpl, U)) == CartesianIndex
+@test length(first(refine(pack, smpl))) == smpl.numpoints
+@test eltype(first(refine(first(pack), smpl, U))) == CartesianIndex
 
 # Test with an existing coordinates vector
-@test_throws DimensionMismatch refine!(c, pool, AdaptiveSpatial(numpoints=length(c) - 1), U)
+@test_throws DimensionMismatch refine!(
+    c,
+    first(pack),
+    AdaptiveSpatial(; numpoints = length(c) - 1),
+    last(pack),
+)
 
 # Test the curried version
-@test length(refine(AdaptiveSpatial(numpoints=12))(pool, U)) == 12
+@test length(first(refine(AdaptiveSpatial(; numpoints = 12))(pack...))) == 12
 
 # Test the curried allocating version
-@test length(refine!(c, AdaptiveSpatial(numpoints=length(c)))(pool, U)) == length(c)
-@test_throws DimensionMismatch refine!(c, AdaptiveSpatial(numpoints=length(c) - 1))(pool, U)
+@test length(first(refine!(c, AdaptiveSpatial(; numpoints = length(c)))(pack...))) ==
+      length(c)
+@test_throws DimensionMismatch refine!(c, AdaptiveSpatial(; numpoints = length(c) - 1))(
+    pack...,
+)
 
 end
