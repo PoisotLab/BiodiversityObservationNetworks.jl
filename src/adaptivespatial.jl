@@ -49,7 +49,7 @@ function _generate!(coords::Vector{CartesianIndex}, pool::Vector{CartesianIndex}
         end
         coords[i] = popat!(pool, best_s)
     end
-    return coords
+    return (coords, uncertainty)
 end
 
 function _H(threshold::T, uncertainty::Matrix{T}) where {T<:AbstractFloat}

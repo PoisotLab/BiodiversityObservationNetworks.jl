@@ -41,5 +41,5 @@ function _generate!(coords::Vector{CartesianIndex}, sampler::BalancedAcceptance,
         end 
     end
 
-    return coords
+    return (coords, uncertainty)
 end
