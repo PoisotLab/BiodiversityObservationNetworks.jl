@@ -14,7 +14,7 @@ using Plots
 # can sample:
 
 U = rand(MidpointDisplacement(0.5), (100, 100))
-heatmap(U, aspectratio=1, frame=:none, c=:lapaz)
+heatmap(U; aspectratio = 1, frame = :none, c = :lapaz)
 
 # In practice, this uncertainty matrix is likely to be derived from an
 # application of the hyper-parameters optimization step, which is detailed in
@@ -27,7 +27,7 @@ heatmap(U, aspectratio=1, frame=:none, c=:lapaz)
 # more (or less) uncertainty. To start with, we will extract 200 candidate
 # points, *i.e.* 200 possible locations which will then be refined.
 
-pack = seed(BalancedAcceptance(numpoints=200), U)
+pack = seed(BalancedAcceptance(; numpoints = 200), U)
 first(pack)[1:5]
 
 # We store the output in `pack`, which is a tuple containing the recommended
@@ -42,7 +42,7 @@ first(pack)[1:5]
 # spatial auto-correlation).
 
 candidates, uncertainty = pack
-locations, _ = refine(candidates, AdaptiveSpatial(numpoints=50), uncertainty)
+locations, _ = refine(candidates, AdaptiveSpatial(; numpoints = 50), uncertainty)
 
 # The reason we start from a candidate set of points is that some algorithms
 # struggle with full landscapes, and work much better with a sub-sample of
@@ -51,9 +51,10 @@ locations, _ = refine(candidates, AdaptiveSpatial(numpoints=50), uncertainty)
 # Note that the syntax we would actually use is a lot simpler, and involves
 # using pipes (`|>`):
 
-locations = U |> 
-    seed(BalancedAcceptance(numpoints=200)) |>
-    refine(AdaptiveSpatial(numpoints=50)) |>
+locations =
+    U |>
+    seed(BalancedAcceptance(; numpoints = 200)) |>
+    refine(AdaptiveSpatial(; numpoints = 50)) |>
     first
 
 locations[1:5]
