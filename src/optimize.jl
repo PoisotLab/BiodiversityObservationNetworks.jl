@@ -90,5 +90,5 @@ function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
 end
 
 function _squish(layers::Array{T, 3}, α::Vector{T}) where T <: AbstractFloat
-    reshape(mapslices(x -> x * α, layers; dims = (2, 3)), size(layers)[1:2]...)
+    return reshape(mapslices(x -> x * α, layers; dims = (2, 3)), size(layers)[1:2]...)
 end
