@@ -22,3 +22,5 @@ surround_whereop_typeparameters = true
 overwrite = true
 verbose = true
 format_markdown = true
+align_struct_field = true
+align_pair_arrow = true
