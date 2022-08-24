@@ -15,6 +15,7 @@
         (a) a combined Seeder/Refiner
         (b) an initial W and α
         (c) hyperparameters for optimization
+        (d) a loss function comparing the sampled outcome to the 'true' state
     
     and uses Zygote's AD to optimize W and α
     to reduce a loss function that describes the 
