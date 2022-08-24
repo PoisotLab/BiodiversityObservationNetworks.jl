@@ -45,15 +45,19 @@ function optimize(layers, simulator; numtargets = 3, fixed_W = false)
     return gradient()
 end
 
+# ...?
+
+using Statistics, StatsBase
+using NeutralLandscapes
+using Zygote, SliceMap
+
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
-    return mapslices(x -> x * W, layers; dims = (2, 3))
+    return convert(Array, slicemap(x -> x * W, layers; dims = (2, 3)))
 end
 
 function _squish(layers::Array{T, 3}, α::Vector{T}) where {T <: AbstractFloat}
-    return reshape(mapslices(x -> x * α, layers; dims = (2, 3)), size(layers)[1:2]...)
+    return slicemap(x -> x * reshape(α, (length(α), 1)), layers; dims = (2, 3))[:, :, 1]
 end
-
-# ...?
 
 dims, nl, nt = (50, 50), 5, 3
 W = rand(nl, nt)
@@ -63,13 +67,15 @@ for i in 1:nl
     layers[:, :, i] = rand(MidpointDisplacement(), dims)
 end
 
-optimize(layers, x -> entropy(x))
-
-using Statistics
-using NeutralLandscapes
-
 model = (W, α) -> StatsBase.entropy(_squish(_squish(layers, W), α))
 
+# Test run
+x = _squish(layers, W)
+typeof(x)
+_squish(_squish(layers, W), α)
+
 model(W, α)
+
+gradient(model, W, α)
 
 heatmap(model(W, α))
