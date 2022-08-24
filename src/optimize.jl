@@ -67,7 +67,7 @@ for i in 1:nl
     layers[:, :, i] = rand(MidpointDisplacement(), dims)
 end
 
-model = (W, α) -> StatsBase.entropy(_squish(_squish(layers, W), α))
+model = (W, α) -> StatsBase.entropy(_squish(_squish(layers, W), α))/prod(size(layers[:,:,1]))
 
 # Test run
 x = _squish(layers, W)
