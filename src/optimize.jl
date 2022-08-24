@@ -5,9 +5,19 @@
     We have a bunch of rasters that are layers that we 
     can to combine in a layer 'stack'.
 
-    We can to have a weights matrix W which has `r` rows and
+    We have a weights matrix W which has `r` rows and
     `t` columns, where `r` is the number of layers in the stack,
     and `t` is the number of optimization targets.
 
-    We want a function `optimize` which takes
+    We have a vector α of length `t` which sums to 1.
+
+    We want a function `optimize` which takes 
+        (a) a combined Seeder/Refiner
+        (b) an initial W and α
+        (c) hyperparameters for optimization
+    
+    and uses Zygote's AD to optimize W and α
+    to reduce a loss function that describes the 
+    difference between the "true" metaweb and 
+    sampled one. 
 """
