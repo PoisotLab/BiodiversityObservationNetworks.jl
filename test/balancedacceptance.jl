@@ -10,7 +10,7 @@ using Test
 @test_throws ArgumentError BalancedAcceptance(1, 0.0)
 
 # Parametric constructor
-@test typeof(BalancedAcceptance(2, 0.2f0)) == BalancedAcceptance{Int64,Float32}
+@test typeof(BalancedAcceptance(2, 0.2f0)) == BalancedAcceptance{Int64, Float32}
 
 # Correct subtype
 @test typeof(BalancedAcceptance(2, 0.2)) <: BONSeeder
@@ -18,19 +18,19 @@ using Test
 
 # Test with a random uncertainty matrix
 U = rand(20, 20)
-@test length(first(seed(BalancedAcceptance(numpoints=10), U))) == 10
-@test length(first(seed(BalancedAcceptance(numpoints=20), U))) == 20
-@test eltype(first(seed(BalancedAcceptance(numpoints=10), U))) == CartesianIndex
+@test length(first(seed(BalancedAcceptance(; numpoints = 10), U))) == 10
+@test length(first(seed(BalancedAcceptance(; numpoints = 20), U))) == 20
+@test eltype(first(seed(BalancedAcceptance(; numpoints = 10), U))) == CartesianIndex
 
 # Test with an existing coordinates vector
 c = Vector{CartesianIndex}(undef, 20)
-@test_throws DimensionMismatch seed!(c, BalancedAcceptance(numpoints=length(c) - 1), U)
+@test_throws DimensionMismatch seed!(c, BalancedAcceptance(; numpoints = length(c) - 1), U)
 
 # Test the curried version
-@test length(first(seed(BalancedAcceptance(numpoints=12))(U))) == 12
+@test length(first(seed(BalancedAcceptance(; numpoints = 12))(U))) == 12
 
 # Test the curried allocating version
-@test length(first(seed!(c, BalancedAcceptance(numpoints=length(c)))(U))) == length(c)
-@test_throws DimensionMismatch seed!(c, BalancedAcceptance(numpoints=length(c)-1))(U)
+@test length(first(seed!(c, BalancedAcceptance(; numpoints = length(c)))(U))) == length(c)
+@test_throws DimensionMismatch seed!(c, BalancedAcceptance(; numpoints = length(c) - 1))(U)
 
 end

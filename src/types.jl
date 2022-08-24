@@ -1,8 +1,3 @@
-Base.@kwdef mutable struct BiodiversityObservationNetwork{IT<:Integer,M<:AbstractMatrix}
-    numobservatories::IT = 50
-    coordinates::M = missing
-end
-
 """
     abstract type BONSeeder end
 
@@ -26,4 +21,4 @@ A union of the abstract types `BONSeeder` and `BONRefiner`. Both types return a
 tuple with the coordinates as a vector of `CartesianIndex`, and the weight
 matrix as a `Matrix` of `AbstractFloat`, in that order.
 """
-const BONSampler = Union{BONSeeder,BONRefiner}
+const BONSampler = Union{BONSeeder, BONRefiner}
