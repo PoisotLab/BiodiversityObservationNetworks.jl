@@ -15,7 +15,8 @@ abstract type BONSeeder end
     abstract type BONRefiner end 
 
 A `BONRefiner` is an algorithm for proposing sampling locations
-using a set of points with values as the 
+by _refining_ a set of points candidate points to a smaller set 
+of 'best' points.
 """
 abstract type BONRefiner end
 
