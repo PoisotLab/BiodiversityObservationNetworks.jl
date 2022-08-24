@@ -12,16 +12,21 @@ function refine!(coords::Vector{CartesianIndex}, sampler::ST) where {ST<:BONRefi
     if length(coords) != sampler.numpoints
         throw(DimensionMismatch("The length of the coordinate vector must match the `numpoints` fields of the sampler"))
     end
-    return (p,u) -> _generate!(coords, copy(p), sampler, u)
+    return (p,u) -> refine!(coords, copy(p), sampler, u)
 end
 
 function refine(pool::Vector{CartesianIndex}, sampler::ST, uncertainty::Matrix{T}) where {ST <: BONRefiner, T<:AbstractFloat}
     coords = Vector{CartesianIndex}(undef, sampler.numpoints)
     refine!(coords, copy(pool), sampler, uncertainty)
-    return coords
 end
 
 function refine(sampler::ST) where {ST <: BONRefiner}
     coords = Vector{CartesianIndex}(undef, sampler.numpoints)
-    return (p, u) -> _generate!(coords, copy(p), sampler, u)
+    _inner(p,u) = refine!(coords, copy(p), sampler, u)
+    _inner(p) = refine!(coords, first(p), sampler, last(p))
+    return _inner
+end
+
+function refine(pack::Tuple{Vector{CartesianIndex}, Matrix{Float64}}, sampler::ST) where {ST <: BONRefiner}
+    return refine(first(pack), sampler, last(pack))
 end

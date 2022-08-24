@@ -8,7 +8,7 @@ from a raster `uncertainty` using `sampler`, where `sampler` is a [`BONSeeder`](
 
 - Seeder's work on rasters, refiners work on set of coordinates. 
 """
-function seed!(coords::Vector{CartesianIndex}, sampler::ST, uncertainty::Matrix{T}) where {ST<:BONSampler,T<:AbstractFloat}
+function seed!(coords::Vector{CartesianIndex}, sampler::ST, uncertainty::Matrix{T}) where {ST<:BONSeeder,T<:AbstractFloat}
     if length(coords) != sampler.numpoints
         throw(DimensionMismatch("The length of the coordinate vector must match the `numpoints` fields of the sampler"))
     end
@@ -21,11 +21,11 @@ end
 The curried version of `seed!`, which returns a function that acts on the input
 uncertainty layer passed to the curried function (`u` below).
 """
-function seed!(coords::Vector{CartesianIndex}, sampler::ST) where {ST<:BONSampler}
+function seed!(coords::Vector{CartesianIndex}, sampler::ST) where {ST<:BONSeeder}
     if length(coords) != sampler.numpoints
         throw(DimensionMismatch("The length of the coordinate vector must match the `numpoints` fields of the sampler"))
     end
-    return (u) -> _generate!(coords, sampler, u)
+    return (u) -> seed!(coords, sampler, u)
 end
 
 """
@@ -33,13 +33,12 @@ end
 
 
 """
-function seed(sampler::ST, uncertainty::Matrix{T}) where {ST <: BONSampler, T<:AbstractFloat}
+function seed(sampler::ST, uncertainty::Matrix{T}) where {ST <: BONSeeder, T<:AbstractFloat}
     coords = Vector{CartesianIndex}(undef, sampler.numpoints)
     seed!(coords, sampler, uncertainty)
-    return coords
 end
 
-function seed(sampler::ST) where {ST <: BONSampler}
+function seed(sampler::ST) where {ST <: BONSeeder}
     coords = Vector{CartesianIndex}(undef, sampler.numpoints)
-    return (u) -> _generate!(coords, sampler, u)
+    return (u) -> seed!(coords, sampler, u)
 end
