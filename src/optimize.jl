@@ -32,39 +32,6 @@ struct Weights{F <: AbstractFloat}
     α::Vector{F}
 end
 
-"""
-    optimize
-"""
-
-matrixloss(M) = -entropy(vec(M))
-
-"""
-"""
-function _squish(
-    layers::Vector{M},
-    W::Matrix{F},
-) where {F <: AbstractFloat, M <: AbstractMatrix}
-    stack = zeros(size(layers[begin])..., length(layers))
-
-    for (i, layer) in enumerate(layers)
-        stack[:, :, i] .= layers[i]
-    end
-
-    x, y = size(layers[begin])
-
-    squished_layers = zeros(size(layers[begin])..., size(W, 2))
-    @info vec(stack[1, 1, :])
-
-    for i in 1:x, j in 1:y
-        squished_layers[i, j, :] .= ((stack[i, j, :])' * W)'
-    end
-
-    return squished_layers
-end
-sl = _squish(layers, Matrix(1.0I, 5, 3))
-
-function _squish(layers, α::Vector{F}) where {F <: AbstractFloat}
-end
 
 function optimize(layers, simulator; numtargets = 3, fixed_W = false)
     numlayers = length(layers)
@@ -72,18 +39,19 @@ function optimize(layers, simulator; numtargets = 3, fixed_W = false)
     W = rand(numlayers, numtargets)
     α = rand(numtargets)
 
-    return tensor = zeros(size(layers), l)
+    score = _squish(_squish(layers, Matrix(1.0I, 5, 3)), [0.3, 0.4, 0.3])
+    loss = simulator(score)
+    @info loss
+
+    gradient()
+
 end
 
 dims, nl = (50, 50), 5
 layers = [rand(MidpointDisplacement(), dims) for i in 1:nl]
 
-optimize(layers, matrixloss)
+optimize(layers, x->entropy(x))
 
-A = rand(10, 10, 3)
-W = rand(3, 5)
-a = rand(size(W, 2))
-a = a ./ sum(a)
 
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
     return mapslices(x -> x * W, layers; dims = (2, 3))
@@ -92,3 +60,6 @@ end
 function _squish(layers::Array{T, 3}, α::Vector{T}) where T <: AbstractFloat
     return reshape(mapslices(x -> x * α, layers; dims = (2, 3)), size(layers)[1:2]...)
 end
+
+
+heatmap(sl)
