@@ -39,12 +39,25 @@ function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
     losses = zeros(numsteps)
 
     @showprogress for step in 1:numsteps
+
+        # Do some simulation with the current W and α
+        candidatepts = rand(50,50) |> seed(BalancedAcceptance()) |> first
+        
+        truemetaweb, observedmetaweb = simulate_sampling(pts)
+
+        
+
         ∂W, ∂α = learningrate .* gradient(loss, W, α)
         W += ∂W
         α += ∂α
         W = clamp.(W, 0, 1)
         α = clamp.(α, 0, 1)
         α ./= sum(α)
+
+        numcolumns = size(W,2)
+        for i in 1:numcolumns
+            W[:,i] ./= sum(W[:,i])
+        end
 
         losses[step] = loss(W, α)
     end
@@ -77,6 +90,35 @@ end
 
 model =
     (W, α) ->
-        StatsBase.entropy(_squish(_squish(layers, W), α)) / prod(size(layers[:, :, 1]))
+        -StatsBase.entropy(_squish(_squish(layers, W), α)) / prod(size(layers[:, :, 1]))
 
-optimize(layers, model; numsteps = 10^4)
+
+function J(trueweb, obsweb)
+    M, S = adjacency.([trueweb,obsweb])
+
+    tp,tn,fp,fn = 0,0,0,0
+
+    for i in eachindex(M)
+        tp += M[i] == 1 && S[i] == 1
+        tn += M[i] == 0 && S[i] == 0
+        fp += M[i] == 0 && S[i] == 1
+        fn += M[i] == 1 && S[i] == 0
+    end
+
+    return tp/(tp+fn) + tn/(tn+fp) - 1
+end
+
+function metaweb_loss(trueweb, obsweb) 
+    # Compute some validation stats.
+    # Topology using β-div from EN.jl
+    # Interaction classification using Youden's J.
+
+    topological_loss = KGL01(βos(truemat, obsmat))
+    interaction_loss = J(trueweb, obsweb)
+
+    return interaction_loss + topological_loss
+end 
+
+losses = optimize(layers, model; numsteps = 10^4)
+
+plot(1:length(losses), losses)

@@ -39,7 +39,7 @@ end
 function simulate_sampling(
     coords::Vector{CartesianIndex};
     richness=50,
-    numobs = 100)
+    numobs = 30)
 
     metaweb = flexiblelinks(richness)
     ra = getabundances(metaweb)
@@ -50,7 +50,7 @@ function simulate_sampling(
     end
 
     observed_metaweb = reduce(∪, locals)
-    return observed_metaweb
+    return metaweb, observed_metaweb
 end 
 
 
@@ -87,6 +87,7 @@ end
 
 
 
-pts = rand(50,50) |> seed(BalancedAcceptance())
+pts = rand(50,50) |> seed(BalancedAcceptance()) |> first
 
-obsmat = simulate_sampling(pts)
+truemat, obsmat = simulate_sampling(pts)
+
