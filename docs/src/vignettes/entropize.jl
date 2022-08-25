@@ -19,7 +19,7 @@ using Plots
 
 # We start by generating a random matrix of measurements:
 
-measurements = convert(Integer, rand(MidpointDisplacement(), (200, 200)) .* 100)
+measurements = convert.(Integer, rand(MidpointDisplacement(), (200, 200)) .* 100)
 heatmap(measurements)
 
 # Using the `entropize` function will convert these values into entropy at the
