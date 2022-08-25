@@ -1,6 +1,5 @@
 module BiodiversityObservationNetworks
 
-using SimpleSDMLayers
 using Distributions
 using Random
 using HaltonSequences
