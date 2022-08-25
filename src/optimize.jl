@@ -38,14 +38,12 @@ function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
 
     losses = zeros(numsteps)
 
-    @showprogress for step in 1:numsteps
-
+    @showprogress for step in 1:numsteps 
         # Do some simulation with the current W and α
-        candidatepts = rand(50,50) |> seed(BalancedAcceptance()) |> first
+        candidatepts = _squish(_squish(layers, W), α) |> seed(BalancedAcceptance()) |> first
         
         truemetaweb, observedmetaweb = simulate_sampling(pts)
-
-        
+        L = metaweb_loss(truemetaweb, observedmetaweb)
 
         ∂W, ∂α = learningrate .* gradient(loss, W, α)
         W += ∂W
@@ -53,6 +51,7 @@ function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
         W = clamp.(W, 0, 1)
         α = clamp.(α, 0, 1)
         α ./= sum(α)
+
 
         numcolumns = size(W,2)
         for i in 1:numcolumns
@@ -64,7 +63,6 @@ function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
     return losses
 end
 
-# ...?
 
 using Statistics, StatsBase
 using ProgressMeter
@@ -88,6 +86,7 @@ for i in 1:nl
     layers[:, :, i] = rand(MidpointDisplacement(), dims)
 end
 
+
 model =
     (W, α) ->
         -StatsBase.entropy(_squish(_squish(layers, W), α)) / prod(size(layers[:, :, 1]))
@@ -104,7 +103,6 @@ function J(trueweb, obsweb)
         fp += M[i] == 0 && S[i] == 1
         fn += M[i] == 1 && S[i] == 0
     end
-
     return tp/(tp+fn) + tn/(tn+fp) - 1
 end
 
@@ -116,9 +114,23 @@ function metaweb_loss(trueweb, obsweb)
     topological_loss = KGL01(βos(truemat, obsmat))
     interaction_loss = J(trueweb, obsweb)
 
+    @info "Topology Loss: $topological_loss"
+    @info "Interaction Loss: $interaction_loss"
     return interaction_loss + topological_loss
 end 
+
+metaweb_loss(truemat, obsmat)
 
 losses = optimize(layers, model; numsteps = 10^4)
 
 plot(1:length(losses), losses)
+
+
+targets = 3 
+W = rand(size(layers, 3), targets)
+α = rand(targets)
+layers
+
+function batching(layers, W, α)
+    score = _squish(_squish(layers, W), α)
+end
