@@ -31,7 +31,7 @@ pack = seed(BalancedAcceptance(; numpoints = 200), U)
 first(pack)[1:5]
 
 # We store the output in `pack`, which is a tuple containing the recommended
-# locations and a copy of the uncertainty matrix. This enables to build
+# locations and a copy of the uncertainty matrix. This enables us to build
 # workflows where samplers are chained together.
 
 # The positions of locations to sample are given as a vector of
@@ -61,3 +61,8 @@ locations[1:5]
 
 # This works because `seed` and `refine` have curried versions that can be used
 # directly in a pipeline.
+
+# Proposed sampling locations can then be overlayed onto the original uncertainty matrix:
+
+plt = heatmap(U; aspectratio = 1, frame = :none, c = :lapaz)
+scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
