@@ -35,7 +35,7 @@ heatmap(U)
 # We can use `entropize` as part of a pipeline, and overlay the points optimized
 # based on entropy on the measurement map:
 
-sites =
+locations =
     measurements |> entropize |> seed(BalancedAcceptance(; numpoints = 500)) |>
     refine(AdaptiveSpatial(; numpoints = 50)) |> first
 heatmap(measurements)
