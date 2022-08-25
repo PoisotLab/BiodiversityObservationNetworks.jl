@@ -24,10 +24,10 @@ makedocs(;
         "Index" => "index.md",
         "Vignettes" => [
             "Overview" => "vignettes/overview.md",
+            "Entropy" => "vignettes/entropize.md",
         ],
     ],
     checkdocs = :all,
-    #strict=true,
 )
 
 deploydocs(;
