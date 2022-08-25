@@ -41,3 +41,10 @@ BalancedAcceptance
 ```@docs
 AdaptiveSpatial
 ```
+
+## Helper functions
+
+```@docs
+entropize!
+entropize
+```
