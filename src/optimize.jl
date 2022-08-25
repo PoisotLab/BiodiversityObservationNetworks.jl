@@ -41,8 +41,8 @@ function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
     @showprogress for step in 1:numsteps 
         # Do some simulation with the current W and α
         candidatepts = _squish(_squish(layers, W), α) |> seed(BalancedAcceptance()) |> first
-        
-        truemetaweb, observedmetaweb = simulate_sampling(pts)
+    
+        truemetaweb, observedmetaweb = simulate_sampling(candidatepts)
         L = metaweb_loss(truemetaweb, observedmetaweb)
 
         ∂W, ∂α = learningrate .* gradient(loss, W, α)
@@ -69,6 +69,7 @@ using ProgressMeter
 using NeutralLandscapes
 using Zygote, SliceMap
 using ProgressMeter
+using Optim
 
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
     return convert(Array, slicemap(x -> x * W, layers; dims = (2, 3)))
@@ -111,12 +112,12 @@ function metaweb_loss(trueweb, obsweb)
     # Topology using β-div from EN.jl
     # Interaction classification using Youden's J.
 
-    topological_loss = KGL01(βos(truemat, obsmat))
+    #topological_loss = KGL01(βos(truemat, obsmat))
     interaction_loss = J(trueweb, obsweb)
 
-    @info "Topology Loss: $topological_loss"
-    @info "Interaction Loss: $interaction_loss"
-    return interaction_loss + topological_loss
+    #@info "Topology Loss: $topological_loss"
+    #@info "Interaction Loss: $interaction_loss"
+    return interaction_loss #+ topological_loss
 end 
 
 metaweb_loss(truemat, obsmat)
@@ -131,6 +132,20 @@ W = rand(size(layers, 3), targets)
 α = rand(targets)
 layers
 
-function batching(layers, W, α)
-    score = _squish(_squish(layers, W), α)
-end
+function stochastic_metaweb_loss(θ, layers; nlayers=3, ntargets=2)
+    w_endpoint = nlayers*ntargets
+    W, α = reshape(θ[1:w_endpoint], nlayers, ntargets), θ[w_endpoint+1:end]
+    candidatepts = _squish(_squish(layers, W), α) |> seed(BalancedAcceptance()) |> first
+    
+    truemetaweb, observedmetaweb = simulate_sampling(candidatepts)
+    L = metaweb_loss(truemetaweb, observedmetaweb)
+    return L
+end 
+
+initθ = [vec(rand(5,3))..., vec(rand(3))...]
+
+@time optimize(θ->stochastic_metaweb_loss(θ,layers; nlayers=nl, ntargets=nt), 
+   initθ,
+   ParticleSwarm(),
+   Optim.Options(time_limit = 15.0))
+)
