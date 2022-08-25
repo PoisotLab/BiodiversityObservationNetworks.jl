@@ -12,7 +12,6 @@ so that it is close to 1 for values close to the median, and close to 0 for
 values close to the extreme of the distribution.
 """
 function entropize!(U::Matrix{RT}, A::Matrix{T}) where {RT <: AbstractFloat, T <: Number}
-    @assert basis > zero(basis)
     for i in eachindex(A)
         p_high = mean(A .< A[i])
         p_low = mean(A .>= A[i])
