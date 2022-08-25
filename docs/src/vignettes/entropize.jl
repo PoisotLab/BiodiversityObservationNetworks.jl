@@ -40,7 +40,6 @@ locations =
     refine(AdaptiveSpatial(; numpoints = 50)) |> first
 heatmap(measurements)
 scatter!(
-    plt,
     [x[1] for x in locations],
     [x[2] for x in locations];
     ms = 2.5,
