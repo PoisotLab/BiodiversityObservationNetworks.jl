@@ -59,6 +59,12 @@ function refine(
     return refine!(coords, copy(pool), sampler, uncertainty)
 end
 
+"""
+    refine(sampler::BONRefiner)
+
+Returns a curried function of `refine` with *two* methods: both are using the
+output of `seed`, one in its packed form, the other in its splatted form.
+"""
 function refine(sampler::ST) where {ST <: BONRefiner}
     coords = Vector{CartesianIndex}(undef, sampler.numpoints)
     _inner(p, u) = refine!(coords, copy(p), sampler, u)
@@ -66,6 +72,11 @@ function refine(sampler::ST) where {ST <: BONRefiner}
     return _inner
 end
 
+"""
+    refine(pack, sampler::BONRefiner)
+
+Calls `refine` on the appropriatedly splatted version of `pack`.
+"""
 function refine(
     pack::Tuple{Vector{CartesianIndex}, Matrix{Float64}},
     sampler::ST,
