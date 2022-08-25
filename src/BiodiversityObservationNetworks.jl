@@ -22,4 +22,7 @@ export seed, seed!
 include("refine.jl")
 export refine, refine!
 
+include("entropize.jl")
+export entropize, entropize!
+
 end
