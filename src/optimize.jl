@@ -27,10 +27,6 @@
     measures of these elements.
 """
 
-struct Weights{F <: AbstractFloat}
-    W::Matrix{F}
-    α::Vector{F}
-end
 
 function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
     W = rand(size(layers, 3), targets)
@@ -39,7 +35,7 @@ function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
     losses = zeros(numsteps)
 
     @showprogress for step in 1:numsteps
-        ∂W, ∂α = learningrate .* gradient(loss, W, α)
+        ∂W, ∂α = learningrate .* gradient(loss, layers, W, α)
         W += ∂W
         α += ∂α
         W = clamp.(W, 0, 1)
@@ -50,33 +46,3 @@ function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
     end
     return losses
 end
-
-# ...?
-
-using Statistics, StatsBase
-using ProgressMeter
-using NeutralLandscapes
-using Zygote, SliceMap
-using ProgressMeter
-
-function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
-    return convert(Array, slicemap(x -> x * W, layers; dims = (2, 3)))
-end
-
-function _squish(layers::Array{T, 3}, α::Vector{T}) where {T <: AbstractFloat}
-    return slicemap(x -> x * reshape(α, (length(α), 1)), layers; dims = (2, 3))[:, :, 1]
-end
-
-dims, nl, nt = (50, 50), 5, 3
-W = rand(nl, nt)
-α = rand(nt)
-layers = zeros(dims..., nl)
-for i in 1:nl
-    layers[:, :, i] = rand(MidpointDisplacement(), dims)
-end
-
-model =
-    (W, α) ->
-        StatsBase.entropy(_squish(_squish(layers, W), α)) / prod(size(layers[:, :, 1]))
-
-optimize(layers, model; numsteps = 10^4)
