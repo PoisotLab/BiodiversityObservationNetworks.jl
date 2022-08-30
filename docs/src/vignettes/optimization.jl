@@ -11,7 +11,6 @@ using Plots
 # ...?
 
 using Statistics, StatsBase
-using ProgressMeter
 using NeutralLandscapes
 using Zygote, SliceMap
 
