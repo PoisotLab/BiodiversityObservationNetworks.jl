@@ -6,6 +6,7 @@ using HaltonSequences
 using StatsBase
 using SpecialFunctions
 using ProgressMeter
+using SliceMap
 
 include("types.jl")
 export BONSeeder, BONRefiner, BONSampler
