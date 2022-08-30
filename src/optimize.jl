@@ -41,6 +41,12 @@ end
 Takes a set of `n` layers and squishes them down
 to a single layer.
 
+
+        numcolumns = size(W,2)
+        for i in 1:numcolumns
+            W[:,i] ./= sum(W[:,i])
+        end
+
 For a coordinate in the raster (i,j), denote the vector of
 values across all locations at that coordinate v⃗ᵢⱼ. The value
 at that coordinate in squished layer, s⃗ᵢⱼ, is computed in two steps.
@@ -54,6 +60,7 @@ current distribution of a species and (b) if that distribution is changing over 
 Each entry in the weights matrix `W` corresponds to the 'importance' of the layer
 in the corresponding row to the successful measurement of the target of the corresponding
 column. As such, each column of `W` must sum to 1.0.
+using Optim
 
 For each location, the value of the condensed layer `tᵢ`, corresponding to target `i`, at 
 coordinate (i,j) is given by the dot product of v⃗ᵢⱼ and the `i`-th column of `W`.
