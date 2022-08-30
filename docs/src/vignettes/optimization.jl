@@ -16,8 +16,11 @@ using BiodiversityObservationNetworks
 using NeutralLandscapes
 using Plots
 using SimpleSDMLayers
+using Optim
 using Zygote, SliceMap
 using Statistics, StatsBase
+
+using Optim
 
 
 dims, nl, nt = (50, 50), 5, 3
@@ -28,9 +31,36 @@ for i in 1:nl
     layers[:, :, i] = rand(MidpointDisplacement(), dims)
 end
 
-model =
-    (layers, W, α) ->
-        StatsBase.entropy(squish(layers,W,α)) / prod(size(layers[:, :, 1]))
+function covariance_map(layers)
+    #candidatepts = squish(layers, W, α) |> seed(BalancedAcceptance()) |> first
+
+    covarmap = zeros(size(layers,1),size(layers,2))
+    ind = CartesianIndices((1:size(covarmap,1),1:size(covarmap,2)))
+    for i in ind
+        vi = layers[i[1], i[2],:]
+        for j in ind
+            if i != j
+                vj =  layers[j[1],j[2],:]
+                covarmap[i] += abs(cov(vi,vj))
+            end
+        end
+    end
+    return covarmap
+end 
+
+initθ = [vec(rand(5,3))..., vec(rand(3))...]
+
+
+heatmap(covariance_map(layers))
+
+
+out = @time Optim.optimize(θ->covariance_loss(θ,layers; nlayers=nl, ntargets=nt), 
+   initθ,
+   ParticleSwarm(),
+   Optim.Options(time_limit = 15.0))
+
+
+
 
 #out = optimize(layers, model; numsteps = 10^4)
 #heatmap(out)
