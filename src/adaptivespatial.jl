@@ -61,13 +61,6 @@ function _generate!(
     return (coords, uncertainty)
 end
 
-function _H(threshold::T, uncertainty::Matrix{T}) where {T <: AbstractFloat}
-    p = mean(uncertainty .> threshold)
-    q = 1.0 - p
-    (isone(q) | iszero(q)) && return 0.0
-    return -p * log2(p) - q * log2(q)
-end
-
 function _matérn(d, ρ, ν)
     # This is the version from the supp mat
     # ν = 0.5 to have the exponential version

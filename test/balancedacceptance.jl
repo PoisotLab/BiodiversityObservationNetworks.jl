@@ -10,7 +10,7 @@ using Test
 @test_throws ArgumentError BalancedAcceptance(1, 0.0)
 
 # Parametric constructor
-@test typeof(BalancedAcceptance(2, 0.2f0)) == BalancedAcceptance{Int64, Float32}
+@test typeof(BalancedAcceptance(2, 0.2f0)) == BalancedAcceptance{typeof(2), Float32}
 
 # Correct subtype
 @test typeof(BalancedAcceptance(2, 0.2)) <: BONSeeder

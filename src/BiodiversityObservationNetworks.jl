@@ -1,6 +1,5 @@
 module BiodiversityObservationNetworks
 
-using SimpleSDMLayers
 using Distributions
 using Random
 using HaltonSequences
@@ -21,5 +20,8 @@ export seed, seed!
 
 include("refine.jl")
 export refine, refine!
+
+include("entropize.jl")
+export entropize, entropize!
 
 end
