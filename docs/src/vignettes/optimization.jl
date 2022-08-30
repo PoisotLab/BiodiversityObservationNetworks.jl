@@ -14,8 +14,6 @@ using Statistics, StatsBase
 using ProgressMeter
 using NeutralLandscapes
 using Zygote, SliceMap
-using ProgressMeter
-
 
 
 dims, nl, nt = (50, 50), 5, 3
@@ -30,4 +28,5 @@ model =
     (layers, W, α) ->
         StatsBase.entropy(squish(layers,W,α)) / prod(size(layers[:, :, 1]))
 
-optimize(layers, model; numsteps = 10^4)
+out = optimize(layers, model; numsteps = 10^4)
+heatmap(out)
