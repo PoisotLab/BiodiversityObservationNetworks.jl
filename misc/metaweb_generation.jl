@@ -38,15 +38,20 @@ end
 
 function simulate_sampling(
     coords::Vector{CartesianIndex};
-    richness=50,
-    numobs = 30)
-
-    metaweb = flexiblelinks(richness)
+    speciesrichness=50,
+    numobs = 10,
+    metaweb=flexiblelinks(speciesrichness),
+    sz = (50,50)
+)
     ra = getabundances(metaweb)
-
+    occurrence_maps = []
+    for i in 1:richness(metaweb)
+        thismap = classify(rand(MidpointDisplacement(), sz), [0.25, 1.]) .== 1 
+        push!(occurrence_maps, thismap)
+    end 
     locals = [UnipartiteNetwork(rand(Bool,5,5)) for _ in 1:length(coords)]
     for (i,coord) in enumerate(coords)
-        locals[i] = observe(metaweb, coord, ra, numobs)
+        locals[i] = observe(metaweb, coord, ra, numobs, occurrence_maps)
     end
 
     observed_metaweb = reduce(∪, locals)
@@ -66,14 +71,33 @@ function getabundances(metaweb)
     return  abundances ./ sum(abundances)
 end
 
-function observe(metaweb, coord, relativeabundances, numobservations, )
+
+function observe(metaweb, 
+    coord, 
+    relativeabundances, 
+    numobservations, 
+    occurrence_maps
+)
+
     counts = zeros(length(relativeabundances))
-    for i in 1:numobservations
-        ind = rand(Categorical(relativeabundances))
-        counts[ind] += 1
+
+    occurrence = [occurrence_maps[i][coord] == 1 for i in eachindex(relativeabundances)]
+
+    realized_ra = similar(relativeabundances)
+    for i in eachindex(relativeabundances)
+        realized_ra[i] = occurrence[i] == 1 ? relativeabundances[i] : 0
     end
 
     observed_net = zeros(size(adjacency(metaweb)))
+
+    sum(realized_ra) == 0 && return UnipartiteNetwork(Bool.(observed_net))
+
+    realized_ra = [i/sum(realized_ra) for i in realized_ra]
+    for i in 1:numobservations
+        ind = rand(Categorical(realized_ra))
+        counts[ind] += 1
+    end
+
 
     S = richness(metaweb)
 
@@ -85,9 +109,16 @@ function observe(metaweb, coord, relativeabundances, numobservations, )
     return UnipartiteNetwork(Bool.(observed_net))
 end
 
+metaweb = UnipartiteNetwork(
+          Bool[0 0 0;
+           0 0 0;
+           1 1 0])
+
 
 
 pts = rand(50,50) |> seed(BalancedAcceptance()) |> first
+simulate_sampling(pts, metaweb=metaweb)
+
 
 truemat, obsmat = simulate_sampling(pts)
 

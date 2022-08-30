@@ -116,8 +116,8 @@ function metaweb_loss(trueweb, obsweb)
     interaction_loss = J(trueweb, obsweb)
 
     #@info "Topology Loss: $topological_loss"
-    #@info "Interaction Loss: $interaction_loss"
-    return interaction_loss #+ topological_loss
+    @info "Interaction Loss: $interaction_loss"
+    return 1-interaction_loss #+ topological_loss
 end 
 
 metaweb_loss(truemat, obsmat)
@@ -132,20 +132,21 @@ W = rand(size(layers, 3), targets)
 α = rand(targets)
 layers
 
-function stochastic_metaweb_loss(θ, layers; nlayers=3, ntargets=2)
+function stochastic_metaweb_loss(θ, layers; metaweb=flexiblelinks(20),nlayers=3, ntargets=2)
+    @info θ
     w_endpoint = nlayers*ntargets
     W, α = reshape(θ[1:w_endpoint], nlayers, ntargets), θ[w_endpoint+1:end]
-    candidatepts = _squish(_squish(layers, W), α) |> seed(BalancedAcceptance()) |> first
+    candidatepts = _squish(_squish(layers, W), α) |> seed(BalancedAcceptance(α=3.)) |> first
     
-    truemetaweb, observedmetaweb = simulate_sampling(candidatepts)
+    truemetaweb, observedmetaweb = simulate_sampling(candidatepts, metaweb=metaweb)
     L = metaweb_loss(truemetaweb, observedmetaweb)
     return L
 end 
 
 initθ = [vec(rand(5,3))..., vec(rand(3))...]
 
-@time optimize(θ->stochastic_metaweb_loss(θ,layers; nlayers=nl, ntargets=nt), 
+out = @time optimize(θ->stochastic_metaweb_loss(θ,layers; nlayers=nl, ntargets=nt), 
    initθ,
    ParticleSwarm(),
-   Optim.Options(time_limit = 15.0))
+   Optim.Options())
 )
