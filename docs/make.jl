@@ -18,13 +18,15 @@ end
 
 makedocs(;
     sitename = "BiodiversityObservationNetworks",
-    authors = "Timothée Poisot + others",
+    authors = "M.D. Catchen, Timothée Poisot, Kari Norman, Hana Mayall, Tom Malpas",
     modules = [BiodiversityObservationNetworks],
     pages = [
         "Index" => "index.md",
         "Vignettes" => [
             "Overview" => "vignettes/overview.md",
             "Entropy" => "vignettes/entropize.md",
+            "Environmental uniqueness" => "vignettes/uniqueness.md",
+            "Network smapling" => "vignettes/networks.md"
         ],
     ],
     checkdocs = :all,
