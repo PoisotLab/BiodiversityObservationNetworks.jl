@@ -24,6 +24,9 @@ export refine, refine!
 include("entropize.jl")
 export entropize, entropize!
 
+include("optimize.jl")
+export squish
+
 using Requires
 function __init__()
     @require NeutralLandscapes="71847384-8354-4223-ac08-659a5128069f" include(joinpath("integrations", "neutrallandscapes.jl"))

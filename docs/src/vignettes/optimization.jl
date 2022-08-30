@@ -16,15 +16,6 @@ using NeutralLandscapes
 using Zygote, SliceMap
 using ProgressMeter
 
-function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
-    return convert(Array, slicemap(x -> x * W, layers; dims = (2, 3)))
-end
-
-function _squish(layers::Array{T, 3}, α::Vector{T}) where {T <: AbstractFloat}
-    return slicemap(x -> x * reshape(α, (length(α), 1)), layers; dims = (2, 3))[:, :, 1]
-end
-
-squish(layers, W, α) = _squish(_squish(layers, W), α)
 
 
 dims, nl, nt = (50, 50), 5, 3
