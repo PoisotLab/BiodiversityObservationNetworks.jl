@@ -8,7 +8,7 @@ function BiodiversityObservationNetworks.optimize(layers, loss; targets = 3, lea
     losses = zeros(numsteps)
 
     @showprogress for step in 1:numsteps
-        ∂W, ∂α = learningrate .* gradient(loss, layers, W, α)
+        ∂W, ∂α = learningrate .* Zygote.gradient(loss, layers, W, α)
         W += ∂W
         α += ∂α
         W = clamp.(W, 0, 1)
