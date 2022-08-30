@@ -17,6 +17,10 @@ export BalancedAcceptance
 include("adaptivespatial.jl")
 export AdaptiveSpatial
 
+include("uniqueness.jl")
+export Uniqueness
+
+
 include("seed.jl")
 export seed, seed!
 

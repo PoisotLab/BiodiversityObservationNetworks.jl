@@ -8,8 +8,8 @@ function refine!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::ST,
-    uncertainty::Matrix{T},
-) where {ST <: BONRefiner, T <: AbstractFloat}
+    layers::Array{T,N},
+) where {ST <: BONRefiner, T <: AbstractFloat, N}
     if length(coords) != sampler.numpoints
         throw(
             DimensionMismatch(
@@ -24,7 +24,7 @@ function refine!(
             ),
         )
     end
-    return _generate!(coords, copy(pool), sampler, uncertainty)
+    return _generate!(coords, copy(pool), sampler, layers)
 end
 
 """
@@ -53,10 +53,10 @@ from a vector  of coordinates `pool` using `sampler`, where `sampler` is a [`BON
 function refine(
     pool::Vector{CartesianIndex},
     sampler::ST,
-    uncertainty::Matrix{T},
-) where {ST <: BONRefiner, T <: AbstractFloat}
+    layers::Array{T,N},
+) where {ST <: BONRefiner, T <: AbstractFloat, N}
     coords = Vector{CartesianIndex}(undef, sampler.numpoints)
-    return refine!(coords, copy(pool), sampler, uncertainty)
+    return refine!(coords, copy(pool), sampler, layers)
 end
 
 """
@@ -78,8 +78,8 @@ end
 Calls `refine` on the appropriatedly splatted version of `pack`.
 """
 function refine(
-    pack::Tuple{Vector{CartesianIndex}, Matrix{Float64}},
+    pack::Tuple{Vector{CartesianIndex}, Array{Float64,N}},
     sampler::ST,
-) where {ST <: BONRefiner}
+) where {ST <: BONRefiner,N}
     return refine(first(pack), sampler, last(pack))
 end

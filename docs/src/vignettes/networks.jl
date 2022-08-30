@@ -23,7 +23,7 @@ using Statistics, StatsBase
 using Optim
 
 
-dims, nl, nt = (50, 50), 5, 3
+dims, nl, nt = (50, 50), 3, 2
 W = rand(nl, nt)
 α = rand(nt)
 layers = zeros(dims..., nl)
@@ -48,19 +48,8 @@ function covariance_map(layers)
     return covarmap
 end 
 
-initθ = [vec(rand(5,3))..., vec(rand(3))...]
-
 
 heatmap(covariance_map(layers))
-
-
-out = @time Optim.optimize(θ->covariance_loss(θ,layers; nlayers=nl, ntargets=nt), 
-   initθ,
-   ParticleSwarm(),
-   Optim.Options(time_limit = 15.0))
-
-
-
 
 #out = optimize(layers, model; numsteps = 10^4)
 #heatmap(out)
