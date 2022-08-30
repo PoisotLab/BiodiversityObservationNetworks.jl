@@ -9,6 +9,7 @@
 using BiodiversityObservationNetworks
 using NeutralLandscapes
 using Plots
+using SliceMap
 
 # !!! warning "Entropy is problem-specific"
 #     The solution presented in this vignette is a least-assumption solution
