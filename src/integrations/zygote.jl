@@ -1,7 +1,7 @@
 @info "Loading BONs.jl support for Zygote.jl ..."
 
 
-function optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
+function BiodiversityObservationNetworks.optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
     W = rand(size(layers, 3), targets)
     α = rand(targets)
 

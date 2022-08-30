@@ -5,6 +5,7 @@ using Random
 using HaltonSequences
 using StatsBase
 using SpecialFunctions
+using ProgressMeter
 
 include("types.jl")
 export BONSeeder, BONRefiner, BONSampler
@@ -25,7 +26,7 @@ include("entropize.jl")
 export entropize, entropize!
 
 include("optimize.jl")
-export squish
+export squish, optimize
 
 using Requires
 function __init__()
