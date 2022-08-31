@@ -1,14 +1,15 @@
 """
-    BalancedAcceptance
+    Uniqueness
 
 A `BONRefiner`.
 
 
 
 """
-Base.@kwdef mutable struct Uniqueness{I <: Integer} <: BONRefiner
+Base.@kwdef mutable struct Uniqueness{I <: Integer, T<:Number} <: BONRefiner
     numpoints::I = 30
-    function Uniqueness(numpoints)
+    layers::Array{T,3}
+    function Uniqueness(numpoints, layers::Array{T,N}) where {T,N}
         if numpoints < one(numpoints)
             throw(
                 ArgumentError(
@@ -16,7 +17,14 @@ Base.@kwdef mutable struct Uniqueness{I <: Integer} <: BONRefiner
                 ),
             )
         end
-        return new{typeof(numpoints)}(numpoints)
+        if N != 3
+            throw(
+                ArgumentError(
+                    "You cannot have a Uniqueness sampler without layers passed as a cube.",
+                ),
+            )
+        end 
+        return new{typeof(numpoints),T}(numpoints, layers)
     end
 end
 
@@ -25,10 +33,12 @@ function _generate!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::Uniqueness,
-    layers::Array{T,N},
-) where {T <: AbstractFloat,N}
-    
-    N <= 2 && throw(ArgumentError("Uniqueness needs more than one layer to work."))
+    uncertainty,
+) where {T <: AbstractFloat}
+    layers = sampler.layers
+    ndims(layers) <= 2 && throw(ArgumentError("Uniqueness needs more than one layer to work."))
+    size(uncertainty) != (size(layers,1), size(layers,2)) && throw(DimensionMismatch("Layers are not the same dimension as uncertainty"))
+
 
     covscore = zeros(length(pool))
     for (i,p1) in enumerate(pool)
@@ -45,5 +55,5 @@ function _generate!(
     sortedvals = sortperm(vec(covscore))
     
     coords[:] .= pool[sortedvals[1:np]]
-    return (coords, layers)
+    return (coords, uncertainty)
 end

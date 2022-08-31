@@ -4,7 +4,9 @@ using BiodiversityObservationNetworks
 tests = [
     "\033[1m\033[34mSEEDER\033[0m  Balance Acceptance Sampling" => "balancedacceptance.jl",
     "\033[1m\033[35mREFINER\033[0m Adaptive Spatial Sampling" => "adaptivespatial.jl",
-    "\033[1m\033[36mHELPER\033[0m  Adaptive Spatial Sampling" => "entropize.jl",
+    "\033[1m\033[35mREFINER\033[0m Uniqueness" => "uniqueness.jl",
+    "\033[1m\033[36mHELPER\033[0m Entropize" => "entropize.jl",
+    "\033[1m\033[36mHELPER\033[0m Squish" => "squish.jl",
 ]
 
 global anyerrors = false
