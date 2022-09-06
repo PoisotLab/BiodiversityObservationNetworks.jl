@@ -31,7 +31,10 @@ include("entropize.jl")
 export entropize, entropize!
 
 include("optimize.jl")
-export squish, optimize
+export optimize
+
+include("utils.jl")
+export stack, squish
 
 using Requires
 function __init__()

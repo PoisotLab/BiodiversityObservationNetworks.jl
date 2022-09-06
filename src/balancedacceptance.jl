@@ -15,10 +15,10 @@ Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} 
                 ),
             )
         end
-        if α <= zero(α)
+        if α < zero(α)
             throw(
                 ArgumentError(
-                    "The value of α for BalancedAcceptance must be larger than 0",
+                    "The value of α for BalancedAcceptance must be greater or equal to 0",
                 ),
             )
         end
@@ -26,6 +26,10 @@ Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} 
     end
 end
 
+# TODO 
+# - make this not spaghetti code
+# - this should accept a boolean array mask arg which should
+#   get treated like NaNs 
 function _generate!(
     coords::Vector{CartesianIndex},
     sampler::BalancedAcceptance,
