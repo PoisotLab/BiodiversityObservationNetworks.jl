@@ -7,7 +7,7 @@ using Test
 @test_throws ArgumentError BalancedAcceptance(0, 1.0)
 
 # Must have a positive alpha
-@test_throws ArgumentError BalancedAcceptance(1, 0.0)
+@test_throws ArgumentError BalancedAcceptance(1, -0.01)
 
 # Parametric constructor
 @test typeof(BalancedAcceptance(2, 0.2f0)) == BalancedAcceptance{typeof(2), Float32}
