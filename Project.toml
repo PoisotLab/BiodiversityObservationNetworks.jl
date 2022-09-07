@@ -19,3 +19,9 @@ Distributions = "0.25"
 HaltonSequences = "0.1"
 SimpleSDMLayers = "0.8"
 StatsBase = "0.33"
+
+[compat]
+Distributions = "0.25"
+HaltonSequences = "0.1"
+SpecialFunctions = "2.1"
+julia = "1.7" 
