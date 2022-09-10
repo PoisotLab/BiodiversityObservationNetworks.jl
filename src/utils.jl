@@ -9,10 +9,15 @@ function stack(layers::Vector{<:AbstractMatrix})
 end
 
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
+    size(W,1) == size(layers,3) || throw(ArgumentError("W does not have the same number of rows are there are number of layers"))
+    all([sum(c) ≈ 1 for c in eachcol(W)]) || throw(ArgumentError("Not all of the columns of W sum to 1."))
+
     return convert(Array, slicemap(x -> x * W, layers; dims = (2, 3)))
 end
 
 function _squish(layers::Array{T, 3}, α::Vector{T}) where {T <: AbstractFloat}
+    length(α) == size(layers,3) || throw(ArgumentError("α is not the same length as number of layers"))
+    sum(α) ≈ 1 || throw(ArgumentError("α does not sum to 1.0"))
     return slicemap(x -> x * reshape(α, (length(α), 1)), layers; dims = (2, 3))[:, :, 1]
 end
 
