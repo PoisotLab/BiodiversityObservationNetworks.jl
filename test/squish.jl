@@ -6,7 +6,6 @@
 
 module BONTestSquish
     using BiodiversityObservationNetworks
-   # using NeutralLandscapes
     using Distributions
     using Test
 
