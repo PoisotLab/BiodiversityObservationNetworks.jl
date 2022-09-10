@@ -8,19 +8,29 @@ function BiodiversityObservationNetworks.optimize(layers, loss; targets = 3, lea
     numsteps > 0 || throw(ArgumentError("numsteps must be positive"))
 
     W = rand(size(layers, 3), targets)
-    α = rand(targets)
+    for (i,c) in enumerate(eachcol(W))
+        W[:,i] .= c ./ sum(c)
+    end
 
+    α = rand(targets)
+    α ./= sum(α)
+    
     losses = zeros(numsteps)
 
     @showprogress for step in 1:numsteps
-        ∂W, ∂α = learningrate .* Zygote.gradient(loss, layers, W, α)
+        dL, ∂W, ∂α = learningrate .* Zygote.gradient(loss, layers, W, α)
         W += ∂W
         α += ∂α
+
         W = clamp.(W, 0, 1)
+        for (i,c) in enumerate(eachcol(W))
+            W[:,i] .= c ./ sum(c)
+        end
+
         α = clamp.(α, 0, 1)
         α ./= sum(α)
 
-        losses[step] = loss(W, α)
+        losses[step] = loss(layers, W, α)
     end
     return W,α,losses
 end
