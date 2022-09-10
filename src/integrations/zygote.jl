@@ -2,6 +2,11 @@
 
 
 function BiodiversityObservationNetworks.optimize(layers, loss; targets = 3, learningrate = 1e-4, numsteps = 10)
+    ndims(layers) == 3 || throw(ArgumentError("Layers must be a 3-dimensional array"))
+    typeof(loss) <: Function || throw(ArgumentError("`loss` must be a function"))
+    learningrate > 0.0 || throw(ArgumentError("learningrate must be positive"))
+    numsteps > 0 || throw(ArgumentError("numsteps must be positive"))
+
     W = rand(size(layers, 3), targets)
     α = rand(targets)
 
@@ -17,5 +22,5 @@ function BiodiversityObservationNetworks.optimize(layers, loss; targets = 3, lea
 
         losses[step] = loss(W, α)
     end
-    return losses
+    return W,α,losses
 end
