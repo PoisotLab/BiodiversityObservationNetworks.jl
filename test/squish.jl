@@ -6,7 +6,7 @@
 
 module BONTestSquish
     using BiodiversityObservationNetworks
-    using NeutralLandscapes
+   # using NeutralLandscapes
     using Distributions
     using Test
 
@@ -15,7 +15,7 @@ module BONTestSquish
         dims = 50,50
         layers = zeros(dims...,nl)
         for l in 1:nl
-            layers[:,:,l] .= rand(MidpointDisplacement(), dims)
+            layers[:,:,l] .= rand(dims)
         end
         layers
     end 
