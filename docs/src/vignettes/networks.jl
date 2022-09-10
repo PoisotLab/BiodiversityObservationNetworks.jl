@@ -30,26 +30,3 @@ layers = zeros(dims..., nl)
 for i in 1:nl
     layers[:, :, i] = rand(MidpointDisplacement(), dims)
 end
-
-function covariance_map(layers)
-    #candidatepts = squish(layers, W, α) |> seed(BalancedAcceptance()) |> first
-
-    covarmap = zeros(size(layers,1),size(layers,2))
-    ind = CartesianIndices((1:size(covarmap,1),1:size(covarmap,2)))
-    for i in ind
-        vi = layers[i[1], i[2],:]
-        for j in ind
-            if i != j
-                vj =  layers[j[1],j[2],:]
-                covarmap[i] += abs(cov(vi,vj))
-            end
-        end
-    end
-    return covarmap
-end 
-
-
-heatmap(covariance_map(layers))
-
-#out = optimize(layers, model; numsteps = 10^4)
-#heatmap(out)

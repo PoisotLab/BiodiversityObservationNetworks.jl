@@ -14,7 +14,7 @@ using Plots
 # (or information content) in a unit we can sample:
 
 U = rand(MidpointDisplacement(0.5), (100, 100))
-heatmap(U; aspectratio = 1, frame = :none, c = :lapaz)
+heatmap(U'; aspectratio = 1, frame = :none, c = :lapaz)
 
 # In practice, this uncertainty matrix is likely to be derived from an
 # application of the hyper-parameters optimization step, which is detailed in

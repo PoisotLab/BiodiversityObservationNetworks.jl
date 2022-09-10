@@ -34,11 +34,8 @@ temp, precip, seasonality, elevation =
 layers = stack([temp,precip,seasonality,elevation])
 
 
-# TODO this should be a extension of NL.jl, dispatch on the case that the kwarg
-# `mask` is of type SDMLayer.
-qcmask = fill(true, size(temp))                  
-qcmask[findall(isnothing, temp.grid)] .= false   
-uncert = rand(MidpointDisplacement(0.8), size(temp), mask=qcmask);
+# this requires NeutralLandscapes v0.1.2
+uncert = rand(MidpointDisplacement(0.8), size(temp), mask=temp);
 heatmap(uncert, aspectratio=1, frame=:box) 
 
 # Now we'll get a set of candidate points from a BalancedAcceptance seeder that
