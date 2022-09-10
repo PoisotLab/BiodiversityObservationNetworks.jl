@@ -11,7 +11,6 @@ module BONTestSquish
     using Test
 
     function makelayers(nl) 
-        nl = 5
         dims = 50,50
         layers = zeros(dims...,nl)
         for l in 1:nl
