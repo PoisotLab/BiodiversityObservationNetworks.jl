@@ -14,7 +14,7 @@ module BONTestSquish
         nl = 5
         layers = zeros(50,50,nl)
         for l in 1:nl
-            layers[:,:,l] = rand(MidpointDisplacement(), 50, 50)
+            layers[:,:,l] .= rand(MidpointDisplacement(), 50, 50)
         end
         layers
     end 
