@@ -38,7 +38,7 @@ heatmap(U)
 locations =
     measurements |> entropize |> seed(BalancedAcceptance(; numpoints = 500)) |>
     refine(AdaptiveSpatial(; numpoints = 50)) |> first
-heatmap(measurements)
+heatmap(measurements')
 scatter!(
     [x[1] for x in locations],
     [x[2] for x in locations];

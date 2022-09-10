@@ -73,5 +73,5 @@ locations[1:5]
 # This works because `seed` and `refine` have curried versions that can be used
 # directly in a pipeline. Proposed sampling locations can then be overlayed onto the original uncertainty matrix:
 
-plt = heatmap(U; aspectratio = 1, frame = :none, c = :lapaz)
+plt = heatmap(U'; aspectratio = 1, frame = :none, c = :lapaz)
 scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
