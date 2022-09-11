@@ -20,13 +20,13 @@ using Plots
 # We start by generating a random matrix of measurements:
 
 measurements = rand(MidpointDisplacement(), (200, 200)) .* 100
-heatmap(measurements)
+heatmap(measurements')
 
 # Using the `entropize` function will convert these values into entropy at the
 # pixel scale:
 
 U = entropize(measurements)
-heatmap(U)
+heatmap(U')
 
 # The values closest to the median of the distribution have the highest entropy,
 # and the values closest to its extrema have an entropy of 0. The entropy matrix
@@ -36,9 +36,8 @@ heatmap(U)
 # based on entropy on the measurement map:
 
 locations =
-    measurements |> entropize |> seed(BalancedAcceptance(; numpoints = 500)) |>
-    refine(AdaptiveSpatial(; numpoints = 50)) |> first
-heatmap(measurements)
+    measurements |> entropize |> seed(BalancedAcceptance(; numpoints = 100)) |> first
+heatmap(U')
 scatter!(
     [x[1] for x in locations],
     [x[2] for x in locations];

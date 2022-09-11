@@ -21,11 +21,18 @@ Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer} <: BONRefiner
     end
 end
 
+_generate!(
+    coords::Vector{CartesianIndex},
+    pool::Vector{CartesianIndex},
+    sampler::AdaptiveSpatial,
+    uncertainty) = throw(ArgumentError(
+        "You can only call AdaptiveSpatial with a single layer of type Matrix"))
+
 function _generate!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::AdaptiveSpatial,
-    uncertainty::Matrix{T},
+    uncertainty::Array{T,2},
 ) where {T <: AbstractFloat}
 
     # Distance matrix (inlined)

@@ -8,8 +8,8 @@ function refine!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::ST,
-    uncertainty::Matrix{T},
-) where {ST <: BONRefiner, T <: AbstractFloat}
+    uncertainty::Matrix{T}
+) where {ST <: BONRefiner, T <: AbstractFloat, N}
     if length(coords) != sampler.numpoints
         throw(
             DimensionMismatch(
@@ -74,7 +74,7 @@ end
 
 """
     refine(pack, sampler::BONRefiner)
-
+    
 Calls `refine` on the appropriatedly splatted version of `pack`.
 """
 function refine(
