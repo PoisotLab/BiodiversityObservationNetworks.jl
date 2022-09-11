@@ -26,7 +26,6 @@ makedocs(;
             "Overview" => "vignettes/overview.md",
             "Entropy" => "vignettes/entropize.md",
             "Environmental uniqueness" => "vignettes/uniqueness.md",
-            "Network smapling" => "vignettes/networks.md"
         ],
     ],
     checkdocs = :all,
