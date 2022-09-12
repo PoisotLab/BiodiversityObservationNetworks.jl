@@ -34,7 +34,7 @@ include("optimize.jl")
 export optimize
 
 include("utils.jl")
-export stack, squish
+export stack, squish, _squish, _norm
 
 using Requires
 function __init__()
