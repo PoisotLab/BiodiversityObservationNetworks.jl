@@ -3,7 +3,10 @@ function stack(layers::Vector{<:AbstractMatrix})
 
     mat = zeros(size(first(layers))..., length(layers))
     for (l,layer) in enumerate(layers)
-        mat[:,:,l] .= broadcast(x->isnan(x) ? NaN : x, layer)
+        nonnanvals = vec(layer[findall(!isnan, layer)])
+        thismin, thismax = findmin(nonnanvals)[1], findmax(nonnanvals)[1]
+
+        mat[:,:,l] .= broadcast(x->isnan(x) ? NaN : (x-thismin)/(thismax-thismin), layer)
     end
     mat
 end
@@ -59,3 +62,4 @@ The final value of the squished layer at (i,j) is given by s⃗ᵢⱼ = ∑ₓ �
 the value of the x-th target layer at (i,j).
 """
 squish(layers, W, α) = _squish(_squish(layers, W), α)
+
