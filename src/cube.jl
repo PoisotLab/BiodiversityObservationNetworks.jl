@@ -25,13 +25,14 @@ p = 4
 x = rand(0:4, p, N)
 
 ### Flight Phase ###
- i = 0
+ j = 0
  set_nullspace = zeros(1,2)
  pikstar = pik
 # check if there is a possible u to satisfy the conditions
 while size(set_nullspace)[2] != 0
-    i = i+1
-    #yield(i)
+    j = j+1
+    print(j)
+
     ## STEP 1 ##
 
     # find a vector u that is in the kernel of the matrix A
@@ -74,9 +75,8 @@ while size(set_nullspace)[2] != 0
         # get rows of A's nullspace corresponding to those pikstar's
         set_A = kernal[set_piks, :]
         # get the nullspace of that matrix
-        print(i)
+        
         set_nullspace = nullspace(set_A)
-        print(i)
 
         if size(set_nullspace)[2] == 0
             break
@@ -143,6 +143,7 @@ end =#
 
 # get all non-integer probabilities
 non_int_ind = findall(x -> x .∉ Ref(Set([0,1])), pikstar)
+#non_int_ind = deleteat!(non_int_ind, 1)
 non_int_piks = pikstar[non_int_ind]
 N_land = length(non_int_piks)
 # get auxillary variables for those units
@@ -185,7 +186,6 @@ sub_mat = samps .- reshape(non_int_piks, :, N_land)
 
 # let's get A for the non-integer units
 A_land = x_land ./ reshape(non_int_piks, :, N_land)
-4/0.
 
 sample_pt = A_land * transpose(sub_mat)
 ## FIXME: need to deal with the case that there are fixed zeros in pik
@@ -196,10 +196,28 @@ for i in 1:size(samps)[1]
     cost[i] = transpose(sample_pt[:, i]) * inv(A*transpose(A)) * sample_pt[:, i]
 end
 
-
-cost = transpose(sample_pt) * inv(A*transpose(A)) * sample_pt
-
 # Let's get it in a format jump wants
 lp_df = DataFrames.DataFrame(samps, :auto)
 lp_df.cost = cost
 lp_df.id = 1:size(lp_df)[1]
+
+# linear programing
+
+# option one that doesn't work
+model = Model(HiGHS.Optimizer)
+
+@variable(model, ps[1:size(samps,1)] >= 0)
+#@variable(model, ps[1:size(samps)[1], 1:size(samps)[2]])
+
+@objective(model, Min, sum(sample["cost"] * ps[sample["id"]] for sample in eachrow(lp_df)))
+#@objective(model, Min, sum(cost[j] * ps[j]) for j in 1:size(samps)[2])
+
+@constraint(model, sum(ps[lp_df.id]) == 1)
+
+for i in size(samps,2)
+    @constraint(model, sum(ps .* (samps.>0)[i,:]) == non_int_piks[i])
+end
+
+optimize!(model)
+solution_summary(model)
+value.(ps)
