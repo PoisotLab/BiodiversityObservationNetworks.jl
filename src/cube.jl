@@ -201,9 +201,7 @@ lp_df = DataFrames.DataFrame(samps, :auto)
 lp_df.cost = cost
 lp_df.id = 1:size(lp_df)[1]
 
-# linear programing
-
-# option one that doesn't work
+## linear programing ##
 model = Model(HiGHS.Optimizer)
 
 @variable(model, ps[1:size(samps,1)] >= 0)
@@ -219,5 +217,13 @@ for i in size(samps,2)
 end
 
 optimize!(model)
-solution_summary(model)
-value.(ps)
+#solution_summary(model)
+samp_prob = value.(ps)
+
+# pick a sample based on their probabilities
+samp_ind = sample(1:length(samp_prob), Weights(samp_prob))
+
+# fill in non-integer points with the sample option picked by lp
+pikstar[non_int_ind] = samps[samp_ind, :]
+
+return(pikstar)
