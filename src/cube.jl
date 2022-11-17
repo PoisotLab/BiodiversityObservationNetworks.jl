@@ -4,28 +4,6 @@ using JuMP
 import DataFrames
 import HiGHS
 
-
-# Need a vector of inclusion probabilities for a set of points
-
-
-# Let's implement a little concrete example using the notation from Tillé 2011
-# I use the same structure as the paper, with two phases Flight and Landing 
-
-# n samples in sample s
-n = 50
-# from population U of size N
-N = 1000
-# with probability of inclusion (this is equal probability example)
-pik = repeat([n/N], outer = N)
-
-# p auxillary variables
-p = 3
-
-
-# generate random auxillary variables, p rows are x_k variables for N sample units
-x = rand(0:4, p, N)
-
-
 function cube(pik, x; fastflight = true)
 
     if all(fastflight)
@@ -38,7 +16,7 @@ function cube(pik, x; fastflight = true)
 
     non_int_ind = findall(x -> x .∉ Ref(Set([0,1])), pikstar)
 
-    if length(non_int_ind) > 0
+    if length(non_int_ind) == 0
         return(pikstar)
     else 
         println("Starting landing phase")
@@ -174,7 +152,12 @@ function cubefastflight(pik, x)
 
         println(k)
 
-        ψ = update_psi(Ψ, B) 
+        Ψ = update_psi(Ψ, B) 
+
+        if length(findall(x -> x .<0, Ψ)) > 0
+            throw(error("Negative inclusion probability"))
+        end
+
         # update for the probabilities that are now integers
         i = 0
         while i < length(Ψ) && k <= length(π)
@@ -198,7 +181,7 @@ function cubefastflight(pik, x)
     Ψ = update_psi(Ψ, B)
     π[r] = Ψ
 
-    return(Π)
+    return(π)
 end
 
 function update_psi(Ψ, B)
@@ -213,12 +196,31 @@ function update_psi(Ψ, B)
      λ1_max(; u, pik) = @. ifelse(u > 0, (1 - pik) / u, -pik / u)
      λ2_max(; u, pik) = @. ifelse(u > 0, pik / u, (pik - 1) / u)
 
-     λ1 = minimum(filter(x -> isfinite(x), λ1_max(; u = u, pik = Ψ)))
-     λ2 = minimum(filter(x -> isfinite(x), λ2_max(; u = u, pik = Ψ)))
+     λ1_vec = filter(x -> isfinite(x), λ1_max(; u = u, pik = Ψ))
+     λ2_vec = filter(x -> isfinite(x), λ2_max(; u = u, pik = Ψ))
+
+     deleteat!(λ1_vec, λ1_vec .<= 0)
+     deleteat!(λ2_vec, λ2_vec .<= 0)
+
+     λ1 = minimum(λ1_vec)
+     λ2 = minimum(λ2_vec)
+
+     #check that the inequalities hold true
+     Ψ1 = Ψ .+ (λ1*u)
+     Ψ2 = Ψ .- (λ2*u)
+    
+     if sum(Ψ1 .< 0) > 0 || sum(Ψ1 .> 1) > 0 || sum(Ψ2 .< 0) > 0 || sum(Ψ2 .> 1) > 0
+        @bp
+     end
 
      # calculate the inequality expression for both lambdas
      λ1_ineq = @. Ψ + (λ1 * u)
      λ2_ineq = @. Ψ - (λ2 * u)
+
+     # checking for floating point issues
+     tol = 1e-13
+     λ1_ineq[abs.(λ1_ineq) .< tol] .= 0
+     λ2_ineq[abs.(λ2_ineq) .< tol] .= 0
 
      ineq_mat = reduce(hcat, [λ1_ineq, λ2_ineq])
      # the new inclusion probability π is one of the lambda expressions with a given probability q1, q2
