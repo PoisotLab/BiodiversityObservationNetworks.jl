@@ -1,27 +1,47 @@
-using LinearAlgebra
-using StatsBase
-using JuMP
-import DataFrames
-import HiGHS
+"""
+    CubeSampling
 
-function cube(pik, x; fastflight = true)
-
-    if all(fastflight)
-        println("Starting fast flight phase.")
-        pikstar = cubefastflight(pik, x)
-    else
-        println("Starting flight phase.")
-        pikstar = cubeflight(pik, x)
+A `BONRefiner` that uses Cube Sampling (Tillé 2011)
+"""
+Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector{AbstractFloat}, M <: Matrix{AbstractFloat}} <: BONSeeder
+    numpoints::I = 50
+    fast::Bool = true
+    pik::V = fill(numpoints/N, N)
+    x::M = rand(0:4, numpoints, N)
+    function CubeSampling(numpoints, pik, x)
+        if numpoints < one(numpoints)
+            throw(ArgumentError("You cannot have a CubeSampling with fewer than one point"))
+        end
+        return new{typeof(numpoints),}(numpoints, )
     end
+end
 
+function _generate!(
+    coords::Vector{CartesianIndex}, 
+    sampler::CubeSampling, 
+    fixedn::Bool
+    uncertainty::Matrix{T}
+    ) where {T <: AbstractFloat}
+
+    # sort points by distance in auxillary variable space
+    dist = mahalanobis(sampler.pik, sampler.x)
+    perm = sortperm(dist, rev=true)
+
+    coords = coords[perm]
+    pik = sampler.pik[perm]
+    x = sampler.x[:,perm]
+
+    # if we want the sample size enforced, add pik as an aux variable
+    fixedn &&  x = vcat(transpose(pik), x)
+
+    # pick flight phase algorithm
+    pikstar = sampler.fast ? cubefastflight(pik, x) : cubeflight(pik, x)
+    # check if there are non-integer probabilities
     non_int_ind = findall(x -> x .∉ Ref(Set([0,1])), pikstar)
+    # if so, perform landing phase to resolve them
+    pikstar = isempty(non_int_ind) ? pikstar : cubeland(pikstar, pik, x)
 
-    if length(non_int_ind) == 0
-        return(pikstar)
-    else 
-        println("Starting landing phase")
-        return(cubeland(pikstar, pik, x))
-    end
+    return (coords[findall(x -> x == 1, pikstar)], uncertainty)
 end
 
 function cubeflight(pik, x)
@@ -37,7 +57,6 @@ function cubeflight(pik, x)
     # check if there is a possible u to satisfy the conditions
     while size(set_nullspace)[2] != 0
         j = j+1
-        println(j)
 
         ## STEP 1 ##
 
@@ -150,8 +169,6 @@ function cubefastflight(pik, x)
 
     while k <= length(π)
 
-        println(k)
-
         Ψ = update_psi(Ψ, B) 
 
         if length(findall(x -> x .<0, Ψ)) > 0
@@ -162,7 +179,6 @@ function cubefastflight(pik, x)
         i = 0
         while i < length(Ψ) && k <= length(π)
             i = i + 1
-            println("in second loop iteration $i")
             if Ψ[i] ∈ [0, 1]
                 # update π
                 π[r[i]] = Ψ[i]
@@ -205,14 +221,6 @@ function update_psi(Ψ, B)
      λ1 = minimum(λ1_vec)
      λ2 = minimum(λ2_vec)
 
-     #check that the inequalities hold true
-     Ψ1 = Ψ .+ (λ1*u)
-     Ψ2 = Ψ .- (λ2*u)
-    
-     if sum(Ψ1 .< 0) > 0 || sum(Ψ1 .> 1) > 0 || sum(Ψ2 .< 0) > 0 || sum(Ψ2 .> 1) > 0
-        @bp
-     end
-
      # calculate the inequality expression for both lambdas
      λ1_ineq = @. Ψ + (λ1 * u)
      λ2_ineq = @. Ψ - (λ2 * u)
@@ -236,8 +244,6 @@ function cubeland(pikstar, pik, x)
     ### Landing Phase ###
     # Goal: Find sample s such that E(s|π*) = π*, where π* is output from flight phase
     # q non-integer elements of π should be <= p auxillary variables
-
-    println("Start of Landing Phase")
     
     # get all non-integer probabilities
     non_int_ind = findall(x -> x .∉ Ref(Set([0,1])), pikstar)
@@ -325,4 +331,30 @@ function unique_permutations(x::T, prefix=T()) where T
     end
 end
 
-selected_points = cube(pik, x, fastflight = false)
+function mahalanobis(pik, x)
+    N = length(pik)
+    p = size(x)[1]
+
+    x_hat = x ./ reshape(pik, :, N)
+    x_hat_bar = (1/N) .* sum(x_hat, dims = 2)
+
+    k_vecs = x_hat .- x_hat_bar
+    outer_prods = Array{Float64}(undef, p, p, N)
+    for i in 1:N
+        outer_prods[:, :, i] = k_vecs[1:p, i] * transpose(k_vecs[1:p, i])
+    end
+    
+    sigma = (1/(N-1)) * dropdims(sum(outer_prods, dims = 3), dims = 3)
+    inv_sigma = inv(sigma)
+    
+    d = Vector{Float64}(undef, N)
+    for i in 1:N
+        d[i] = (transpose(x_hat[1:3, i] - x_hat_bar) * inv_sigma * (x_hat[1:3, i] - x_hat_bar))[1]
+    end
+
+    return d
+end
+
+
+
+selected_points = cube(pik, x, fastflight = true)
