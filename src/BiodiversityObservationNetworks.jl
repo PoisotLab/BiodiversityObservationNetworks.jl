@@ -20,7 +20,7 @@ include(joinpath("types", "weights.jl"))
 
 export BONSeeder, BONRefiner, BONSampler
 export Layer, LayerSet, Target, Group, Weights
-export name
+export name, getlayer
 export getlayers, gettargets, getgroups
 export numlayers, numtargets, numgroups
    

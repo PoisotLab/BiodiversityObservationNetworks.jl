@@ -11,6 +11,10 @@ function stack(layers::Vector{<:AbstractMatrix})
     mat
 end
 
+function stack(layerset::LayerSet)
+    stack([getlayer(getlayer(layerset,i)) for i in 1:numlayers(layerset)])
+end
+
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
     size(W,1) == size(layers,3) || throw(ArgumentError("W does not have the same number of rows are there are number of layers"))
     all([sum(c) ≈ 1 for c in eachcol(W)]) || throw(ArgumentError("Not all of the columns of W sum to 1."))

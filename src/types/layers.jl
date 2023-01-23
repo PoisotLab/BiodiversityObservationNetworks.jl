@@ -6,7 +6,7 @@ Layer
 """
 @kwdef struct Layer
     name::Union{Symbol,String}
-    layer = zeros(50,100)
+    layer = rand(50,100)
     group::Group
 end
 function Base.show(io::IO, ::MIME"text/plain", l::Layer) 
@@ -53,8 +53,8 @@ function Base.show(io::IO, ::MIME"text/plain", ls::LayerSet)
     )
 end 
 
-
 getlayers(ls::LayerSet) = ls.layers
+getlayer(ls::LayerSet, i::Integer) = getlayers(ls)[i]
 getgroups(ls::LayerSet) = [getgroup(l) for l in getlayers(ls)]
 gettargets(ls::LayerSet) = ls.targets
 
