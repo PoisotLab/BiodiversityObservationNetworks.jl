@@ -10,16 +10,22 @@ Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector{AbstractFloat}
     x::M = rand(0:4, numpoints, N)
     function CubeSampling(numpoints, pik, x)
         if numpoints < one(numpoints)
-            throw(ArgumentError("You cannot have a CubeSampling with fewer than one point"))
+            throw(ArgumentError("You cannot have a CubeSampling with fewer than one point.",),)
         end
-        return new{typeof(numpoints),}(numpoints, )
+        if length(numpoints) > length(pik)
+            throw(ArgumentError("You cannot select more points than the number of candidate points.",),)
+        end
+        if length(pik) != size(x)[2]
+            throw(ArgumentError("The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",),)
+        end
+        return new{typeof(numpoints), typeof(pik), typeof(x)}(numpoints, pik, x)
     end
 end
 
 function _generate!(
     coords::Vector{CartesianIndex}, 
     sampler::CubeSampling, 
-    fixedn::Bool
+    fixedn::Bool,
     uncertainty::Matrix{T}
     ) where {T <: AbstractFloat}
 
@@ -32,7 +38,7 @@ function _generate!(
     x = sampler.x[:,perm]
 
     # if we want the sample size enforced, add pik as an aux variable
-    fixedn &&  x = vcat(transpose(pik), x)
+    x = fixedn && vcat(transpose(pik), x)
 
     # pick flight phase algorithm
     pikstar = sampler.fast ? cubefastflight(pik, x) : cubeflight(pik, x)
@@ -357,4 +363,4 @@ end
 
 
 
-selected_points = cube(pik, x, fastflight = true)
+#selected_points = cube(pik, x, fastflight = true)
