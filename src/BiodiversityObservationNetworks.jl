@@ -17,6 +17,9 @@ export BalancedAcceptance
 include("adaptivespatial.jl")
 export AdaptiveSpatial
 
+include("cubesampling.jl")
+export CubeSampling
+
 include("uniqueness.jl")
 export Uniqueness
 
