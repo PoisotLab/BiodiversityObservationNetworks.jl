@@ -7,10 +7,24 @@ using StatsBase
 using SpecialFunctions
 using ProgressMeter
 using SliceMap
+using Base: @kwdef
+using Term
+using Term.TermMarkdown
+using Markdown
 
-include("types.jl")
+include(joinpath("types", "samplers.jl"))
+include(joinpath("types", "groups.jl"))
+include(joinpath("types", "targets.jl"))
+include(joinpath("types", "layers.jl"))
+include(joinpath("types", "weights.jl"))
+
 export BONSeeder, BONRefiner, BONSampler
-
+export Layer, LayerSet, Target, Group, Weights
+export name
+export getlayers, gettargets, getgroups
+export numlayers, numtargets, numgroups
+   
+    
 include("balancedacceptance.jl")
 export BalancedAcceptance
 
@@ -46,3 +60,5 @@ end
 
 
 end
+
+

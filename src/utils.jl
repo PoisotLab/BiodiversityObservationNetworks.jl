@@ -62,4 +62,3 @@ The final value of the squished layer at (i,j) is given by s⃗ᵢⱼ = ∑ₓ �
 the value of the x-th target layer at (i,j).
 """
 squish(layers, W, α) = _squish(_squish(layers, W), α)
-
