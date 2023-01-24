@@ -3,7 +3,7 @@
 
 A `BONRefiner` that uses Cube Sampling (Tillé 2011)
 """
-Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector{AbstractFloat}, M <: Matrix{AbstractFloat}} <: BONSeeder
+Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector{AbstractFloat}, M <: Matrix{AbstractFloat}} <: BONRefiner
     numpoints::I = 50
     fast::Bool = true
     pik::V = fill(numpoints/N, N)
@@ -24,8 +24,8 @@ end
 
 function _generate!(
     coords::Vector{CartesianIndex}, 
-    sampler::CubeSampling, 
-    fixedn::Bool,
+    pool::Vector{CartesianIndex},
+    sampler::CubeSampling,
     uncertainty::Matrix{T}
     ) where {T <: AbstractFloat}
 
@@ -33,12 +33,12 @@ function _generate!(
     dist = mahalanobis(sampler.pik, sampler.x)
     perm = sortperm(dist, rev=true)
 
-    coords = coords[perm]
+    pool = pool[perm]
     pik = sampler.pik[perm]
     x = sampler.x[:,perm]
-
+ 
     # if we want the sample size enforced, add pik as an aux variable
-    x = fixedn && vcat(transpose(pik), x)
+    x = vcat(transpose(pik), x)
 
     # pick flight phase algorithm
     pikstar = sampler.fast ? cubefastflight(pik, x) : cubeflight(pik, x)
@@ -47,7 +47,13 @@ function _generate!(
     # if so, perform landing phase to resolve them
     pikstar = isempty(non_int_ind) ? pikstar : cubeland(pikstar, pik, x)
 
-    return (coords[findall(x -> x == 1, pikstar)], uncertainty)
+    selected = pool[findall(x -> x == 1, pikstar)]
+
+    for i = 1:length(selected)
+        coords[i] = pool[i]
+    end
+
+    return (coords, uncertainty)
 end
 
 function cubeflight(pik, x)
