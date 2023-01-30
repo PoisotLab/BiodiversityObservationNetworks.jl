@@ -3,11 +3,12 @@
 
 A `BONRefiner` that uses Cube Sampling (Tillé 2011)
 """
+
 Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector{AbstractFloat}, M <: Matrix{AbstractFloat}} <: BONRefiner
     numpoints::I = 50
     fast::Bool = true
-    pik::V = fill(numpoints/N, N)
-    x::M = rand(0:4, numpoints, N)
+    pik::V = zeros(50)
+    x::M = rand(0:4, numpoints, 50)
     function CubeSampling(numpoints, pik, x)
         if numpoints < one(numpoints)
             throw(ArgumentError("You cannot have a CubeSampling with fewer than one point.",),)
@@ -28,6 +29,20 @@ function _generate!(
     sampler::CubeSampling,
     uncertainty::Matrix{T}
     ) where {T <: AbstractFloat}
+    
+    #check if they gave us pik or not
+    if sum(pik) == 0
+        println("Probabilities of inclusion were not provided, so we assume equal probability design.")
+        pik = fill(sampler.numpoints/length(pool), length(pool))
+    end
+
+    # check that dimensions match
+    if length(pool) != length(pik)
+        throw(ArgumentError("The pik vector does not match the number of candidate points.",),)
+    end
+    if length(pik) != size(x, 2)
+        throw(ArgumentError("There is a mismatch in the number of inclusion probabilities and the points in the auxillary matrix.",),)
+    end
 
     # sort points by distance in auxillary variable space
     dist = mahalanobis(sampler.pik, sampler.x)
@@ -283,13 +298,17 @@ function cubeland(pikstar, pik, x)
     sub_mat = samps .- reshape(non_int_piks, :, N_land)
 
     # let's get A for the non-integer units
-    A_land = x_land ./ reshape(non_int_piks, :, N_land)
+    A_land = x_land ./ reshape(pik[non_int_ind], :, N_land)
+    
 
     sample_pt = A_land * transpose(sub_mat)
     ## FIXME: need to deal with the case that there are fixed zeros in pik
-    A = x ./ reshape(pik, :, N)
+    #A = x ./ reshape(pik, :, N)
+    zero_pik_ind = findall(x -> x == 0, pik)
+    A = x[:, setdiff(1:end, zero_pik_ind)] ./ reshape(pik[setdiff(1:end, zero_pik_ind)], :, N-length(zero_pik_ind))
+    
 
-    cost = zeros(size(samps)[1])
+    cost = zeros(size(samps,1))
     for i in 1:size(samps)[1]
         cost[i] = transpose(sample_pt[:, i]) * inv(A*transpose(A)) * sample_pt[:, i]
     end
@@ -303,19 +322,21 @@ function cubeland(pikstar, pik, x)
     model = Model(HiGHS.Optimizer)
 
     @variable(model, ps[1:size(samps,1)] >= 0)
-    #@variable(model, ps[1:size(samps)[1], 1:size(samps)[2]])
 
     @objective(model, Min, sum(sample["cost"] * ps[sample["id"]] for sample in eachrow(lp_df)))
     #@objective(model, Min, sum(cost[j] * ps[j]) for j in 1:size(samps)[2])
 
     @constraint(model, sum(ps[lp_df.id]) == 1)
 
-    for i in size(samps,2)
-        @constraint(model, sum(ps .* (samps.>0)[i,:]) == non_int_piks[i])
+    for i in 1:size(samps,2)
+        @constraint(model, sum(ps .* (samps.>0)[:,i]) == non_int_piks[i])
     end
 
     optimize!(model)
     #solution_summary(model)
+
+    has_values(model) || @warn "The linear program did not find a feasible solution."
+    
     samp_prob = value.(ps)
 
     # pick a sample based on their probabilities
@@ -345,7 +366,7 @@ end
 
 function mahalanobis(pik, x)
     N = length(pik)
-    p = size(x)[1]
+    p = size(x, 1)
 
     x_hat = x ./ reshape(pik, :, N)
     x_hat_bar = (1/N) .* sum(x_hat, dims = 2)
