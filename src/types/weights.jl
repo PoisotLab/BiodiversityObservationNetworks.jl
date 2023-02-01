@@ -13,27 +13,23 @@ function Base.show(io::IO, ::MIME"text/plain", weights::Weights)
     group_names = map(name ,getgroups(getlayers(weights)))
 
 
-    numtargs, numgroups = numtargets(getlayers(weights)), numtargets(getlayers(weights))
+    numtargs, numgroups = numtargets(getlayers(weights)), numtargets(getlayers(weights))    
+    γ, α = weights.group_mixing, weights.target_mixing
+    unique_groups = unique(getgroups(getlayers(weights)))
 
-
-    # append title lines
-
-    # for i in number of layers, enumerate a row     
-    
-
-
+    # TODO automate this
     str = 
     md"""
-    | {blue}Group{/blue} | {blue}Layer{/blue}  | $(target_names[1])| $(target_names[2])|
-    | :----------|:----------        | ---------- |:------------:|
-    | $(group_names[1]) | $(layer_names[1]) | $(weights.weights[1,1]) | $(weights.weights[1,2]) |
-    | $(group_names[2]) | $(layer_names[2]) | $(weights.weights[2,1]) | $(weights.weights[2,2]) |
-    | $(group_names[3]) | $(layer_names[3]) | $(weights.weights[3,1]) | $(weights.weights[3,2]) |
-    | $(group_names[4]) | $(layer_names[4]) | $(weights.weights[4,1]) | $(weights.weights[4,2]) |
-    | $(group_names[5]) | $(layer_names[5]) | $(weights.weights[5,1]) | $(weights.weights[5,2]) |
-    """
-    
+    | {blue}Group{/blue} | {blue}Layer{/blue}  | $(target_names[1])| $(target_names[2]) | Mixing weight  |
+    | :----------|:----------        | ----------|---- |:------------:|
+    | $(group_names[1]) | $(layer_names[1]) | $(weights.weights[1,1]) | $(weights.weights[1,2]) |$(γ[1])  | 
+    | $(group_names[2]) | $(layer_names[2]) | $(weights.weights[2,1]) | $(weights.weights[2,2]) | |
+    | $(group_names[3]) | $(layer_names[3]) | $(weights.weights[3,1]) | $(weights.weights[3,2]) ||
+    | $(group_names[4]) | $(layer_names[4]) | $(weights.weights[4,1]) | $(weights.weights[4,2]) |$(γ[2])  |
+    | $(group_names[5]) | $(layer_names[5]) | $(weights.weights[5,1]) | $(weights.weights[5,2]) | |
+    | {green}Mixing weights α{/green} | | {green}$(α[1]){/green}  |  {green}$(α[2]){/green}  |   |
 
+    """
     tprint(str)
 end 
 
@@ -82,11 +78,3 @@ function Weights(
         target_mixing_weights
     )
 end
-
-rmat() = rand(50,50)
-
-#=
-layers = [Layer(rmat(), :l1), Layer(rmat(), :l2), Layer(rmat(), :l2), Layer(rmat(), :l3)]
-groups = [Group(:g1), Group(:g2)]
-targs =  [Target(:t1), Target(:t2)]
-Weights(layers, groups, targs) =#

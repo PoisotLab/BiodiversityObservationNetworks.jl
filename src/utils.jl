@@ -66,3 +66,19 @@ The final value of the squished layer at (i,j) is given by s⃗ᵢⱼ = ∑ₓ �
 the value of the x-th target layer at (i,j).
 """
 squish(layers, W, α) = _squish(_squish(layers, W), α)
+
+function squish(ls::LayerSet, weights::Weights)
+    w = weights.weights
+    γ, α = weights.group_mixing, weights.target_mixing
+    unique_groups = unique(getgroups(ls))
+    γₚ = [γ[findfirst(g->g==x, unique_groups)] for x in getgroups(ls)]
+
+    stackedlayers = stack(ls)
+
+    priority = similar(getlayer(getlayer(ls,1)))
+
+    for i in CartesianIndices(getlayer(getlayer(ls,1)))
+        priority[i] = transpose(α) * transpose(w) * (γₚ .* stackedlayers[i[1],i[2],:]) 
+    end 
+    priority
+end 
