@@ -11,6 +11,10 @@ function stack(layers::Vector{<:AbstractMatrix})
     mat
 end
 
+function stack(layerset::LayerSet)
+    stack([getlayer(getlayer(layerset,i)) for i in 1:numlayers(layerset)])
+end
+
 function _squish(layers::Array{T, 3}, W::Matrix{T}) where {T <: AbstractFloat}
     size(W,1) == size(layers,3) || throw(ArgumentError("W does not have the same number of rows are there are number of layers"))
     all([sum(c) ≈ 1 for c in eachcol(W)]) || throw(ArgumentError("Not all of the columns of W sum to 1."))
@@ -63,3 +67,18 @@ the value of the x-th target layer at (i,j).
 """
 squish(layers, W, α) = _squish(_squish(layers, W), α)
 
+function squish(ls::LayerSet, weights::Weights)
+    w = weights.weights
+    γ, α = weights.group_mixing, weights.target_mixing
+    unique_groups = unique(getgroups(ls))
+    γₚ = [γ[findfirst(g->g==x, unique_groups)] for x in getgroups(ls)]
+
+    stackedlayers = stack(ls)
+
+    priority = similar(getlayer(getlayer(ls,1)))
+
+    for i in CartesianIndices(getlayer(getlayer(ls,1)))
+        priority[i] = transpose(α) * transpose(w) * (γₚ .* stackedlayers[i[1],i[2],:]) 
+    end 
+    priority
+end 
