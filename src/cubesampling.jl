@@ -4,12 +4,12 @@
 A `BONRefiner` that uses Cube Sampling (Tillé 2011)
 """
 
-Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector{AbstractFloat}, M <: Matrix{AbstractFloat}} <: BONRefiner
+Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector, M <: Matrix} <: BONRefiner
     numpoints::I = 50
     fast::Bool = true
     pik::V = zeros(50)
     x::M = rand(0:4, numpoints, 50)
-    function CubeSampling(numpoints, pik, x)
+    function CubeSampling(numpoints, fast, pik, x)
         if numpoints < one(numpoints)
             throw(ArgumentError("You cannot have a CubeSampling with fewer than one point.",),)
         end
@@ -19,7 +19,7 @@ Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector{AbstractFloat}
         if length(pik) != size(x)[2]
             throw(ArgumentError("The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",),)
         end
-        return new{typeof(numpoints), typeof(pik), typeof(x)}(numpoints, pik, x)
+        return new{typeof(numpoints), typeof(pik), typeof(x)}(numpoints, fast, pik, x)
     end
 end
 
