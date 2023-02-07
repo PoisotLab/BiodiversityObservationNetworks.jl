@@ -7,8 +7,10 @@ A `BONRefiner` that uses Cube Sampling (Tillé 2011)
 Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector, M <: Matrix} <: BONRefiner
     numpoints::I = 50
     fast::Bool = true
-    pik::V = zeros(50)
-    x::M = rand(0:4, numpoints, 50)
+    #pik::V = zeros(50)
+    pik::V = zeros(size(x,2))
+    x::M = rand(0:4, 3, 50)
+    
     function CubeSampling(numpoints, fast, pik, x)
         if numpoints < one(numpoints)
             throw(ArgumentError("You cannot have a CubeSampling with fewer than one point.",),)
@@ -16,7 +18,7 @@ Base.@kwdef mutable struct CubeSampling{I <: Integer, V <: Vector, M <: Matrix} 
         if length(numpoints) > length(pik)
             throw(ArgumentError("You cannot select more points than the number of candidate points.",),)
         end
-        if length(pik) != size(x)[2]
+        if length(pik) != size(x, 2)
             throw(ArgumentError("The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",),)
         end
         return new{typeof(numpoints), typeof(pik), typeof(x)}(numpoints, fast, pik, x)
@@ -31,25 +33,27 @@ function _generate!(
     ) where {T <: AbstractFloat}
     
     #check if they gave us pik or not
-    if sum(pik) == 0
+    if sum(sampler.pik) == 0
         println("Probabilities of inclusion were not provided, so we assume equal probability design.")
         pik = fill(sampler.numpoints/length(pool), length(pool))
+    else pik = sampler.pik
     end
 
     # check that dimensions match
     if length(pool) != length(pik)
         throw(ArgumentError("The pik vector does not match the number of candidate points.",),)
     end
-    if length(pik) != size(x, 2)
+    
+    if length(pik) != size(sampler.x, 2)
         throw(ArgumentError("There is a mismatch in the number of inclusion probabilities and the points in the auxillary matrix.",),)
     end
 
     # sort points by distance in auxillary variable space
-    dist = mahalanobis(sampler.pik, sampler.x)
+    dist = mahalanobis(pik, sampler.x)
     perm = sortperm(dist, rev=true)
 
     pool = pool[perm]
-    pik = sampler.pik[perm]
+    pik = pik[perm]
     x = sampler.x[:,perm]
  
     # if we want the sample size enforced, add pik as an aux variable
@@ -305,7 +309,7 @@ function cubeland(pikstar, pik, x)
     ## FIXME: need to deal with the case that there are fixed zeros in pik
     #A = x ./ reshape(pik, :, N)
     zero_pik_ind = findall(x -> x == 0, pik)
-    A = x[:, setdiff(1:end, zero_pik_ind)] ./ reshape(pik[setdiff(1:end, zero_pik_ind)], :, N-length(zero_pik_ind))
+    A = x[:, setdiff(1:end, zero_pik_ind)] ./ reshape(pik[setdiff(1:end, zero_pik_ind)], :, length(pik) - length(zero_pik_ind))
     
 
     cost = zeros(size(samps,1))
@@ -335,15 +339,20 @@ function cubeland(pikstar, pik, x)
     optimize!(model)
     #solution_summary(model)
 
-    has_values(model) || @warn "The linear program did not find a feasible solution."
-    
-    samp_prob = value.(ps)
+    #has_values(model) || @warn "The linear program did not find a feasible solution."
+    if has_values(model) 
+        samp_prob = value.(ps)
+        
+        # pick a sample based on their probabilities
+        samp_ind = sample(1:length(samp_prob), Weights(samp_prob))
 
-    # pick a sample based on their probabilities
-    samp_ind = sample(1:length(samp_prob), Weights(samp_prob))
+        # fill in non-integer points with the sample option picked by lp
+        pikstar[non_int_ind] = samps[samp_ind, :]
+    else
+        @warn "The linear program did not find a feasible solution."
+        pikstar[non_int_ind] = samps[sample(1:size(samps,1)), :]
 
-    # fill in non-integer points with the sample option picked by lp
-    pikstar[non_int_ind] = samps[samp_ind, :]
+    end 
 
     return(pikstar)
 end
@@ -382,12 +391,8 @@ function mahalanobis(pik, x)
     
     d = Vector{Float64}(undef, N)
     for i in 1:N
-        d[i] = (transpose(x_hat[1:3, i] - x_hat_bar) * inv_sigma * (x_hat[1:3, i] - x_hat_bar))[1]
+        d[i] = (transpose(x_hat[1:p, i] - x_hat_bar) * inv_sigma * (x_hat[1:p, i] - x_hat_bar))[1]
     end
 
     return d
 end
-
-
-
-#selected_points = cube(pik, x, fastflight = true)
