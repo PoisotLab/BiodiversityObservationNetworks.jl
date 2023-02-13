@@ -11,7 +11,7 @@ Base.@kwdef mutable struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} 
     pik::V = zeros(size(x,2))
 
     function CubeSampling(numpoints, fast, x, pik)
-        
+
         if numpoints < one(numpoints)
             throw(ArgumentError("You cannot have a CubeSampling with fewer than one point.",),)
         end
@@ -43,7 +43,7 @@ function _generate!(
     if length(pool) != length(pik)
         throw(ArgumentError("The pik vector does not match the number of candidate points.",),)
     end
-    
+
     if length(pik) != size(sampler.x, 2)
         throw(ArgumentError("There is a mismatch in the number of inclusion probabilities and the points in the auxillary matrix.",),)
     end
@@ -328,7 +328,6 @@ function cubeland(pikstar, pik, x)
     @variable(model, ps[1:size(samps,1)] >= 0)
 
     @objective(model, Min, sum(sample["cost"] * ps[sample["id"]] for sample in eachrow(lp_df)))
-    #@objective(model, Min, sum(cost[j] * ps[j]) for j in 1:size(samps)[2])
 
     @constraint(model, sum(ps[lp_df.id]) == 1)
 
@@ -374,6 +373,11 @@ function unique_permutations(x::T, prefix=T()) where T
 end
 
 function mahalanobis(pik, x)
+    # drop variables that are the same for all points
+    num_uniq = map(y -> length(unique(y)), eachrow(x))
+    nonuniq_ind = findall(z -> z == 1, num_uniq)
+    x = length(nonuniq_ind) > 0 ? x[1:end .!= nonuniq_ind, :] : x
+
     N = length(pik)
     p = size(x, 1)
 
