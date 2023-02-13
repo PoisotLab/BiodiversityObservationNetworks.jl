@@ -13,8 +13,8 @@ using Test
 @test_throws ArgumentError CubeSampling(numpoints = 5, pik = zeros(15), x = rand(0:4, 2, 10))
 
 # Correct subtype
-@test typeof(CubeSampling(numpoints = 0)) <: BONRefiner
-@test typeof(CubeSampling(numpoints = 0)) <: BONSampler
+@test typeof(CubeSampling(numpoints = 5, x = rand(0:4, 2, 10))) <: BONRefiner
+@test typeof(CubeSampling(numpoints = 5, x = rand(0:4, 2, 10)))<: BONSampler
 
 # Test with a random uncertainty matrix
 N = 100
@@ -36,3 +36,5 @@ smpl = CubeSampling(numpoints = length(c), x = x_mat)
     CubeSampling(; numpoints = length(c) - 1, x = x_mat),
     last(pack),
 )
+
+end 
