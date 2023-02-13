@@ -275,7 +275,7 @@ function cubeland(pikstar, pik, x)
     ### Landing Phase ###
     # Goal: Find sample s such that E(s|π*) = π*, where π* is output from flight phase
     # q non-integer elements of π should be <= p auxillary variables
-    
+
     # get all non-integer probabilities
     non_int_ind = findall(x -> x .∉ Ref(Set([0,1])), pikstar)
     non_int_piks = pikstar[non_int_ind]
@@ -287,6 +287,9 @@ function cubeland(pikstar, pik, x)
     # first, get the sample size from the total inclusion probability
     total_prob = sum(non_int_piks)
     n_land = round(Int, total_prob)
+
+    # rescale so that the inclusion probabilities sum to the sample size
+    non_int_piks = n_land * (non_int_piks / sum(non_int_piks))
 
     # then get matrix of potential sample design
     # get vector with appropriate allocation of 0's and 1's
