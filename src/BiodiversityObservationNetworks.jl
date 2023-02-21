@@ -9,7 +9,6 @@ using ProgressMeter
 using SliceMap
 using JuMP
 using HiGHS
-using DataFrames
 using LinearAlgebra
 
 include("types.jl")
