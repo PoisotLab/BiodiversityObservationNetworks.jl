@@ -2,6 +2,16 @@
     CubeSampling
 
 A `BONRefiner` that uses Cube Sampling (Tillé 2011)
+
+...
+
+**numpoints**, an Integer (def. 50), specifying the number of points to use.
+
+**fast**, a Boolean (def. true) indicating whether to use the fast flight algorithm. 
+
+**x**, a Matrix of auxillary variables for the candidate points, with one row for each variable and one column for each candidate point.
+
+**pik**, a Float Vector indicating the probabilities of inclusion for each candidate point; should sum to numpoints value.
 """
 
 Base.@kwdef mutable struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONRefiner
@@ -39,6 +49,8 @@ function _generate!(
     else pik = sampler.pik
     end
 
+    if sum(pik) != sampler.numpoints
+        throw(Warning("The inclusion probabilities sum to $sum(pik), which will be your sample size instead of numpoints."))
     # check that dimensions match
     if length(pool) != length(pik)
         throw(DimensionMismatch("The pik vector does not match the number of candidate points.",),)
