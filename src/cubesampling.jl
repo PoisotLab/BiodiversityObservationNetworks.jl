@@ -41,7 +41,7 @@ function _generate!(
     sampler::CubeSampling,
     uncertainty::Matrix{T}
     ) where {T <: AbstractFloat}
-    
+
     #check if they gave us pik or not
     if sum(sampler.pik) == 0
         @info "Probabilities of inclusion were not provided, so we assume equal probability design."
@@ -49,8 +49,10 @@ function _generate!(
     else pik = sampler.pik
     end
 
-    if sum(pik) != sampler.numpoints
-        throw(Warning("The inclusion probabilities sum to $sum(pik), which will be your sample size instead of numpoints."))
+    if round(Int, sum(pik)) != sampler.numpoints
+        @warn "The inclusion probabilities sum to $(round(Int, sum(pik))), which will be your sample size instead of numpoints."
+    end
+
     # check that dimensions match
     if length(pool) != length(pik)
         throw(DimensionMismatch("The pik vector does not match the number of candidate points.",),)
@@ -72,13 +74,13 @@ function _generate!(
     x = vcat(transpose(pik), x)
 
     # pick flight phase algorithm
-    pikstar = sampler.fast ? cubefastflight(pik, x) : cubeflight(pik, x)
+    pikstar_flight = sampler.fast ? cubefastflight(pik, x) : cubeflight(pik, x)
     # check if there are non-integer probabilities
-    non_int_ind = findall(x -> x .∉ Ref(Set([0,1])), pikstar)
+    non_int_ind = findall(u -> u .∉ Ref(Set([0,1])), pikstar_flight)
     # if so, perform landing phase to resolve them
-    pikstar = isempty(non_int_ind) ? pikstar : cubeland(pikstar, pik, x)
+    pikstar = isempty(non_int_ind) ? pikstar_flight : cubeland(pikstar_flight, pik, x)
 
-    selected = pool[findall(x -> x == 1, pikstar)]
+    selected = pool[findall(z -> z == 1, pikstar)]
 
     for i = 1:length(selected)
         coords[i] = pool[i]
@@ -122,7 +124,7 @@ function cubeflight(pik, x)
         # let's make sure the rows that need it satisfy that condition
 
         # get index where pikstar is 0 or 1
-        set_piks = findall(x -> x .∈ Ref(Set([0,1])), pikstar)
+        set_piks = findall(u -> u .∈ Ref(Set([0,1])), pikstar)
 
         # if none of the pikstar's are fixed yet (as 0 or 1) u can be a vector from the nullspace
         if length(set_piks) == 0
@@ -132,7 +134,7 @@ function cubeflight(pik, x)
         elseif length(set_piks) == 1
             sums = sum(eachrow(kernal))
             # find indicator vector
-            ind = findall(x -> x==1, sums)
+            ind = findall(z -> z==1, sums)
 
             # get vector of potential column indices, remove unit column, and get random u
             ind = deleteat!(collect(1:size(kernal)[2]), ind)
@@ -200,7 +202,7 @@ function cubefastflight(pik, x)
     p = size(x)[1]
 
     # get all non-integer probabilities
-    non_int_ind = findall(x -> x .∉ Ref(Set([0, 1])), pik)
+    non_int_ind = findall(u -> u .∉ Ref(Set([0, 1])), pik)
     π = pik[non_int_ind]
     Ψ = π[1:(p + 1)]
     r = collect(1:(p + 1))
@@ -214,7 +216,7 @@ function cubefastflight(pik, x)
 
         Ψ = update_psi(Ψ, B) 
 
-        if length(findall(x -> x .<0, Ψ)) > 0
+        if length(findall(z -> z .<0, Ψ)) > 0
             throw(error("Negative inclusion probability"))
         end
 
@@ -288,9 +290,10 @@ function cubeland(pikstar, pik, x)
     # Goal: Find sample s such that E(s|π*) = π*, where π* is output from flight phase
     # q non-integer elements of π should be <= p auxillary variables
 
+    pikstar_return = copy(pikstar)
     # get all non-integer probabilities
-    non_int_ind = findall(x -> x .∉ Ref(Set([0,1])), pikstar)
-    non_int_piks = pikstar[non_int_ind]
+    non_int_ind = findall(u -> u .∉ Ref(Set([0,1])), pikstar_return)
+    non_int_piks = pikstar_return[non_int_ind]
     N_land = length(non_int_piks)
     # get auxillary variables for those units
     x_land = x[:, non_int_ind]
@@ -323,7 +326,7 @@ function cubeland(pikstar, pik, x)
     sample_pt = A_land * transpose(sub_mat)
     ## FIXME: need to deal with the case that there are fixed zeros in pik
     #A = x ./ reshape(pik, :, N)
-    zero_pik_ind = findall(x -> x == 0, pik)
+    zero_pik_ind = findall(u -> u == 0, pik)
     A = x[:, setdiff(1:end, zero_pik_ind)] ./ reshape(pik[setdiff(1:end, zero_pik_ind)], :, length(pik) - length(zero_pik_ind))
     
 
@@ -361,14 +364,14 @@ function cubeland(pikstar, pik, x)
         samp_ind = sample(1:length(samp_prob), Weights(samp_prob))
 
         # fill in non-integer points with the sample option picked by lp
-        pikstar[non_int_ind] = samps[samp_ind, :]
+        pikstar_return[non_int_ind] = samps[samp_ind, :]
     else
         @warn "The linear program did not find a feasible solution."
-        pikstar[non_int_ind] = samps[sample(1:size(samps,1)), :]
+        pikstar_return[non_int_ind] = samps[sample(1:size(samps,1)), :]
 
     end 
 
-    return(pikstar)
+    return(pikstar_return)
 end
 
 # all credit to stackoverflow https://stackoverflow.com/questions/65051953/julia-generate-all-non-repeating-permutations-in-set-with-duplicates
