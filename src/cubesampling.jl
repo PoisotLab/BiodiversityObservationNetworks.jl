@@ -19,7 +19,7 @@ Base.@kwdef mutable struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} 
             throw(ArgumentError("You cannot select more points than the number of candidate points.",),)
         end
         if length(pik) != size(x, 2)
-            throw(ArgumentError("The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",),)
+            throw(DimensionMismatch("The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",),)
         end
         return new{typeof(numpoints), typeof(x), typeof(pik)}(numpoints, fast, x, pik)
     end
@@ -34,18 +34,18 @@ function _generate!(
     
     #check if they gave us pik or not
     if sum(sampler.pik) == 0
-        println("Probabilities of inclusion were not provided, so we assume equal probability design.")
+        @info "Probabilities of inclusion were not provided, so we assume equal probability design."
         pik = fill(sampler.numpoints/length(pool), length(pool))
     else pik = sampler.pik
     end
 
     # check that dimensions match
     if length(pool) != length(pik)
-        throw(ArgumentError("The pik vector does not match the number of candidate points.",),)
+        throw(DimensionMismatch("The pik vector does not match the number of candidate points.",),)
     end
 
     if length(pik) != size(sampler.x, 2)
-        throw(ArgumentError("There is a mismatch in the number of inclusion probabilities and the points in the auxillary matrix.",),)
+        throw(DimensionMismatch("There is a mismatch in the number of inclusion probabilities and the points in the auxillary matrix.",),)
     end
 
     # sort points by distance in auxillary variable space
