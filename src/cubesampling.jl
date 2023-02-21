@@ -320,19 +320,19 @@ function cubeland(pikstar, pik, x)
         cost[i] = transpose(sample_pt[:, i]) * inv(A*transpose(A)) * sample_pt[:, i]
     end
 
-    # Let's get it in a format jump wants
-    lp_df = DataFrames.DataFrame(samps, :auto)
-    lp_df.cost = cost
-    lp_df.id = 1:size(lp_df)[1]
+    # get matrix of samples and costs
+    id = 1:size(samps)[1]
+    lp_mat = [id cost samps]
 
     ## linear programing ##
     model = Model(HiGHS.Optimizer)
 
     @variable(model, ps[1:size(samps,1)] >= 0)
 
-    @objective(model, Min, sum(sample["cost"] * ps[sample["id"]] for sample in eachrow(lp_df)))
+    # multiple cost (lp_mat[2]) by ps[id], where id is lp_mat[1]
+    @objective(model, Min, sum(sample[2] * ps[trunc(Int, sample[1])] for sample in eachrow(lp_mat)))
 
-    @constraint(model, sum(ps[lp_df.id]) == 1)
+    @constraint(model, sum(ps[id]) == 1)
 
     for i in 1:size(samps,2)
         @constraint(model, sum(ps .* (samps.>0)[:,i]) == non_int_piks[i])
