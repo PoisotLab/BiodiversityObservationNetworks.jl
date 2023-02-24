@@ -24,9 +24,8 @@ c = Vector{CartesianIndex}(undef, 15)
 x_mat = rand(0:4, 2, N)
 smpl = CubeSampling(numpoints = length(c), x = x_mat)
 
-
 # Length and element type
-#@test length(first(refine(pack, smpl))) == smpl.numpoints
+@test length(first(refine(pack, smpl))) == smpl.numpoints
 @test eltype(first(refine(first(pack), smpl, U))) == CartesianIndex
 
 # Test with an existing coordinates vector
