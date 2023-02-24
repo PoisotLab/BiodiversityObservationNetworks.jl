@@ -203,16 +203,18 @@ function cubefastflight(pik, x)
 
     # get all non-integer probabilities
     non_int_ind = findall(u -> u .∉ Ref(Set([0, 1])), pik)
-    π = pik[non_int_ind]
-    Ψ = π[1:(p + 1)]
+    pivals = pik[non_int_ind]
+    Ψ = pivals[1:(p + 1)]
     r = collect(1:(p + 1))
 
-    A = x[:, non_int_ind] ./ reshape(π, :, length(non_int_ind))
+    A = x[:, non_int_ind] ./ reshape(pivals, :, length(non_int_ind))
     B = A[:, 1:(p + 1)]
 
     k = p + 2
 
-    while k <= length(π)
+
+
+    while k <= length(pivals)
 
         Ψ = update_psi(Ψ, B) 
 
@@ -222,13 +224,13 @@ function cubefastflight(pik, x)
 
         # update for the probabilities that are now integers
         i = 0
-        while i < length(Ψ) && k <= length(π)
+        while i < length(Ψ) && k <= length(pivals)
             i = i + 1
             if Ψ[i] ∈ [0, 1]
-                # update π
-                π[r[i]] = Ψ[i]
+                # update pivals
+                pivals[r[i]] = Ψ[i]
                 # replace that unit with a new unit
-                Ψ[i] = π[k]
+                Ψ[i] = pivals[k]
                 # And also in the auxillary data matrix
                 B[:, i] = A[:, k]
                 # update the vector that keeps track of unit indexes
@@ -240,9 +242,9 @@ function cubefastflight(pik, x)
     end
     # now do the final iteration
     Ψ = update_psi(Ψ, B)
-    π[r] = Ψ
+    pivals[r] = Ψ
 
-    return(π)
+    return(pivals)
 end
 
 function update_psi(Ψ, B)
@@ -276,13 +278,13 @@ function update_psi(Ψ, B)
      λ2_ineq[abs.(λ2_ineq) .< tol] .= 0
 
      ineq_mat = reduce(hcat, [λ1_ineq, λ2_ineq])
+
      # the new inclusion probability π is one of the lambda expressions with a given probability q1, q2
      q1 = λ2 / (λ1 + λ2)
-     q2 = 1 - q1
 
-     Ψ = map(r -> sample(r, Weights([q1, q2])), eachrow(ineq_mat))
+     new_pik = rand() < q1 ? λ1_ineq : λ2_ineq
 
-     return(Ψ)
+     return(new_pik)
 end    
 
 function cubeland(pikstar, pik, x)
