@@ -86,6 +86,12 @@ function propose(klsa::KLSimulatedAnnealing, coord)
     _clip_inbounds(coord + CartesianIndex(Δx, Δy), size(klsa.layers)[1:2])
 end
 
+function jensen_shannon_distance(P,Q; nsamples= 1000)
+    M = MixtureModel([P,Q], [0.5,0.5])
+    return 0.5kldivergence(P,M; nsamples=nsamples) + 0.5kldivergence(Q,M;nsamples=nsamples)
+end
+
+
 function _multivariate_loss(mv1, mv2)
     kldivergence(mv1, mv2)
 end
@@ -164,21 +170,27 @@ function _generate!(
 
     best_kl = zeros(Float32, (length(temps)*np+1))
     best_kl[1] = 1000.
-
     best_kl_overall = best_kl[begin]
  
+    coord_sets = []
+
     sampled_layers = zeros(Float32, np, size(layers, 3))
+    
     i = 2
     
     progbar = ProgressMeter.Progress(Int32(floor(length(best_kl)/log_freq)))
     accepts = 0
     for T in temps
+        these_sampled_layers = deepcopy(sampled_layers)
         for p in 1:np
             proposed_coord = propose(sampler, coords[p])
             proposed_vec = _coord_vector(layers, proposed_coord)
             
-            sampled_layers[p,:] .= proposed_vec
-            sampled_dist = sampler.multivariate ? _multivariate_sampled_dist(sampled_layers) : _independent_sampled_dist(sampled_layers)
+            tmp_storage = zeros(Float32, size(layers,3))
+            tmp_storage .= these_sampled_layers[p,:] 
+
+            these_sampled_layers[p,:] .= proposed_vec
+            sampled_dist = sampler.multivariate ? _multivariate_sampled_dist(these_sampled_layers) : _independent_sampled_dist(these_sampled_layers)
 
             KL_proposed = loss(full_dist, sampled_dist)
             if rand() <= move_probability(KL_proposed, best_kl[i - 1], T)
@@ -190,6 +202,7 @@ function _generate!(
                     best_kl[i] = best_kl_overall
                 end
             else
+                these_sampled_layers[p,:]  .= tmp_storage 
                 coords[p] = CartesianIndex(proposed_coord)
                 best_kl[i] = best_kl[i - 1]
             end    
@@ -201,32 +214,58 @@ function _generate!(
                         (Symbol("Acceptance Ratio"), accepts/i)
                     ]
                 )
+                push!(coord_sets, copy(coords))
             end 
+
+
             i += 1
         end
     end
-    return (coords, uncertainty), best_kl
+    return (coords, uncertainty), best_kl, coord_sets
 end
 
 
-layers = stack([rand(MidpointDisplacement(0.5), (100,100)) for _ in 1:5])
+layers = stack([rand(MidpointDisplacement(0.3), (1000,1000)) for _ in 1:2])
+np= 100
 
 klsa = KLSimulatedAnnealing(
     layers=layers, 
-    T₀=5., 
-    steps=1_000,
-    cooling=GeometricCooling(0.99),
+    T₀=10., 
+    steps=10000,
+    numpoints=np,
+    cooling=GeometricCooling(0.999),
     multivariate=true
 )
 
-pool, _ = seed(BalancedAcceptance(), rand(100,100))
+pool, unce = seed(BalancedAcceptance(numpoints=np), rand(1000,1000))
 coords = similar(pool)
 
-(_,_), kl = _generate!(coords, pool, klsa, rand(100,100))
+(_,_), kl, coord_set = _generate!(coords, pool, klsa, unce)
+
+coord_set
+
+klsa
+
+
+coord_set[1]
+
+
+a,b = MvNormal([0; 0], [1 0; 0 1]), MvNormal([2; 1],[4 0; 0 3])
+
+jensen_shannon_distance(a,b)
 
 
 
+using Plots
 
+plot(eachindex(kl), log.(kl))
+
+
+
+kl
+
+# -- foo
+f()
 
 #= MLP opt w/ zygote below, doesn't work 
 sigmoid(x) = 1/(1+exp(-x))
