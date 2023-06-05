@@ -30,7 +30,7 @@ temp, precip, elevation =
 # Now we'll use the `stack` function to combine our four environmental layers
 # into a single, 3-dimensional array, which we'll pass to our `Uniqueness` refiner.
 
-layers = stack([temp,precip,elevation]);
+layers = BiodiversityObservationNetworks.stack([temp,precip,elevation]);
 
 
 # this requires NeutralLandscapes v0.1.2
