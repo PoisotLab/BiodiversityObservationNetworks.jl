@@ -29,6 +29,7 @@ using NeutralLandscapes
 using BiodiversityObservationNetworks
 using ProgressMeter
 
+using Optim
 
 abstract type CoolingSchedule end 
 decay(s::CoolingSchedule) = s.decay
@@ -86,18 +87,25 @@ function propose(klsa::KLSimulatedAnnealing, coord)
     _clip_inbounds(coord + CartesianIndex(Δx, Δy), size(klsa.layers)[1:2])
 end
 
-function jensen_shannon_distance(P,Q; nsamples= 1000)
-    M = MixtureModel([P,Q], [0.5,0.5])
-    return 0.5kldivergence(P,M; nsamples=nsamples) + 0.5kldivergence(Q,M;nsamples=nsamples)
+# takes two vectors of CartesianIndices and mutates one of them.
+# have to explore ways more args can be passed via SA 
+function propose_mutating!(x_proposed, x_current)
+    
 end
 
+function jensen_shannon_distance(P,Q; kwargs...)
+    # there is also occasional numerical instability with very divergent distributions
+    M = MixtureModel([P,Q], [0.5,0.5])
+    div = 0.5kldivergence(P,M; kwargs...) + 0.5kldivergence(Q,M;kwargs...)
+    sqrt(div / log(2))
+end
 
 function _multivariate_loss(mv1, mv2)
-    kldivergence(mv1, mv2)
+    jensen_shannon_distance(mv1, mv2)
 end
 
 function _independent_loss(normals1, normals2)
-    sum([kldivergence(normals1[i], normals2[i]) for i in eachindex(normals1)])
+    sum([jensen_shannon_distance(normals1[i], normals2[i]) for i in eachindex(normals1)])
 end
 
 _coord_vector(layers, c) = layers[c[1], c[2], :]
@@ -225,8 +233,12 @@ function _generate!(
 end
 
 
-layers = stack([rand(MidpointDisplacement(0.3), (1000,1000)) for _ in 1:2])
+layers = BiodiversityObservationNetworks.stack([rand(MidpointDisplacement(0.3), (1000,1000)) for _ in 1:2])
 np= 100
+
+
+
+
 
 klsa = KLSimulatedAnnealing(
     layers=layers, 
@@ -259,10 +271,35 @@ jensen_shannon_distance(a,b)
 using Plots
 
 plot(eachindex(kl), log.(kl))
-
-
-
 kl
+
+
+# optim sandbo 
+
+
+rosenbrock(x) =  (1.0 - x[1])^2 + 100.0 * (x[2] - x[1]^2)^2
+
+
+
+
+result = Optim.optimize(rosenbrock, zeros(2), SimulatedAnnealing(neighbor=a!), Optim.Options(iterations=10^6))
+
+result = Optim.optimize(rosenbrock, zeros(2), NelderMead())
+
+result = Optim.optimize(rosenbrock, zeros(2))
+
+
+function a!(proposed, current)
+    proposed .= (0.01rand() .+ current)
+end
+
+
+# end of optim sandbox
+
+
+
+
+
 
 # -- foo
 f()
