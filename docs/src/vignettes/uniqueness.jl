@@ -9,29 +9,28 @@
 # the required packages. 
 
 using BiodiversityObservationNetworks
-using SimpleSDMLayers
+using SpeciesDistributionToolkit
 using StatsBase
 using NeutralLandscapes
 using Plots
 
 # !!! warning "Consider setting your SDMLAYERS_PATH" When accessing data using
-#     `SimpleSDMLayers.jl`, it is best to set the `SDM_LAYERSPATH` environmental
-#     variable to tell `SimpleSDMLayers.jl` where to download data. This can be
+#     `SimpleSDMDatasets.jl`, it is best to set the `SDM_LAYERSPATH` environmental
+#     variable to tell `SimpleSDMDatasets.jl` where to download data. This can be
 #     done by setting `ENV["SDMLAYERS_PATH"] = "/home/user/Data/"` or similar in
 #     the `~/.julia/etc/julia/startup.jl` file. (Note this will be different
 #     depending on where `julia` is installed.)
 
 bbox = (left=-83.0, bottom=46.4, right=-55.2, top=63.7);
-temp, precip, seasonality, elevation = 
-    convert(Float32, SimpleSDMPredictor(WorldClim, BioClim, 7; bbox...)),
-    convert(Float32, SimpleSDMPredictor(WorldClim, BioClim, 12; bbox...)),
-    convert(Float32, SimpleSDMPredictor(WorldClim, BioClim, 4; bbox...)),
-    convert(Float32, SimpleSDMPredictor(WorldClim, Elevation; bbox...));
+temp, precip, elevation = 
+    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim, AverageTemperate); bbox...)),
+    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim, Precipitation); bbox...)),
+    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim, Elevation); bbox...));
 
 # Now we'll use the `stack` function to combine our four environmental layers
 # into a single, 3-dimensional array, which we'll pass to our `Uniqueness` refiner.
 
-layers = stack([temp,precip,seasonality,elevation]);
+layers = stack([temp,precip,elevation]);
 
 
 # this requires NeutralLandscapes v0.1.2
