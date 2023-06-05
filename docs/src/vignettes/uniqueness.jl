@@ -23,7 +23,7 @@ using Plots
 
 bbox = (left=-83.0, bottom=46.4, right=-55.2, top=63.7);
 temp, precip, elevation = 
-    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, AverageTemperate); bbox...)),
+    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, AverageTemperature); bbox...)),
     convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, Precipitation); bbox...)),
     convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, Elevation); bbox...));
 
