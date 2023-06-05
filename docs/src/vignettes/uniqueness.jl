@@ -23,9 +23,9 @@ using Plots
 
 bbox = (left=-83.0, bottom=46.4, right=-55.2, top=63.7);
 temp, precip, elevation = 
-    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim, AverageTemperate); bbox...)),
-    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim, Precipitation); bbox...)),
-    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim, Elevation); bbox...));
+    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, AverageTemperate); bbox...)),
+    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, Precipitation); bbox...)),
+    convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, Elevation); bbox...));
 
 # Now we'll use the `stack` function to combine our four environmental layers
 # into a single, 3-dimensional array, which we'll pass to our `Uniqueness` refiner.
