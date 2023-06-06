@@ -7,6 +7,9 @@ using StatsBase
 using SpecialFunctions
 using ProgressMeter
 using SliceMap
+using JuMP
+using HiGHS
+using LinearAlgebra
 
 include("types.jl")
 export BONSeeder, BONRefiner, BONSampler
@@ -16,6 +19,9 @@ export BalancedAcceptance
 
 include("adaptivespatial.jl")
 export AdaptiveSpatial
+
+include("cubesampling.jl")
+export CubeSampling
 
 include("uniqueness.jl")
 export Uniqueness
