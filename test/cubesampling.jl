@@ -7,10 +7,10 @@ using Test
 @test_throws ArgumentError CubeSampling(numpoints = 0)
 
 # Must select fewer points than number of candidate points
-@test_throws ArgumentError CubeSampling(numpoints = 20, pik = zeros(10), x = rand(0:4, 2, 10))
+@test_throws ArgumentError CubeSampling(numpoints = 20, πₖ = zeros(10), x = rand(0:4, 2, 10))
 
 # Must have the same number of inclusion probabilites as auxillary variables
-@test_throws DimensionMismatch CubeSampling(numpoints = 5, pik = zeros(15), x = rand(0:4, 2, 10))
+@test_throws DimensionMismatch CubeSampling(numpoints = 5, πₖ = zeros(15), x = rand(0:4, 2, 10))
 
 # Correct subtype
 @test typeof(CubeSampling(numpoints = 5, x = rand(0:4, 2, 10))) <: BONRefiner
