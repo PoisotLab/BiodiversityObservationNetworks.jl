@@ -29,7 +29,8 @@ makedocs(;
         ],
     ],
     checkdocs = :all,
-    warnonly = true
+    warnonly = true,
+    format = HTML(;size_threshold= nothing)
 )
 
 deploydocs(;
