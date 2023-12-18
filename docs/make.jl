@@ -34,7 +34,6 @@ makedocs(;
 )
 
 deploydocs(;
-    deps = Deps.pip("pygments", "python-markdown-math"),
     repo = "github.com/EcoJulia/BiodiversityObservationNetworks.jl.git",
     devbranch = "main",
     push_preview = true,
