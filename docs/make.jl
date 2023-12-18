@@ -34,7 +34,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo = "github.com/EcoJulia/BiodiversityObservationNetworks.jl.git",
+    repo = "github.com/PoisotLab/BiodiversityObservationNetworks.jl.git",
     devbranch = "main",
     push_preview = true,
 )
