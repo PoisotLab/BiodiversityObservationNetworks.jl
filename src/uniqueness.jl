@@ -2,9 +2,6 @@
     Uniqueness
 
 A `BONRefiner`.
-
-
-
 """
 Base.@kwdef mutable struct Uniqueness{I <: Integer, T<:Number} <: BONRefiner
     numpoints::I = 30

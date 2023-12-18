@@ -40,11 +40,13 @@ BalancedAcceptance
 
 ```@docs
 AdaptiveSpatial
+Uniqueness
 ```
 
 ## Helper functions
 
 ```@docs
+squish
 entropize!
 entropize
 ```
