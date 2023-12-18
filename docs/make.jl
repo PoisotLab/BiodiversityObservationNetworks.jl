@@ -30,7 +30,7 @@ makedocs(;
     ],
     checkdocs = :all,
     warnonly = true,
-    format = HTML(;size_threshold= nothing)
+    format = Documenter.HTMLWriter.HTML(;size_threshold= nothing)
 )
 
 deploydocs(;
