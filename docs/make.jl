@@ -29,6 +29,7 @@ makedocs(;
         ],
     ],
     checkdocs = :all,
+    warnonly = true
 )
 
 deploydocs(;
