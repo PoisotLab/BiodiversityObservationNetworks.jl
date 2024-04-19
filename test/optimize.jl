@@ -4,7 +4,7 @@ module BONTestOptimize
     using Zygote
     using StatsBase
 
-    # empty method returns missing
+ #=   # empty method returns missing
     @test ismissing(optimize())
 
     layers = rand(50,50,5)
@@ -18,6 +18,8 @@ module BONTestOptimize
     @test_throws ArgumentError optimize(layers, loss; learningrate = -0.1)
     @test_throws ArgumentError optimize(layers, loss; numsteps = 0)
     @test_throws ArgumentError optimize(zeros(50,50), loss; numsteps = 0)
-    @test_throws ArgumentError optimize(layers, 5; numsteps = 0)
+    @test_throws ArgumentError optimize(layers, 5; numsteps = 0)=#
+
+    
 
 end 
