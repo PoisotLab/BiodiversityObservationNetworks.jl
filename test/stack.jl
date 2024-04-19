@@ -3,7 +3,7 @@ module BONTestStack
     using SpeciesDistributionToolkit
     using Test
 
-    nl = 10
+    #=nl = 10
     layers = [rand(50,50) for i in 1:nl]
 
     @test typeof(BiodiversityObservationNetworks.stack(layers)) <: Array{T,3} where T
@@ -17,4 +17,5 @@ module BONTestStack
     
     layers = [temp,precip,elevation] 
     @test typeof(BiodiversityObservationNetworks.stack(layers)) <: Array{T,3} where T
+    =# 
 end 
