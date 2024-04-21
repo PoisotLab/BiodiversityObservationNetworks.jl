@@ -9,7 +9,7 @@ an example using the `entropize` function to convert raw data to entropy values.
 ```@example 1
 using BiodiversityObservationNetworks
 using NeutralLandscapes
-using Plots
+using CairoMakie
 ```
 
 !!! warning "Entropy is problem-specific"
@@ -29,7 +29,7 @@ pixel scale:
 
 ```@example 1
 U = entropize(measurements)
-heatmap(U')
+heatmap(U)
 ```
 
 The values closest to the median of the distribution have the highest entropy, and the values closest to its extrema have an entropy of 0. The entropy matrix is guaranteed to have values on the unit interval.
@@ -39,12 +39,5 @@ We can use `entropize` as part of a pipeline, and overlay the points optimized b
 ```@example 1
 locations =
     measurements |> entropize |> seed(BalancedAcceptance(; numpoints = 100)) |> first
-heatmap(U')
-scatter!(
-    [x[1] for x in locations],
-    [x[2] for x in locations];
-    ms = 2.5,
-    mc = :white,
-    label = "",
-)
+heatmap(U)
 ```
