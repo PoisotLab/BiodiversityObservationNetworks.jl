@@ -12,7 +12,7 @@ using BiodiversityObservationNetworks
 using SpeciesDistributionToolkit
 using StatsBase
 using NeutralLandscapes
-using Plots
+using CairoMakie
 ```
 
 !!! warning "Consider setting your SDMLAYERS_PATH" 
@@ -36,7 +36,7 @@ this requires NeutralLandscapes v0.1.2
 
 ```@example 1
 uncert = rand(MidpointDisplacement(0.8), size(temp), mask=temp);
-heatmap(uncert, aspectratio=1, frame=:box) 
+heatmap(uncert) 
 ```
 
 Now we'll get a set of candidate points from a BalancedAcceptance seeder that has no bias toward higher uncertainty values.
@@ -49,8 +49,8 @@ Now we'll `refine` our `100` candidate points down to the 30 most environmentall
 
 ```@example 1
 finalpts, uncert = refine(candpts, Uniqueness(;numpoints=30, layers=layers), uncert)
-
+#=
 heatmap(uncert)
 scatter!([p[2] for p in candpts], [p[1] for p in candpts], fa=0.0, msc=:white, label="Candidate Points")
-scatter!([p[2] for p in finalpts], [p[1] for p in finalpts], c=:dodgerblue, msc=:white, label="Selected Points")
+scatter!([p[2] for p in finalpts], [p[1] for p in finalpts], c=:dodgerblue, msc=:white, label="Selected Points")=#
 ```

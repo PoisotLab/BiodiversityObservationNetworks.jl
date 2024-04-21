@@ -8,7 +8,7 @@ insights about the process generating this entropy.
 ```@example 1
 using BiodiversityObservationNetworks
 using NeutralLandscapes
-using Plots
+using CairoMakie
 ```
 
 In order to simplify the process, we will use the *NeutralLandscapes* package to
@@ -17,7 +17,7 @@ information content) in a unit we can sample:
 
 ```@example 1
 U = rand(MidpointDisplacement(0.5), (100, 100))
-heatmap(U'; aspectratio = 1, frame = :none, c = :lapaz)
+heatmap(U)
 ```
 
 In practice, this uncertainty matrix is likely to be derived from an application of the hyper-parameters optimization step, which is detailed in other vignettes.
@@ -83,6 +83,6 @@ directly in a pipeline. Proposed sampling locations can then be overlayed onto
 the original uncertainty matrix: 
 
 ```@example 1
-plt = heatmap(U'; aspectratio = 1, frame = :none, c = :lapaz)
-scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
+plt = heatmap(U)
+#scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
 ```
