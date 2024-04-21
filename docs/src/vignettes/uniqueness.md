@@ -7,7 +7,7 @@ environmental values.
 
 To do this, we use a `BONRefiner` called `Uniqueness`. We'll start by loading the required packages. 
 
-```
+```@example 1
 using BiodiversityObservationNetworks
 using SpeciesDistributionToolkit
 using StatsBase
@@ -15,14 +15,10 @@ using NeutralLandscapes
 using Plots
 ```
 
-!!! warning "Consider setting your SDMLAYERS_PATH" When accessing data using
-    `SimpleSDMDatasets.jl`, it is best to set the `SDM_LAYERSPATH` environmental
-    variable to tell `SimpleSDMDatasets.jl` where to download data. This can be
-    done by setting `ENV["SDMLAYERS_PATH"] = "/home/user/Data/"` or similar in
-    the `~/.julia/etc/julia/startup.jl` file. (Note this will be different
-    depending on where `julia` is installed.)
+!!! warning "Consider setting your SDMLAYERS_PATH" 
+    When accessing data using `SimpleSDMDatasets.jl`, it is best to set the `SDM_LAYERSPATH` environmental variable to tell `SimpleSDMDatasets.jl` where to download data. This can be done by setting `ENV["SDMLAYERS_PATH"] = "/home/user/Data/"` or similar in the `~/.julia/etc/julia/startup.jl` file. (Note this will be different depending on where `julia` is installed.)
 
-```
+```@example 1
 bbox = (left=-83.0, bottom=46.4, right=-55.2, top=63.7);
 temp, precip, elevation = 
     convert(Float32, SimpleSDMPredictor(RasterData(WorldClim2, AverageTemperature); bbox...)),
@@ -32,26 +28,26 @@ temp, precip, elevation =
 
 Now we'll use the `stack` function to combine our four environmental layers into a single, 3-dimensional array, which we'll pass to our `Uniqueness` refiner.
 
-```
+```@example 1
 layers = BiodiversityObservationNetworks.stack([temp,precip,elevation]);
 ```
 
 this requires NeutralLandscapes v0.1.2
 
-```
+```@example 1
 uncert = rand(MidpointDisplacement(0.8), size(temp), mask=temp);
 heatmap(uncert, aspectratio=1, frame=:box) 
 ```
 
 Now we'll get a set of candidate points from a BalancedAcceptance seeder that has no bias toward higher uncertainty values.
 
-```
+```@example 1
 candpts, uncert = uncert |> seed(BalancedAcceptance(numpoints=100, α=0.0)); 
 ```
 
 Now we'll `refine` our `100` candidate points down to the 30 most environmentally unique.
 
-```
+```@example 1
 finalpts, uncert = refine(candpts, Uniqueness(;numpoints=30, layers=layers), uncert)
 
 heatmap(uncert)

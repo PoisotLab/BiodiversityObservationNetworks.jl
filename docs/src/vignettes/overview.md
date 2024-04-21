@@ -5,7 +5,7 @@ by generating a random uncertainty matrix, and then using a *seeder* and a
 *refiner* to decide which locations should be sampled in order to gain more
 insights about the process generating this entropy. 
 
-```
+```@example 1
 using BiodiversityObservationNetworks
 using NeutralLandscapes
 using Plots
@@ -15,7 +15,7 @@ In order to simplify the process, we will use the *NeutralLandscapes* package to
 generate a 100×100 pixels landscape, where each cell represents the entropy (or
 information content) in a unit we can sample:
 
-```
+```@example 1
 U = rand(MidpointDisplacement(0.5), (100, 100))
 heatmap(U'; aspectratio = 1, frame = :none, c = :lapaz)
 ```
@@ -30,7 +30,7 @@ less) uncertainty. To start with, we will extract 200 candidate points, *i.e.*
 200 possible locations which will then be refined. 
 
 
-```
+```@example 1
 pack = seed(BalancedAcceptance(; numpoints = 200), U);
 ```
 
@@ -39,7 +39,7 @@ always a tuple, storing in the first position a vector of `CartesianIndex`
 elements, and in the second position the matrix given as input. We can have a
 look at the first five points: 
 
-```
+```@example 1
 first(pack)[1:5]
 ```
 
@@ -53,7 +53,7 @@ candidate proposal, we can further refine it using a `BONRefiner` -- in this
 case, `AdaptiveSpatial`, which performs adaptive spatial sampling (maximizing
 the distribution of entropy while minimizing spatial auto-correlation).
 
-```
+```@example 1
 candidates, uncertainty = pack
 locations, _ = refine(candidates, AdaptiveSpatial(; numpoints = 50), uncertainty)
 locations[1:5]
@@ -70,7 +70,7 @@ the content of the candidate pool of points. In addition to this syntax, both
 functions have a curried version that allows chaining them together using pipes
 (`|>`):
 
-```
+```@example 1
 locations =
     U |>
     seed(BalancedAcceptance(; numpoints = 200)) |>
@@ -82,7 +82,7 @@ This works because `seed` and `refine` have curried versions that can be used
 directly in a pipeline. Proposed sampling locations can then be overlayed onto
 the original uncertainty matrix: 
 
-```
+```@example 1
 plt = heatmap(U'; aspectratio = 1, frame = :none, c = :lapaz)
 scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
 ```

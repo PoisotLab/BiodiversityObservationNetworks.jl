@@ -6,7 +6,7 @@ values, as opposed to *absolute* values. In this vignette, we will walk through
 an example using the `entropize` function to convert raw data to entropy values. 
 
 
-```
+```@example 1
 using BiodiversityObservationNetworks
 using NeutralLandscapes
 using Plots
@@ -19,7 +19,7 @@ using Plots
 
 We start by generating a random matrix of measurements:
 
-```
+```@example 1
 measurements = rand(MidpointDisplacement(), (200, 200)) .* 100
 heatmap(measurements)
 ```
@@ -27,7 +27,7 @@ heatmap(measurements)
 Using the `entropize` function will convert these values into entropy at the
 pixel scale: 
 
-```
+```@example 1
 U = entropize(measurements)
 heatmap(U')
 ```
@@ -36,7 +36,7 @@ The values closest to the median of the distribution have the highest entropy, a
 
 We can use `entropize` as part of a pipeline, and overlay the points optimized based on entropy on the measurement map:
 
-```
+```@example 1
 locations =
     measurements |> entropize |> seed(BalancedAcceptance(; numpoints = 100)) |> first
 heatmap(U')
