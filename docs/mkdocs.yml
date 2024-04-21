@@ -31,6 +31,6 @@ docs_dir: 'build'
 nav:
   - Home: index.md
   - Vignettes: 
-    - Overview: assets/overview.md
-    - Entropize: assets/entropize.md
-    - Uniqueness.jl: assets/uniqueness.md
+    - Overview: vignettes/overview.md
+    - Entropize: vignettes/entropize.md
+    - Uniqueness.jl: vignettes/uniqueness.md
