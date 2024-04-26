@@ -11,13 +11,15 @@ function seed!(
     sampler::ST,
     uncertainty::Matrix{T},
 ) where {ST <: BONSeeder, T <: AbstractFloat}
-    if length(coords) != sampler.numpoints
+    length(coords) != sampler.numpoints &&
         throw(
             DimensionMismatch(
-                "The length of the coordinate vector must match the `numpoints` fields of the sampler",
+                "The length of the coordinate vector must match the `numpoints` fiel s of the sampler",
             ),
         )
-    end
+
+    max_sites = prod(size(uncertainty))
+    max_sites < sampler.numpoints && throw(TooManySites(sampler.numpoints, max_sites))
     return _generate!(coords, sampler, uncertainty)
 end
 
@@ -42,7 +44,7 @@ end
     seed(sampler::ST, uncertainty::Matrix{T})
 
 Produces a set of candidate sampling locations in a vector `coords` of length numpoints
-from a raster `uncertainty` using `sampler`, where `sampler` is a [`BONSeeder`](@ref).   
+from a raster `uncertainty` using `sampler`, where `sampler` is a [`BONSeeder`](@ref).
 """
 function seed(
     sampler::ST,

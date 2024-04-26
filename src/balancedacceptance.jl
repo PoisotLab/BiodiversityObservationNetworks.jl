@@ -9,11 +9,7 @@ Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} 
     α::F = 1.0
     function BalancedAcceptance(numpoints, α)
         if numpoints < one(numpoints)
-            throw(
-                ArgumentError(
-                    "You cannot have a BalancedAcceptance with fewer than one point",
-                ),
-            )
+            throw(TooFewSites(numpoints))
         end
         if α < zero(α)
             throw(
@@ -39,27 +35,26 @@ function _generate!(
     np, α = sampler.numpoints, sampler.α
     x, y = size(uncertainty)
 
-
     nonnan_indices = findall(!isnan, uncertainty)
     stduncert = similar(uncertainty)
-    
+
     uncert_values = uncertainty[nonnan_indices]
     stduncert_values = similar(uncert_values)
-    zfit = nothing 
+    zfit = nothing
     if var(uncert_values) > 0
         zfit = StatsBase.fit(ZScoreTransform, uncert_values)
         stduncert_values = StatsBase.transform(zfit, uncert_values)
     end
-    
+
     nonnan_counter = 1
     for i in eachindex(uncertainty)
-        if isnan(uncertainty[i]) 
+        if isnan(uncertainty[i])
             stduncert[i] = NaN
         elseif !isnothing(zfit)
             stduncert[i] = stduncert_values[nonnan_counter]
             nonnan_counter += 1
-        else 
-            stduncert[i] = 1.
+        else
+            stduncert[i] = 1.0
         end
     end
 

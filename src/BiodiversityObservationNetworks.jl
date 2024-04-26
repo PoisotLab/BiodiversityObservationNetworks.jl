@@ -10,9 +10,13 @@ using SliceMap
 using JuMP
 using HiGHS
 using LinearAlgebra
+using Term
 
 include("types.jl")
 export BONSeeder, BONRefiner, BONSampler
+
+include("exceptions.jl")
+export BONException, SeederException, TooFewSites, TooManySites
 
 include("simplerandom.jl")
 export SimpleRandom
