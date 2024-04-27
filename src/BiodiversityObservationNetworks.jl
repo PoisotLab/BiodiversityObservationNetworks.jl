@@ -25,6 +25,9 @@ export SimpleRandom
 include("balancedacceptance.jl")
 export BalancedAcceptance
 
+include("weightedbas.jl")
+export WeightedBalancedAcceptance
+
 include("adaptivespatial.jl")
 export AdaptiveSpatial
 
