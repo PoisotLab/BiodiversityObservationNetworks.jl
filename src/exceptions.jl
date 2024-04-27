@@ -9,8 +9,7 @@ Base.showerror(io::IO, e::E) where {E <: BONException} =
     )
 
 function _check_arguments(sampler::S) where {S <: BONSeeder}
-    sampler.numpoints > 1 || _throw(TooFewSites)
-    return sampler.numpoints <= n || _throw(TooManySites)
+    return sampler.numpoints > 1 || throw(TooFewSites(sampler.numpoints))
 end
 
 struct TooFewSites{I} <: BONException where {I <: Integer}

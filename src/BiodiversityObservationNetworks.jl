@@ -11,6 +11,7 @@ using JuMP
 using HiGHS
 using LinearAlgebra
 using Term
+using TestItems
 
 include("types.jl")
 export BONSeeder, BONRefiner, BONSampler

@@ -21,7 +21,6 @@ Base.@kwdef mutable struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} 
     πₖ::V = zeros(size(x,2))
 
     function CubeSampling(numpoints, fast, x, πₖ)
-
         if numpoints < one(numpoints)
             throw(ArgumentError("You cannot have a CubeSampling with fewer than one point.",),)
         end

@@ -4,7 +4,9 @@ using BiodiversityObservationNetworks
 using Test
 
 # Must have one point or more
-@test_throws ArgumentError BalancedAcceptance(0, 1.0)
+@test_throws TooFewSites BalancedAcceptance(0, 1.0)
+
+@test_throws TooManySites seed(BalancedAcceptance(; numpoints = 26), rand(5, 5))
 
 # Must have a positive alpha
 @test_throws ArgumentError BalancedAcceptance(1, -0.01)
