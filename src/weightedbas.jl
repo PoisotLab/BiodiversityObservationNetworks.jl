@@ -112,6 +112,7 @@ end
     wbas = WeightedBalancedAcceptance(; α = α)
     @test wbas.α == α
 end
+
 @testitem "BalancedAcceptance can take number of points as keyword argument" begin
     N = 40
     wbas = WeightedBalancedAcceptance(; numpoints = N)
