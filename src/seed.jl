@@ -19,7 +19,11 @@ function seed!(
         )
 
     max_sites = prod(size(uncertainty))
-    max_sites < sampler.numpoints && throw(TooManySites(sampler.numpoints, max_sites))
+    max_sites < sampler.numpoints && throw(
+        TooManySites(
+            "Cannot select $(sampler.numpoints) sampling sites from $max_sites possible locations.",
+        ),
+    )
     return _generate!(coords, sampler, uncertainty)
 end
 
