@@ -8,7 +8,7 @@
 end
 
 function _default_strata(sz)
-    mat = zeros(Int64, sz...)
+    mat = zeros(typeof(sz[1]), sz...)
 
     x = sz[1] ÷ 2
     y = sz[2] ÷ 3
