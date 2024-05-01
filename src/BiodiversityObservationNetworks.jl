@@ -22,6 +22,9 @@ export BONException, SeederException, TooFewSites, TooManySites
 include("simplerandom.jl")
 export SimpleRandom
 
+include("spatialstratified.jl")
+export SpatiallyStratified
+
 include("balancedacceptance.jl")
 export BalancedAcceptance
 
