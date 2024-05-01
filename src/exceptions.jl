@@ -4,23 +4,17 @@ abstract type SeederException <: BONException end
 Base.showerror(io::IO, e::E) where {E <: BONException} =
     tprint(
         io,
-        "{bold red}$(supertype(E)){/bold red} |  {bold yellow}$E{/bold yellow}\n" *
-        _error_message(e),
+        "{bold red}$(supertype(E)){/bold red} |  {bold yellow}$(e.message){/bold yellow}\n",
     )
 
-function _check_arguments(sampler::S) where {S <: BONSeeder}
+function _check_arguments(sampler::S) where {S <: Union{BONSeeder, BONRefiner}}
     return sampler.numpoints > 1 || throw(TooFewSites(sampler.numpoints))
 end
 
-struct TooFewSites{I} <: BONException where {I <: Integer}
-    provided_sites::I
+@kwdef struct TooFewSites <: BONException
+    message = "Number of sites to select must be at least two."
 end
-_error_message(tfs::TooFewSites) =
-    "Number of sampling sites provided was $(tfs.provided_sites), but the number of sites must be {bold}greater than {cyan}1{/cyan}{/bold}.\n"
 
-struct TooManySites{I} <: BONException where {I <: Integer}
-    provided_sites::I
-    maximum_sites::I
+@kwdef struct TooManySites <: BONException
+    message = "Cannot select more sites than there are candidates."
 end
-_error_message(tms::TooManySites) =
-    "Number of sampling sites provided was $(tms.provided_sites), which {bold}exceeds the maximum possible{/bold} number of sites, $(tms.maximum_sites).\n"
