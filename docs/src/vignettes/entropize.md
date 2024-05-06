@@ -29,15 +29,6 @@ pixel scale:
 
 ```@example 1
 U = entropize(measurements)
-heatmap(U)
-```
-
-The values closest to the median of the distribution have the highest entropy, and the values closest to its extrema have an entropy of 0. The entropy matrix is guaranteed to have values on the unit interval.
-
-We can use `entropize` as part of a pipeline, and overlay the points optimized based on entropy on the measurement map:
-
-```@example 1
 locations =
-    measurements |> entropize |> seed(BalancedAcceptance(; numpoints = 100)) |> first
-heatmap(U)
+    seed(BalancedAcceptance(; numpoints = 100, uncertainty=U))
 ```

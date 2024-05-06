@@ -47,7 +47,7 @@ case, `AdaptiveSpatial`, which performs adaptive spatial sampling (maximizing
 the distribution of entropy while minimizing spatial auto-correlation).
 
 ```@example 1
-locations, _ = refine(candidates, AdaptiveSpatial(; numpoints = 50, uncertainty=U))
+locations = refine(candidates, AdaptiveSpatial(; numpoints = 50, uncertainty=U))
 locations[1:5]
 ```
 
@@ -74,5 +74,6 @@ the original uncertainty matrix:
 
 ```@example 1
 plt = heatmap(U)
-scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
+scatter!(plt, [x[1] for x in locations], [x[2] for x in locations])
+current_figure()
 ```

@@ -47,8 +47,8 @@ Now we'll `refine` our `100` candidate points down to the 30 most environmentall
 
 ```@example 1
 finalpts = refine(candpts, Uniqueness(;numpoints=30, layers=layers))
-#=
 heatmap(uncert)
-scatter!([p[2] for p in candpts], [p[1] for p in candpts], fa=0.0, msc=:white, label="Candidate Points")
-scatter!([p[2] for p in finalpts], [p[1] for p in finalpts], c=:dodgerblue, msc=:white, label="Selected Points")=#
+scatter!([p[1] for p in candpts], [p[2] for p in candpts], color=:white)
+scatter!([p[1] for p in finalpts], [p[2] for p in finalpts], color=:dodgerblue, msc=:white)
+current_figure()
 ```
