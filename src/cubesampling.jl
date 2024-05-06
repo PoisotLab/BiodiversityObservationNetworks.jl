@@ -22,21 +22,26 @@ Base.@kwdef struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONRe
     function CubeSampling(numpoints, fast, x, πₖ)
         cs = new{typeof(numpoints), typeof(x), typeof(πₖ)}(numpoints, fast, x, πₖ)
         _check_arguments(cs)
-        if numpoints > length(πₖ)
-            throw(
-                ArgumentError(
-                    "You cannot select more points than the number of candidate points.",
-                ),
-            )
-        end
-        if length(πₖ) != size(x, 2)
-            throw(
-                DimensionMismatch(
-                    "The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",
-                ),
-            )
-        end
+
         return cs
+    end
+end
+
+function check_arguments(cs::CubeSampling)
+    check(TooFewSites, cs)
+    if numpoints > length(πₖ)
+        throw(
+            ArgumentError(
+                "You cannot select more points than the number of candidate points.",
+            ),
+        )
+    end
+    if length(πₖ) != size(x, 2)
+        throw(
+            DimensionMismatch(
+                "The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",
+            ),
+        )
     end
 end
 
@@ -441,4 +446,3 @@ end
     @test_throws TooFewSites CubeSampling(numpoints = 0)
     @test_throws TooFewSites CubeSampling(numpoints = 1)
 end
-

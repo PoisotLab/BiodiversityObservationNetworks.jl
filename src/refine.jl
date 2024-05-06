@@ -2,14 +2,14 @@
     refine!(cooords::Vector{CartesianIndex}, pool::Vector{CartesianIndex}, sampler::ST, uncertainty::Matrix{T})
 
 Refines a set of candidate sampling locations in the preallocated vector `coords`
-from a vector  of coordinates `pool` using `sampler`, where `sampler` is a [`BONRefiner`](@ref).
+from a vector of coordinates `pool` using `sampler`, where `sampler` is a [`BONRefiner`](@ref).
 """
 function refine!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::ST,
-    uncertainty::Matrix{T}
-) where {ST <: BONRefiner, T <: AbstractFloat, N}
+    uncertainty::Matrix{T},
+) where {ST <: BONRefiner, T <: AbstractFloat}
     if length(coords) != sampler.numpoints
         throw(
             DimensionMismatch(
@@ -74,7 +74,7 @@ end
 
 """
     refine(pack, sampler::BONRefiner)
-    
+
 Calls `refine` on the appropriatedly splatted version of `pack`.
 """
 function refine(

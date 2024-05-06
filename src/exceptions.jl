@@ -11,6 +11,10 @@ function _check_arguments(sampler::S) where {S <: Union{BONSeeder, BONRefiner}}
     return sampler.numpoints > 1 || throw(TooFewSites(sampler.numpoints))
 end
 
+function check(TooFewSites, sampler)
+    return sampler.numpoints > 1 || throw(TooFewSites(sampler.numpoints))
+end
+
 @kwdef struct TooFewSites <: BONException
     message = "Number of sites to select must be at least two."
 end

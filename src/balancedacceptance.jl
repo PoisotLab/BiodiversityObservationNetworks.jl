@@ -8,9 +8,13 @@ Base.@kwdef struct BalancedAcceptance{I <: Integer} <: BONSeeder
     numpoints::I = 30
     function BalancedAcceptance(numpoints)
         bas = new{typeof(numpoints)}(numpoints)
-        _check_arguments(bas)
+        check_arguments(bas)
         return bas
     end
+end
+
+function check_arguments(bas::BalancedAcceptance)
+    return check(TooFewSites, bas)
 end
 
 function _generate!(

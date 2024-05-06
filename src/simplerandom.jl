@@ -7,9 +7,13 @@ Base.@kwdef struct SimpleRandom{I <: Integer} <: BONSeeder
     numpoints::I = 50
     function SimpleRandom(numpoints)
         srs = new{typeof(numpoints)}(numpoints)
-        _check_arguments(srs)
+        check_arguments(srs)
         return srs
     end
+end
+
+function check_arguments(srs)
+    return check(TooFewSites, srs)
 end
 
 function _generate!(

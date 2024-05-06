@@ -8,17 +8,25 @@ Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSee
     α::F = 1.0
     function WeightedBalancedAcceptance(numpoints, α)
         wbas = new{typeof(numpoints), typeof(α)}(numpoints, α)
-        _check_arguments(wbas)
+        check_arguments(wbas)
         return wbas
     end
 end
 
+function check_arguments(wbas::WeightedBalancedAcceptance)
+    check(TooFewSites, wbas)
+    return wbas.α > 0 ||
+           throw(
+        ArgumentError("WeightedBalancedAcceptance requires α to be greater than 0 "),
+    )
+end
+
 function _generate!(
     coords::Vector{CartesianIndex},
-    sampler::WeightedBalancedAcceptance,
+    sampler::WeightedBalancedAcceptance{I},
     uncertainty::Matrix{T},
-) where {T <: AbstractFloat}
-    seed = rand(Int32.(1e0:1e7), 2)
+) where {I <: Integer, T <: AbstractFloat}
+    seed = rand(I.(1e0:1e7), 2)
     α = sampler.α
     x, y = size(uncertainty)
 
