@@ -8,7 +8,7 @@
 Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer, F<: AbstractFloat} <: BONRefiner
     numpoints::T = 30
     uncertainty::Array{F,2} = rand(50,50)
-    function AdaptiveSpatial(numpoints)
+    function AdaptiveSpatial(numpoints, uncertainty)
         if numpoints < one(numpoints)
             throw(
                 ArgumentError(
@@ -16,7 +16,7 @@ Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer, F<: AbstractFloat} <: B
                 ),
             )
         end
-        return new{typeof(numpoints)}(numpoints)
+        return new{typeof(numpoints), typeof(uncertainty[begin])}(numpoints, uncertainty)
     end
 end
 
