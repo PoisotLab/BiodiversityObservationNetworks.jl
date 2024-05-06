@@ -31,21 +31,14 @@ less) uncertainty. To start with, we will extract 200 candidate points, *i.e.*
 
 
 ```@example 1
-pack = seed(BalancedAcceptance(; numpoints = 200), U);
+candidates = seed(BalancedAcceptance(; numpoints = 200));
 ```
 
-The output of a `BONSampler` (whether at the seeding or refinement step) is
-always a tuple, storing in the first position a vector of `CartesianIndex`
-elements, and in the second position the matrix given as input. We can have a
-look at the first five points: 
+We can have a look at the first five points: 
 
 ```@example 1
-first(pack)[1:5]
+candidates[1:5]
 ```
-
-Although returning the input matrix may seem redundant, it actually allows to
-chain samplers together to build pipelines that take a matrix as input, and
-return a set of places to sample as outputs; an example is given below.
 
 The positions of locations to sample are given as a vector of `CartesianIndex`,
 which are coordinates in the uncertainty matrix. Once we have generated a
@@ -54,8 +47,7 @@ case, `AdaptiveSpatial`, which performs adaptive spatial sampling (maximizing
 the distribution of entropy while minimizing spatial auto-correlation).
 
 ```@example 1
-candidates, uncertainty = pack
-locations, _ = refine(candidates, AdaptiveSpatial(; numpoints = 50), uncertainty)
+locations, _ = refine(candidates, AdaptiveSpatial(; numpoints = 50, uncertainty=U))
 locations[1:5]
 ```
 
@@ -72,10 +64,8 @@ functions have a curried version that allows chaining them together using pipes
 
 ```@example 1
 locations =
-    U |>
     seed(BalancedAcceptance(; numpoints = 200)) |>
-    refine(AdaptiveSpatial(; numpoints = 50)) |>
-    first
+    refine(AdaptiveSpatial(; numpoints = 50, uncertainty=U))
 ```
 
 This works because `seed` and `refine` have curried versions that can be used
@@ -84,5 +74,5 @@ the original uncertainty matrix:
 
 ```@example 1
 plt = heatmap(U)
-#scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
+scatter!(plt, [x[1] for x in locations], [x[2] for x in locations], ms=2.5, mc=:white, label="")
 ```

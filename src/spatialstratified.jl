@@ -45,8 +45,7 @@ end
 function _generate!(
     coords::Vector{CartesianIndex},
     sampler::SpatiallyStratified,
-    uncertainty::Matrix{T},
-) where {T}
+)
     strata = sampler.strata
     idx_per_strata = [
         findall(i -> strata[i] == x, CartesianIndices(strata)) for
@@ -59,7 +58,7 @@ function _generate!(
         coords[i] = rand(idx_per_strata[s])
     end
 
-    return coords, uncertainty
+    return coords
 end
 
 # ====================================================
@@ -74,8 +73,7 @@ end
 
 @testitem "SpatiallyStratified with default arguments can generate points" begin
     ss = SpatiallyStratified()
-    uncert = rand(size(ss.strata)...)
-    coords = seed(ss, uncert) |> first
+    coords = seed(ss)
     @test typeof(coords) <: Vector{CartesianIndex}
 end
 
@@ -94,13 +92,12 @@ end
 @testitem "SpatiallyStratified can use custom strata as keyword argument" begin
     dims = (42, 30)
     strata = rand(1:10, dims...)
-    uncert = rand(dims...)
     inclusion_probability = [0.1 for i in 1:10]
     ss = SpatiallyStratified(;
         strata = strata,
         inclusion_probability_by_stratum = inclusion_probability,
     )
-    coords = seed(ss, uncert) |> first
+    coords = seed(ss)
     @test typeof(coords) <: Vector{CartesianIndex}
 end
 

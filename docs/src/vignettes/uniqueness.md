@@ -32,8 +32,6 @@ Now we'll use the `stack` function to combine our four environmental layers into
 layers = BiodiversityObservationNetworks.stack([temp,precip,elevation]);
 ```
 
-this requires NeutralLandscapes v0.1.2
-
 ```@example 1
 uncert = rand(MidpointDisplacement(0.8), size(temp), mask=temp);
 heatmap(uncert) 
@@ -42,13 +40,13 @@ heatmap(uncert)
 Now we'll get a set of candidate points from a BalancedAcceptance seeder that has no bias toward higher uncertainty values.
 
 ```@example 1
-candpts, uncert = uncert |> seed(BalancedAcceptance(numpoints=100, α=0.0)); 
+candpts = seed(BalancedAcceptance(numpoints=100)); 
 ```
 
 Now we'll `refine` our `100` candidate points down to the 30 most environmentally unique.
 
 ```@example 1
-finalpts, uncert = refine(candpts, Uniqueness(;numpoints=30, layers=layers), uncert)
+finalpts = refine(candpts, Uniqueness(;numpoints=30, layers=layers))
 #=
 heatmap(uncert)
 scatter!([p[2] for p in candpts], [p[1] for p in candpts], fa=0.0, msc=:white, label="Candidate Points")
