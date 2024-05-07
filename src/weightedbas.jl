@@ -19,10 +19,11 @@ maxsites(wbas::WeightedBalancedAcceptance) = prod(size(wbas.uncertainty))
 function check_arguments(wbas::WeightedBalancedAcceptance)
     check(TooFewSites, wbas)
     check(TooManySites, wbas)
-    return wbas.α > 0 ||
-           throw(
-        ArgumentError("WeightedBalancedAcceptance requires α to be greater than 0 "),
-    )
+    wbas.α > 0 ||
+        throw(
+            ArgumentError("WeightedBalancedAcceptance requires α to be greater than 0 "),
+        )
+    return nothing
 end
 
 function _generate!(

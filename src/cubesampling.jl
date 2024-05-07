@@ -22,7 +22,6 @@ Base.@kwdef struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONRe
     function CubeSampling(numsites, fast, x, πₖ)
         cs = new{typeof(numsites), typeof(x), typeof(πₖ)}(numsites, fast, x, πₖ)
         _check_arguments(cs)
-
         return cs
     end
 end
@@ -48,6 +47,7 @@ function check_arguments(cubesampling::CubeSampling)
             ),
         )
     end
+    return
 end
 
 function check_conditions(coords, pool, sampler)

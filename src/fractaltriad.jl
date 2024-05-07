@@ -18,7 +18,8 @@ end
 maxsites(ft::FractalTriad) = maximum(ft.dims) * 5  # gets numerically unstable for large values because float coords belong to the the same cell in the raster, and arctan breaks  
 function check_arguments(ft::FractalTriad)
     check(TooManySites, ft)
-    return ft.numsites > 9 || throw(TooFewSites("FractalTriad requires at least 10 sites."))
+    ft.numsites > 9 || throw(TooFewSites("FractalTriad requires at least 10 sites."))
+    return
 end
 
 function _outer_triangle(ft)

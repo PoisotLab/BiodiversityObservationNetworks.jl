@@ -18,7 +18,8 @@ end
 maxsites(as::AdaptiveSpatial) = prod(size(as.uncertainty))
 function check_arguments(as::AdaptiveSpatial)
     check(TooFewSites, as)
-    return check(TooManySites, as)
+    check(TooManySites, as)
+    return nothing
 end
 
 function _generate!(
