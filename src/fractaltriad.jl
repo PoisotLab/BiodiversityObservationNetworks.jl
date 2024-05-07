@@ -1,5 +1,5 @@
 Base.@kwdef struct FractalTriad{I <: Integer, F <: AbstractFloat} <: BONSeeder
-    numsites::I = 30
+    numsites::I = 81
     horizontal_padding::F = 0.1
     vertical_padding::F = 0.1
     dims::Tuple{I, I} = (100, 100)
