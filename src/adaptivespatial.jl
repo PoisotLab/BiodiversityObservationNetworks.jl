@@ -3,21 +3,23 @@
 
 ...
 
-**numpoints**, an Integer (def. 50), specifying the number of points to use.
+**numsites**, an Integer (def. 50), specifying the number of points to use.
 """
 Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer, F<: AbstractFloat} <: BONRefiner
-    numpoints::T = 30
+    numsites::T = 30
     uncertainty::Array{F,2} = rand(50,50)
-    function AdaptiveSpatial(numpoints, uncertainty)
-        if numpoints < one(numpoints)
-            throw(
-                ArgumentError(
-                    "You cannot have an AdaptiveSpatial with fewer than one point",
-                ),
-            )
-        end
-        return new{typeof(numpoints), typeof(uncertainty[begin])}(numpoints, uncertainty)
+    function AdaptiveSpatial(numsites, uncertainty)
+        as = new{typeof(numsites), typeof(uncertainty[begin])}(numsites, uncertainty)
+        check_arguments(as)
+        return as
     end
+end
+
+function check_arguments(as::AdaptiveSpatial)
+    check(TooFewSites, as)
+    
+    max_num_sites = prod(size(as.uncertainty))
+    check(TooManySites, as, max_num_sites)
 end
 
 function _generate!(
@@ -26,7 +28,7 @@ function _generate!(
     sampler::AdaptiveSpatial,
 ) 
     # Distance matrix (inlined)
-    d = zeros(Float64, Int((sampler.numpoints * (sampler.numpoints - 1)) / 2))
+    d = zeros(Float64, Int((sampler.numsites * (sampler.numsites - 1)) / 2))
 
     # Start with the point with maximum entropy
     imax = last(findmax([uncertainty[i] for i in pool]))
@@ -36,7 +38,7 @@ function _generate!(
     best_score = 0.0
     best_s = 1
 
-    for i in 2:(sampler.numpoints)
+    for i in 2:(sampler.numsites)
         for (ci, cs) in enumerate(pool)
             coords[i] = cs
             # Distance update
@@ -77,3 +79,24 @@ function _D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     return sqrt((x1 - x2)^2.0 + (y1 - y2)^2.0)
 end
 
+
+# ====================================================
+#
+#   Tests
+#
+# =====================================================
+
+@testitem "AdaptiveSpatial default constructor works" begin
+    @test typeof(AdaptiveSpatial()) <: AdaptiveSpatial
+end
+
+@testitem "AdaptiveSpatial has right subtypes" begin
+    @test AdaptiveSpatial <: BONRefiner
+    @test AdaptiveSpatial <: BONSampler
+end
+
+@testitem "AdaptiveSpatial requires positive number of sites" begin
+    @test_throws TooFewSites AdaptiveSpatial(numsites = 1)
+    @test_throws TooFewSites AdaptiveSpatial(numsites = 0)
+    @test_throws TooFewSites AdaptiveSpatial(numsites = -1)
+end

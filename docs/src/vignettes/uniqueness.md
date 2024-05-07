@@ -40,13 +40,13 @@ heatmap(uncert)
 Now we'll get a set of candidate points from a BalancedAcceptance seeder that has no bias toward higher uncertainty values.
 
 ```@example 1
-candpts = seed(BalancedAcceptance(numpoints=100)); 
+candpts = seed(BalancedAcceptance(numsites=100)); 
 ```
 
 Now we'll `refine` our `100` candidate points down to the 30 most environmentally unique.
 
 ```@example 1
-finalpts = refine(candpts, Uniqueness(;numpoints=30, layers=layers))
+finalpts = refine(candpts, Uniqueness(;numsites=30, layers=layers))
 heatmap(uncert)
 scatter!([p[1] for p in candpts], [p[2] for p in candpts], color=:white)
 scatter!([p[1] for p in finalpts], [p[2] for p in finalpts], color=:dodgerblue, msc=:white)

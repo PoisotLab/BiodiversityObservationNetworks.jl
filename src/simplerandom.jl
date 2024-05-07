@@ -4,10 +4,10 @@
 Implements Simple Random spatial sampling (each location has equal probability of selection)
 """
 Base.@kwdef struct SimpleRandom{I <: Integer} <: BONSeeder
-    numpoints::I = 30
+    numsites::I = 30
     dims::Tuple{I, I} = (50, 50)
-    function SimpleRandom(numpoints, dims)
-        srs = new{typeof(numpoints)}(numpoints, dims)
+    function SimpleRandom(numsites, dims)
+        srs = new{typeof(numsites)}(numsites, dims)
         check_arguments(srs)
         return srs
     end
@@ -16,11 +16,7 @@ end
 function check_arguments(srs::SimpleRandom)
     check(TooFewSites, srs)
     max_num_sites = prod(srs.dims)
-    return max_num_sites >= srs.numpoints || throw(
-        TooManySites(
-            "Number of sites to select $(srs.numpoints) is greater than number of possible sites $(max_num_sites)",
-        ),
-    )
+    check(TooManySites, srs, max_num_sites)
 end
 
 function _generate!(
@@ -28,7 +24,7 @@ function _generate!(
     sampler::SimpleRandom,
 )
     pool = CartesianIndices(sampler.dims)
-    coords .= sample(pool, sampler.numpoints; replace = false)
+    coords .= sample(pool, sampler.numsites; replace = false)
     return coords
 end
 
@@ -44,20 +40,20 @@ end
 end
 
 @testitem "SimpleRandom must have more than one point" begin
-    @test_throws TooFewSites SimpleRandom(numpoints = -1)
-    @test_throws TooFewSites SimpleRandom(numpoints = 0)
-    @test_throws TooFewSites SimpleRandom(numpoints = 1)
+    @test_throws TooFewSites SimpleRandom(numsites = -1)
+    @test_throws TooFewSites SimpleRandom(numsites = 0)
+    @test_throws TooFewSites SimpleRandom(numsites = 1)
 end
 
 @testitem "SimpleRandom allows keyword arguments for number of points" begin
     N = 314
-    srs = SimpleRandom(; numpoints = N)
-    @test srs.numpoints == N
+    srs = SimpleRandom(; numsites = N)
+    @test srs.numsites == N
 end
 
 @testitem "SimpleRandom throws exception if there are more sites than candidates" begin
     numpts, numcandidates = 26, 25
     dims = Int.(floor.((sqrt(numcandidates), sqrt(numcandidates))))
     srs = @test prod(dims) < numpts
-    @test_throws TooManySites SimpleRandom(; numpoints = numpts, dims = dims)
+    @test_throws TooManySites SimpleRandom(; numsites = numpts, dims = dims)
 end

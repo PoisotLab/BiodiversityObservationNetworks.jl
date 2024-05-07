@@ -4,11 +4,11 @@
 A `BONSeeder` that uses Balanced-Acceptance Sampling [@cite] combined with rejection sampling to create a set of sampling sites that is weighted toward values with higher uncertainty as a function of the parameter α.
 """
 Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSeeder
-    numpoints::I = 30
+    numsites::I = 30
     uncertainty::Matrix{F} = rand(50, 50)
     α::F = 1.0
-    function WeightedBalancedAcceptance(numpoints, uncertainty, α)
-        wbas = new{typeof(numpoints), typeof(α)}(numpoints, uncertainty, α)
+    function WeightedBalancedAcceptance(numsites, uncertainty, α)
+        wbas = new{typeof(numsites), typeof(α)}(numsites, uncertainty, α)
         check_arguments(wbas)
         return wbas
     end
@@ -18,9 +18,9 @@ function check_arguments(wbas::WeightedBalancedAcceptance)
     check(TooFewSites, wbas)
 
     max_num_sites = prod(size(wbas.uncertainty))
-    max_num_sites >= wbas.numpoints || throw(
+    max_num_sites >= wbas.numsites || throw(
         TooManySites(
-            "Number of sites to select $(wbas.numpoints) is greater than number of possible sites $(max_num_sites)",
+            "Number of sites to select $(wbas.numsites) is greater than number of possible sites $(max_num_sites)",
         ),
     )
     return wbas.α > 0 ||
@@ -89,8 +89,8 @@ end
 end
 
 @testitem "WeightedBalancedAcceptance requires positive number of sites" begin
-    @test_throws TooFewSites WeightedBalancedAcceptance(numpoints = 0)
-    @test_throws TooFewSites WeightedBalancedAcceptance(numpoints = 1)
+    @test_throws TooFewSites WeightedBalancedAcceptance(numsites = 0)
+    @test_throws TooFewSites WeightedBalancedAcceptance(numsites = 1)
 end
 
 @testitem "WeightedBalancedAcceptance can't be run with too many sites" begin
@@ -101,7 +101,7 @@ end
     uncert = rand(dims...)
 
     @test_throws TooManySites WeightedBalancedAcceptance(
-        numpoints = numpts,
+        numsites = numpts,
         uncertainty = uncert,
     )
 end
@@ -111,7 +111,7 @@ end
     coords = seed(wbas)
 
     @test typeof(coords) <: Vector{CartesianIndex}
-    @test length(coords) == wbas.numpoints
+    @test length(coords) == wbas.numsites
 end
 
 @testitem "WeightedBalancedAcceptance can generate a custom number of points with positional arguments" begin
@@ -132,6 +132,6 @@ end
 
 @testitem "BalancedAcceptance can take number of points as keyword argument" begin
     N = 40
-    wbas = WeightedBalancedAcceptance(; numpoints = N)
-    @test wbas.numpoints == N
+    wbas = WeightedBalancedAcceptance(; numsites = N)
+    @test wbas.numsites == N
 end

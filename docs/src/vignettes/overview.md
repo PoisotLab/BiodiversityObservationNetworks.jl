@@ -31,7 +31,7 @@ less) uncertainty. To start with, we will extract 200 candidate points, *i.e.*
 
 
 ```@example 1
-candidates = seed(BalancedAcceptance(; numpoints = 200));
+candidates = seed(BalancedAcceptance(; numsites = 200));
 ```
 
 We can have a look at the first five points: 
@@ -47,7 +47,7 @@ case, `AdaptiveSpatial`, which performs adaptive spatial sampling (maximizing
 the distribution of entropy while minimizing spatial auto-correlation).
 
 ```@example 1
-locations = refine(candidates, AdaptiveSpatial(; numpoints = 50, uncertainty=U))
+locations = refine(candidates, AdaptiveSpatial(; numsites = 50, uncertainty=U))
 locations[1:5]
 ```
 
@@ -64,8 +64,8 @@ functions have a curried version that allows chaining them together using pipes
 
 ```@example 1
 locations =
-    seed(BalancedAcceptance(; numpoints = 200)) |>
-    refine(AdaptiveSpatial(; numpoints = 50, uncertainty=U))
+    seed(BalancedAcceptance(; numsites = 200)) |>
+    refine(AdaptiveSpatial(; numsites = 50, uncertainty=U))
 ```
 
 This works because `seed` and `refine` have curried versions that can be used

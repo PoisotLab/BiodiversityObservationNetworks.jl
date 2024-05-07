@@ -30,5 +30,5 @@ pixel scale:
 ```@example 1
 U = entropize(measurements)
 locations =
-    seed(BalancedAcceptance(; numpoints = 100, uncertainty=U))
+    seed(BalancedAcceptance(; numsites = 100, uncertainty=U))
 ```

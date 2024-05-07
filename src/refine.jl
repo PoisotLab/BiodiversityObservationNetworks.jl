@@ -9,10 +9,10 @@ function refine!(
     pool::Vector{CartesianIndex},
     sampler::ST,
 ) where {ST <: BONRefiner}
-    if length(coords) != sampler.numpoints
+    if length(coords) != sampler.numsites
         throw(
             DimensionMismatch(
-                "The length of the coordinate vector must match the `numpoints` fields of the sampler",
+                "The length of the coordinate vector must match the `numsites` fields of the sampler",
             ),
         )
     end
@@ -33,10 +33,10 @@ The curried version of `refine!`, which returns a function that acts on the inpu
 coordinate pool passed to the curried function (`p` below).
 """
 function refine!(coords::Vector{CartesianIndex}, sampler::ST) where {ST <: BONRefiner}
-    if length(coords) != sampler.numpoints
+    if length(coords) != sampler.numsites
         throw(
             DimensionMismatch(
-                "The length of the coordinate vector must match the `numpoints` fields of the sampler",
+                "The length of the coordinate vector must match the `numsites` fields of the sampler",
             ),
         )
     end
@@ -46,14 +46,14 @@ end
 """
     refine(pool::Vector{CartesianIndex}, sampler::ST)
 
-Refines a set of candidate sampling locations and returns a vector `coords` of length numpoints
+Refines a set of candidate sampling locations and returns a vector `coords` of length numsites
 from a vector  of coordinates `pool` using `sampler`, where `sampler` is a [`BONRefiner`](@ref).
 """
 function refine(
     pool::Vector{CartesianIndex},
     sampler::ST,
 ) where {ST <: BONRefiner}
-    coords = Vector{CartesianIndex}(undef, sampler.numpoints)
+    coords = Vector{CartesianIndex}(undef, sampler.numsites)
     return refine!(coords, copy(pool), sampler)
 end
 
@@ -63,7 +63,7 @@ end
 Returns a curried function of `refine`
 """
 function refine(sampler::ST) where {ST <: BONRefiner}
-    coords = Vector{CartesianIndex}(undef, sampler.numpoints)
+    coords = Vector{CartesianIndex}(undef, sampler.numsites)
     _inner(p) = refine!(coords, first(p), sampler)
     return _inner
 end
