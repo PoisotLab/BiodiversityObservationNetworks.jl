@@ -5,9 +5,9 @@
 
 **numsites**, an Integer (def. 50), specifying the number of points to use.
 """
-Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer, F<: AbstractFloat} <: BONRefiner
+Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer, F <: AbstractFloat} <: BONRefiner
     numsites::T = 30
-    uncertainty::Array{F,2} = rand(50,50)
+    uncertainty::Array{F, 2} = rand(50, 50)
     function AdaptiveSpatial(numsites, uncertainty)
         as = new{typeof(numsites), typeof(uncertainty[begin])}(numsites, uncertainty)
         check_arguments(as)
@@ -15,18 +15,17 @@ Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer, F<: AbstractFloat} <: B
     end
 end
 
+maxsites(as::AdaptiveSpatial) = prod(size(as.uncertainty))
 function check_arguments(as::AdaptiveSpatial)
     check(TooFewSites, as)
-    
-    max_num_sites = prod(size(as.uncertainty))
-    check(TooManySites, as, max_num_sites)
+    return check(TooManySites, as)
 end
 
 function _generate!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::AdaptiveSpatial,
-) 
+)
     # Distance matrix (inlined)
     d = zeros(Float64, Int((sampler.numsites * (sampler.numsites - 1)) / 2))
 
@@ -78,7 +77,6 @@ function _D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     x2, y2 = a2.I
     return sqrt((x1 - x2)^2.0 + (y1 - y2)^2.0)
 end
-
 
 # ====================================================
 #

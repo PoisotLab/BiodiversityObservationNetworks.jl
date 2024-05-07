@@ -20,8 +20,7 @@ maxsites(ss::SpatiallyStratified) = prod(size(ss.strata))
 
 function check_arguments(ss::SpatiallyStratified)
     check(TooFewSites, ss)
-    check(TooManySites, ss, maxsites(ss))
-
+    check(TooManySites, ss)
 
     length(unique(ss.strata)) == length(ss.inclusion_probability_by_stratum) || throw(
         ArgumentError(

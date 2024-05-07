@@ -15,11 +15,10 @@ Base.@kwdef struct FractalTriad{I <: Integer, F <: AbstractFloat} <: BONSeeder
     end
 end
 
-maxsites(ft::FractalTriad) = prod(ft.dims)
-
+maxsites(ft::FractalTriad) = maximum(ft.dims) * 5  # gets numerically unstable for large values because float coords belong to the the same cell in the raster, and arctan breaks  
 function check_arguments(ft::FractalTriad)
     check(TooManySites, ft)
-    return check(TooFewSites, ft)
+    return ft.numsites > 9 || throw(TooFewSites("FractalTriad requires at least 10 sites."))
 end
 
 function _outer_triangle(ft)
@@ -31,7 +30,11 @@ function _outer_triangle(ft)
 end
 
 """
-This is the layout
+    _hexagon(A, B, C)
+
+Takes a set of `CartesianIndex`'s that form the vertices of a triangle, and returns the `CartisianIndex`'s for each of the points that form the internal hexagon points
+
+For input vertices A, B, C, `_hexagon` returns the points on the edges of the triangle below in the order `[d,e,f,g,h,i]`
 
                         B 
 
@@ -42,9 +45,12 @@ This is the layout
 
         A          i          h            C
 
----
+--
+
+After running `vcat(triangle, hex)`, the resulting indices form the 2-level triad with indices corresponding to points in the below manner:
 
                         2 
+
 
                   5           6
 
@@ -53,19 +59,13 @@ This is the layout
 
         1         9            8         3
 
-
-θ = ∠ BAC
-
-d = γ/3 cos(θ), γ/3 sin(θ)
-e = γ 
-
+  - 
+θ = ⦤ BAC
+α = ⦤ BCA
 """
-
-function _hexagon(outside)
-    A, B, C = outside
-
-    γ = sqrt((B[1] - A[1])^2 + (B[2] - A[2])^2)
-    χ = sqrt((B[1] - C[1])^2 + (B[2] - C[2])^2)
+function _hexagon(A, B, C)
+    γ = sqrt((B[1] - A[1])^2 + (B[2] - A[2])^2) # left side length
+    χ = sqrt((B[1] - C[1])^2 + (B[2] - C[2])^2) # right side length
 
     θ = atan((B[2] - A[2]) / (B[1] - A[1]))
     α = atan((B[2] - C[2]) / (C[1] - B[1]))
@@ -81,7 +81,7 @@ end
 
 function _fill_triangle(coords, triangle, count)
     start = count
-    hex = _hexagon(triangle)
+    hex = _hexagon(triangle...)
     for i in eachindex(hex)
         coords[count] = CartesianIndex(hex[i])
         count += 1
@@ -104,7 +104,6 @@ function _generate!(
 
     triangle = coords[1:3]
     hex, count = _fill_triangle(coords, triangle, count)
-
     pack = vcat(triangle, hex)
     vert_idxs = [[5, 2, 6], [1, 4, 9], [8, 7, 3]]
 

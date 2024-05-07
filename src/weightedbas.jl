@@ -14,15 +14,11 @@ Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSee
     end
 end
 
+maxsites(wbas::WeightedBalancedAcceptance) = prod(size(wbas.uncertainty))
+
 function check_arguments(wbas::WeightedBalancedAcceptance)
     check(TooFewSites, wbas)
-
-    max_num_sites = prod(size(wbas.uncertainty))
-    max_num_sites >= wbas.numsites || throw(
-        TooManySites(
-            "Number of sites to select $(wbas.numsites) is greater than number of possible sites $(max_num_sites)",
-        ),
-    )
+    check(TooManySites, wbas)
     return wbas.α > 0 ||
            throw(
         ArgumentError("WeightedBalancedAcceptance requires α to be greater than 0 "),
@@ -124,13 +120,13 @@ end
     @test numpts == length(coords)
 end
 
-@testitem "BalancedAcceptance can take bias parameter α as keyword argument" begin
+@testitem "WeightedBalancedAcceptance can take bias parameter α as keyword argument" begin
     α = 3.14159
     wbas = WeightedBalancedAcceptance(; α = α)
     @test wbas.α == α
 end
 
-@testitem "BalancedAcceptance can take number of points as keyword argument" begin
+@testitem "WeightedBalancedAcceptance can take number of points as keyword argument" begin
     N = 40
     wbas = WeightedBalancedAcceptance(; numsites = N)
     @test wbas.numsites == N
