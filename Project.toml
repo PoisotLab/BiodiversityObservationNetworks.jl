@@ -24,8 +24,7 @@ SpeciesDistributionToolkit = "72b53823-5c0b-4575-ad0e-8e97227ad13b"
 NeutralLandscapes = "71847384-8354-4223-ac08-659a5128069f"
 
 [extensions]
-SDMToolkitExt = ["SpeciesDistributionToolkit"]
-NLExt = ["NeutralLandscapes"]
+SDTExt = ["SpeciesDistributionToolkit"]
 
 [compat]
 Distributions = "0.25"

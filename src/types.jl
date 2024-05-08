@@ -22,3 +22,6 @@ tuple with the coordinates as a vector of `CartesianIndex`, and the weight
 matrix as a `Matrix` of `AbstractFloat`, in that order.
 """
 const BONSampler = Union{BONSeeder, BONRefiner}
+
+
+numsites(sampler::BONSampler) = sampler.numsites

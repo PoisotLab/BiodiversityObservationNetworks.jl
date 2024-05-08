@@ -5,54 +5,59 @@ A `BONRefiner` that uses Cube Sampling (Tillé 2011)
 
 ...
 
-**numpoints**, an Integer (def. 50), specifying the number of points to use.
+**numsites**, an Integer (def. 50), specifying the number of points to use.
 
 **fast**, a Boolean (def. true) indicating whether to use the fast flight algorithm. 
 
 **x**, a Matrix of auxillary variables for the candidate points, with one row for each variable and one column for each candidate point.
 
-**πₖ**, a Float Vector indicating the probabilities of inclusion for each candidate point; should sum to numpoints value.
+**πₖ**, a Float Vector indicating the probabilities of inclusion for each candidate point; should sum to numsites value.
 """
 
 Base.@kwdef struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONRefiner
-    numpoints::I = 50
+    numsites::I = 50
     fast::Bool = true
     x::M = rand(0:4, 3, 50)
     πₖ::V = zeros(size(x, 2))
-    function CubeSampling(numpoints, fast, x, πₖ)
-        cs = new{typeof(numpoints), typeof(x), typeof(πₖ)}(numpoints, fast, x, πₖ)
+    function CubeSampling(numsites, fast, x, πₖ)
+        cs = new{typeof(numsites), typeof(x), typeof(πₖ)}(numsites, fast, x, πₖ)
         _check_arguments(cs)
-
         return cs
     end
 end
 
-function check_arguments(cs::CubeSampling)
-    check(TooFewSites, cs)
-    if numpoints > length(πₖ)
+numsites(cubesampling::CubeSampling) = cubesampling.numsites
+maxsites(cubesampling::CubeSampling) = size(cubesampling.x, 2)
+
+function check_arguments(cubesampling::CubeSampling)
+    check(TooFewSites, cubesampling)
+    check(TooManySites, cubesampling)
+
+    if numsites > length(cubesampling.πₖ)
         throw(
             ArgumentError(
                 "You cannot select more points than the number of candidate points.",
             ),
         )
     end
-    if length(πₖ) != size(x, 2)
+    if length(cubesampling.πₖ) != size(cubesampling.x, 2)
         throw(
             DimensionMismatch(
                 "The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",
             ),
         )
     end
+    return
 end
 
 function check_conditions(coords, pool, sampler)
     πₖ = sampler.πₖ
     if sum(sampler.πₖ) == 0
         @info "Probabilities of inclusion were not provided, so we assume equal probability design."
-        πₖ = [sampler.numpoints / length(pool) for _ in eachindex(pool)]
+        πₖ = [sampler.numsites / length(pool) for _ in eachindex(pool)]
     end
-    if round(Int, sum(πₖ)) != sampler.numpoints
-        @warn "The inclusion probabilities sum to $(round(Int, sum(πₖ))), which will be your sample size instead of numpoints."
+    if round(Int, sum(πₖ)) != sampler.numsites
+        @warn "The inclusion probabilities sum to $(round(Int, sum(πₖ))), which will be your sample size instead of numsites."
     end
     if length(pool) != length(πₖ)
         throw(
@@ -442,7 +447,7 @@ end
 # =====================================================
 
 @testitem "CubeSampling throws exception with too few points" begin
-    @test_throws TooFewSites CubeSampling(numpoints = -1)
-    @test_throws TooFewSites CubeSampling(numpoints = 0)
-    @test_throws TooFewSites CubeSampling(numpoints = 1)
+    @test_throws TooFewSites CubeSampling(numsites = -1)
+    @test_throws TooFewSites CubeSampling(numsites = 0)
+    @test_throws TooFewSites CubeSampling(numsites = 1)
 end

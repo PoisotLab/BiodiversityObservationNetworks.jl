@@ -6,7 +6,7 @@ using Test
 # Must have one point or more
 @test_throws TooFewSites BalancedAcceptance(0, 1.0)
 
-@test_throws TooManySites seed(BalancedAcceptance(; numpoints = 26), rand(5, 5))
+@test_throws TooManySites seed(BalancedAcceptance(; numsites = 26), rand(5, 5))
 
 # Must have a positive alpha
 @test_throws ArgumentError BalancedAcceptance(1, -0.01)
@@ -20,19 +20,19 @@ using Test
 
 # Test with a random uncertainty matrix
 U = rand(20, 20)
-@test length(first(seed(BalancedAcceptance(; numpoints = 10), U))) == 10
-@test length(first(seed(BalancedAcceptance(; numpoints = 20), U))) == 20
-@test eltype(first(seed(BalancedAcceptance(; numpoints = 10), U))) == CartesianIndex
+@test length(first(seed(BalancedAcceptance(; numsites = 10), U))) == 10
+@test length(first(seed(BalancedAcceptance(; numsites = 20), U))) == 20
+@test eltype(first(seed(BalancedAcceptance(; numsites = 10), U))) == CartesianIndex
 
 # Test with an existing coordinates vector
 c = Vector{CartesianIndex}(undef, 20)
-@test_throws DimensionMismatch seed!(c, BalancedAcceptance(; numpoints = length(c) - 1), U)
+@test_throws DimensionMismatch seed!(c, BalancedAcceptance(; numsites = length(c) - 1), U)
 
 # Test the curried version
-@test length(first(seed(BalancedAcceptance(; numpoints = 12))(U))) == 12
+@test length(first(seed(BalancedAcceptance(; numsites = 12))(U))) == 12
 
 # Test the curried allocating version
-@test length(first(seed!(c, BalancedAcceptance(; numpoints = length(c)))(U))) == length(c)
-@test_throws DimensionMismatch seed!(c, BalancedAcceptance(; numpoints = length(c) - 1))(U)
+@test length(first(seed!(c, BalancedAcceptance(; numsites = length(c)))(U))) == length(c)
+@test_throws DimensionMismatch seed!(c, BalancedAcceptance(; numsites = length(c) - 1))(U)
 
 end

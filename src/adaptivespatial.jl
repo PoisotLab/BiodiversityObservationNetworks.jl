@@ -3,40 +3,32 @@
 
 ...
 
-**numpoints**, an Integer (def. 50), specifying the number of points to use.
-
-**α**, an AbstractFloat (def. 1.0), specifying ...
+**numsites**, an Integer (def. 50), specifying the number of points to use.
 """
-Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer} <: BONRefiner
-    numpoints::T = 50
-    function AdaptiveSpatial(numpoints)
-        if numpoints < one(numpoints)
-            throw(
-                ArgumentError(
-                    "You cannot have an AdaptiveSpatial with fewer than one point",
-                ),
-            )
-        end
-        return new{typeof(numpoints)}(numpoints)
+Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer, F <: AbstractFloat} <: BONRefiner
+    numsites::T = 30
+    uncertainty::Array{F, 2} = rand(50, 50)
+    function AdaptiveSpatial(numsites, uncertainty)
+        as = new{typeof(numsites), typeof(uncertainty[begin])}(numsites, uncertainty)
+        check_arguments(as)
+        return as
     end
 end
 
-_generate!(
-    coords::Vector{CartesianIndex},
-    pool::Vector{CartesianIndex},
-    sampler::AdaptiveSpatial,
-    uncertainty) = throw(ArgumentError(
-        "You can only call AdaptiveSpatial with a single layer of type Matrix"))
+maxsites(as::AdaptiveSpatial) = prod(size(as.uncertainty))
+function check_arguments(as::AdaptiveSpatial)
+    check(TooFewSites, as)
+    check(TooManySites, as)
+    return nothing
+end
 
 function _generate!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::AdaptiveSpatial,
-    uncertainty::Array{T,2},
-) where {T <: AbstractFloat}
-
+)
     # Distance matrix (inlined)
-    d = zeros(Float64, Int((sampler.numpoints * (sampler.numpoints - 1)) / 2))
+    d = zeros(Float64, Int((sampler.numsites * (sampler.numsites - 1)) / 2))
 
     # Start with the point with maximum entropy
     imax = last(findmax([uncertainty[i] for i in pool]))
@@ -46,7 +38,7 @@ function _generate!(
     best_score = 0.0
     best_s = 1
 
-    for i in 2:(sampler.numpoints)
+    for i in 2:(sampler.numsites)
         for (ci, cs) in enumerate(pool)
             coords[i] = cs
             # Distance update
@@ -65,7 +57,7 @@ function _generate!(
         end
         coords[i] = popat!(pool, best_s)
     end
-    return (coords, uncertainty)
+    return coords
 end
 
 function _matérn(d, ρ, ν)
@@ -85,4 +77,25 @@ function _D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     x1, y1 = a1.I
     x2, y2 = a2.I
     return sqrt((x1 - x2)^2.0 + (y1 - y2)^2.0)
+end
+
+# ====================================================
+#
+#   Tests
+#
+# =====================================================
+
+@testitem "AdaptiveSpatial default constructor works" begin
+    @test typeof(AdaptiveSpatial()) <: AdaptiveSpatial
+end
+
+@testitem "AdaptiveSpatial has right subtypes" begin
+    @test AdaptiveSpatial <: BONRefiner
+    @test AdaptiveSpatial <: BONSampler
+end
+
+@testitem "AdaptiveSpatial requires positive number of sites" begin
+    @test_throws TooFewSites AdaptiveSpatial(numsites = 1)
+    @test_throws TooFewSites AdaptiveSpatial(numsites = 0)
+    @test_throws TooFewSites AdaptiveSpatial(numsites = -1)
 end
