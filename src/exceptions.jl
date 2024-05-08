@@ -8,19 +8,22 @@ Base.showerror(io::IO, e::E) where {E <: BONException} =
     )
 
 function _check_arguments(sampler::S) where {S <: Union{BONSeeder, BONRefiner}}
-    return sampler.numsites > 1 || throw(TooFewSites(sampler.numsites))
+    sampler.numsites > 1 || throw(TooFewSites())
+    return nothing
 end
 
 @kwdef struct TooFewSites <: BONException
     message = "Number of sites to select must be at least two."
 end
-function check(TooFewSites, sampler)
-    return sampler.numsites > 1 || throw(TooFewSites())
+function check(::Type{TooFewSites}, sampler)
+    sampler.numsites > 1 || throw(TooFewSites())
+    return nothing
 end
 
 @kwdef struct TooManySites <: BONException
     message = "Cannot select more sites than there are candidates."
 end
-function check(TooManySites, sampler, max_sites)
-    return sampler.numsites <= max_sites || throw(TooManySites())
+function check(::Type{TooManySites}, sampler)
+    sampler.numsites <= maxsites(sampler) || throw(TooManySites())
+    return nothing
 end

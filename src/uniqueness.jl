@@ -17,14 +17,16 @@ maxsites(uniq::Uniqueness) = prod(size(uniq.layers)[1:2])
 
 function check_arguments(uniq::Uniqueness)
     check(TooFewSites, uniq)
-    check(TooManySites, uniq, maxsites(uniq))
+    check(TooManySites, uniq)
 
-    return length(size(uniq.layers)) == 3 ||
-           throw(
-        ArgumentError(
-            "You cannot have a Uniqueness sampler without layers passed as a 3-dimenisional array, where the first two axes are latitude and longitude.",
-        ),
-    )
+    length(size(uniq.layers)) == 3 ||
+        throw(
+            ArgumentError(
+                "You cannot have a Uniqueness sampler without layers passed as a 3-dimenisional array, where the first two axes are latitude and longitude.",
+            ),
+        )
+
+    return nothing
 end
 
 function _generate!(

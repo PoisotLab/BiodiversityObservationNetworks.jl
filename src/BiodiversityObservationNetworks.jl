@@ -37,6 +37,9 @@ export AdaptiveSpatial
 include("cubesampling.jl")
 export CubeSampling
 
+include("fractaltriad.jl")
+export FractalTriad
+
 include("uniqueness.jl")
 export Uniqueness
 

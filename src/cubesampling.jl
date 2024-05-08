@@ -22,7 +22,6 @@ Base.@kwdef struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONRe
     function CubeSampling(numsites, fast, x, πₖ)
         cs = new{typeof(numsites), typeof(x), typeof(πₖ)}(numsites, fast, x, πₖ)
         _check_arguments(cs)
-
         return cs
     end
 end
@@ -32,22 +31,23 @@ maxsites(cubesampling::CubeSampling) = size(cubesampling.x, 2)
 
 function check_arguments(cubesampling::CubeSampling)
     check(TooFewSites, cubesampling)
-    check(TooManySites, maxsites(cubesampling))
+    check(TooManySites, cubesampling)
 
-    if numsites > length(πₖ)
+    if numsites > length(cubesampling.πₖ)
         throw(
             ArgumentError(
                 "You cannot select more points than the number of candidate points.",
             ),
         )
     end
-    if length(πₖ) != size(x, 2)
+    if length(cubesampling.πₖ) != size(cubesampling.x, 2)
         throw(
             DimensionMismatch(
                 "The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",
             ),
         )
     end
+    return
 end
 
 function check_conditions(coords, pool, sampler)

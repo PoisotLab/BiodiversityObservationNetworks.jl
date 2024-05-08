@@ -12,11 +12,12 @@ Base.@kwdef struct SimpleRandom{I <: Integer} <: BONSeeder
         return srs
     end
 end
+maxsites(srs::SimpleRandom) = prod(srs.dims)
 
-function check_arguments(srs::SimpleRandom)
+function check_arguments(srs::SRS) where {SRS <: SimpleRandom}
     check(TooFewSites, srs)
-    max_num_sites = prod(srs.dims)
-    check(TooManySites, srs, max_num_sites)
+    check(TooManySites, srs)
+    return nothing
 end
 
 function _generate!(

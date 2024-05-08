@@ -20,8 +20,7 @@ maxsites(ss::SpatiallyStratified) = prod(size(ss.strata))
 
 function check_arguments(ss::SpatiallyStratified)
     check(TooFewSites, ss)
-    check(TooManySites, ss, maxsites(ss))
-
+    check(TooManySites, ss)
 
     length(unique(ss.strata)) == length(ss.inclusion_probability_by_stratum) || throw(
         ArgumentError(
@@ -29,8 +28,9 @@ function check_arguments(ss::SpatiallyStratified)
         ),
     )
 
-    return sum(ss.inclusion_probability_by_stratum) ≈ 1.0 ||
-           throw(ArgumentError("Inclusion probabilities for each strata do not sum to 1."))
+    sum(ss.inclusion_probability_by_stratum) ≈ 1.0 ||
+        throw(ArgumentError("Inclusion probabilities for each strata do not sum to 1."))
+    return nothing
 end
 
 function _default_strata(sz)

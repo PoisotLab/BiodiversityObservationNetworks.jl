@@ -18,7 +18,8 @@ maxsites(bas::BalancedAcceptance) = prod(bas.dims)
 
 function check_arguments(bas::BalancedAcceptance)
     check(TooFewSites, bas)
-    check(TooManySites, bas, maxsites(bas))
+    check(TooManySites, bas)
+    return nothing
 end
 
 function _generate!(
