@@ -1,3 +1,8 @@
+"""
+    FractalTriad
+
+A `BONSeeder` that generates `FractalTriad` designs
+"""
 Base.@kwdef struct FractalTriad{I <: Integer, F <: AbstractFloat} <: BONSeeder
     numsites::I = 81
     horizontal_padding::F = 0.1
@@ -15,14 +20,20 @@ Base.@kwdef struct FractalTriad{I <: Integer, F <: AbstractFloat} <: BONSeeder
     end
 end
 
-maxsites(ft::FractalTriad) = maximum(ft.dims) * 5  # gets numerically unstable for large values because float coords belong to the the same cell in the raster, and arctan breaks  
+maxsites(ft::FractalTriad) = maximum(ft.dims) * 10  # gets numerically unstable for large values because float coords belong to the the same cell in the raster, and arctan breaks  
 function check_arguments(ft::FractalTriad)
     check(TooManySites, ft)
+    ft.numsites > 9 || throw(TooFewSites("FractalTriad requires more than 9 or more sites"))
     ft.numsites % 9 == 0 ||
         throw(ArgumentError("FractalTriad requires number of sites to be a multiple of 9"))
     return
 end
 
+"""
+    _outer_triangle
+
+Takes a FractalTriad generator `ft` and returns the outermost triangle based on the size of the raster and the padding on the horizontal and vertical.
+"""
 function _outer_triangle(ft)
     x, y = ft.dims
     Δx, Δy =
@@ -51,7 +62,7 @@ For input vertices A, B, C, `_hexagon` returns the points on the edges of the tr
 
 After running `vcat(triangle, hex)`, the resulting indices form the 2-level triad with indices corresponding to points in the below manner:
 
-                        2 
+                         2 
 
 
                   5           6
@@ -62,8 +73,13 @@ After running `vcat(triangle, hex)`, the resulting indices form the 2-level tria
         1         9            8         3
 
   - 
+γ = |AB|
+χ = |BC|
+
 θ = ⦤ BAC
 α = ⦤ BCA
+
+TODO: this always assumes |AC| is horizontal. This could be changed later.
 """
 function _hexagon(A, B, C)
     γ = sqrt((B[1] - A[1])^2 + (B[2] - A[2])^2) # left side length
@@ -81,7 +97,12 @@ function _hexagon(A, B, C)
     return [CartesianIndex(Int.([floor(x[1]), floor(x[2])])...) for x in [d, e, f, g, h, i]]
 end
 
-function _fill_triangle(coords, triangle, count)
+"""
+    _fill_triangle!(coords, traingle, count)
+
+Takes a set of vertices of a triangle `triangle`, and fills the internal hexagon for those points.
+"""
+function _fill_triangle!(coords, triangle, count)
     start = count
     hex = _hexagon(triangle...)
     for i in eachindex(hex)
@@ -95,17 +116,21 @@ function _fill_triangle(coords, triangle, count)
     return coords[start:(count - 1)], count
 end
 
+"""
+    _generate!(coords::Vector{CartesianIndex}, ft::FractalTriad)
+
+Fills `coords` with a set of points generated using the `FractalTriad` generator `ft`.
+"""
 function _generate!(
     coords::Vector{CartesianIndex},
     ft::FractalTriad,
 )
     base_triangle = _outer_triangle(ft)
     coords[1:3] .= base_triangle
-
     count = 4
 
     triangle = coords[1:3]
-    hex, count = _fill_triangle(coords, triangle, count)
+    hex, count = _fill_triangle!(coords, triangle, count)
     pack = vcat(triangle, hex)
     vert_idxs = [[5, 2, 6], [1, 4, 9], [8, 7, 3]]
 
@@ -115,7 +140,7 @@ function _generate!(
         pack = popat!(pack_stack, 1)
         for idx in vert_idxs
             triangle = pack[idx]
-            hex, count = _fill_triangle(coords, triangle, count)
+            hex, count = _fill_triangle!(coords, triangle, count)
             if count > ft.numsites
                 return coords
             end
@@ -123,4 +148,37 @@ function _generate!(
         end
     end
     return coords
+end
+
+# ====================================================
+#
+#   Tests
+#
+# =====================================================
+
+@testitem "FractalTriad is correct subtype" begin
+    @test FractalTriad <: BONSeeder
+    @test FractalTriad <: BONSampler
+end
+
+@testitem "FractalTriad default constructor works" begin
+    @test typeof(FractalTriad()) <: FractalTriad
+end
+
+@testitem "FractalTriad can change number of sites with keyword argument" begin
+    ft = FractalTriad(; numsites = 18)
+    @test typeof(ft) <: FractalTriad
+    @test ft.numsites == 18
+
+    ft = FractalTriad(; numsites = 27)
+    @test typeof(ft) <: FractalTriad
+    @test ft.numsites == 27
+
+    @test_throws ArgumentError FractalTriad(numsites = 20)
+end
+
+@testitem "FractalTriad throws error when too few points as passed as an argument" begin
+    @test_throws TooFewSites FractalTriad(; numsites = 9)
+    @test_throws TooFewSites FractalTriad(; numsites = -1)
+    @test_throws TooFewSites FractalTriad(; numsites = 0)
 end
