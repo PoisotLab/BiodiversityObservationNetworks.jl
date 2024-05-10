@@ -40,6 +40,9 @@ export CubeSampling
 include("fractaltriad.jl")
 export FractalTriad
 
+include("grts.jl")
+export GeneralizedRandomTessellatedStratified
+
 include("uniqueness.jl")
 export Uniqueness
 
