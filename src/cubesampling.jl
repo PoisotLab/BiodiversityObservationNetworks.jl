@@ -14,7 +14,7 @@ A `BONRefiner` that uses Cube Sampling (Tillé 2011)
 **πₖ**, a Float Vector indicating the probabilities of inclusion for each candidate point; should sum to numsites value.
 """
 
-Base.@kwdef struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONRefiner
+Base.@kwdef struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONSampler
     numsites::I = 50
     fast::Bool = true
     x::M = rand(0:4, 3, 50)

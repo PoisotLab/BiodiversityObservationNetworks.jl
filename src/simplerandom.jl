@@ -3,16 +3,24 @@
 
 Implements Simple Random spatial sampling (each location has equal probability of selection)
 """
-Base.@kwdef struct SimpleRandom{I <: Integer} <: BONSeeder
+Base.@kwdef struct SimpleRandom{I<:Integer,S<:Sites} <: BONSampler
     numsites::I = 30
-    dims::Tuple{I, I} = (50, 50)
-    function SimpleRandom(numsites, dims)
-        srs = new{typeof(numsites)}(numsites, dims)
+    pool::S = Sites(vec(collect(CartesianIndices((1:50, 1:50)))))
+    function SimpleRandom(numsites::I, pool::J) where{I<:Integer,J<:Sites}
+        srs = new{typeof(numsites), typeof(pool)}(numsites, pool)
         check_arguments(srs)
         return srs
     end
 end
-maxsites(srs::SimpleRandom) = prod(srs.dims)
+maxsites(srs::SimpleRandom) = length(pool(srs))
+
+function SimpleRandom(layer::Layer, numsites = 50)
+    candidates = pool(layer)
+    srs = SimpleRandom(numsites, candidates)
+    check_arguments(srs)
+    return srs
+end
+
 
 function check_arguments(srs::SRS) where {SRS <: SimpleRandom}
     check(TooFewSites, srs)
@@ -20,13 +28,16 @@ function check_arguments(srs::SRS) where {SRS <: SimpleRandom}
     return nothing
 end
 
-function _generate!(
-    coords::Vector{CartesianIndex},
-    sampler::SimpleRandom,
-)
-    pool = CartesianIndices(sampler.dims)
-    coords .= sample(pool, sampler.numsites; replace = false)
-    return coords
+function _sample!(
+    sites::Sites{T},
+    sampler::SimpleRandom{I},
+) where {T,I}
+    candidates = coordinates(pool(sampler))
+    _coords = Distributions.sample(candidates, sampler.numsites; replace = false)
+    for (i,c) in enumerate(_coords)
+        sites[i] = c
+    end
+    return sites
 end
 
 # ====================================================

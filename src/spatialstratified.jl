@@ -1,7 +1,7 @@
 """
     SpatiallyStratified
 """
-@kwdef struct SpatiallyStratified{I <: Integer, F <: AbstractFloat} <: BONSeeder
+@kwdef struct SpatiallyStratified{I <: Integer, F <: AbstractFloat} <: BONSampler
     numsites::I = 50
     strata::Matrix{I} = _default_strata((50, 50))
     inclusion_probability_by_stratum::Vector{F} = ones(3) ./ 3

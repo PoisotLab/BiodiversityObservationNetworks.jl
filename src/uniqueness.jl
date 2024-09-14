@@ -1,9 +1,9 @@
 """
     Uniqueness
 
-A `BONRefiner`
+A `BONSampler`
 """
-Base.@kwdef struct Uniqueness{I <: Integer, T <: AbstractFloat} <: BONRefiner
+Base.@kwdef struct Uniqueness{I <: Integer, T <: AbstractFloat} <: BONSampler
     numsites::I = 30
     layers::Array{T, 3} = rand(50, 50, 3)
     function Uniqueness(numsites, layers)

@@ -14,10 +14,16 @@ using Term
 using TestItems
 
 include("types.jl")
-export BONSeeder, BONRefiner, BONSampler
+export BONSampler
+export Sites, numsites, pool
+export LayerType, DataLayer, InclusionProbability
+export Layer, Stack
+
+include("sample.jl")
+export sample
 
 include("exceptions.jl")
-export BONException, SeederException, TooFewSites, TooManySites
+export BONException, TooFewSites, TooManySites
 
 include("simplerandom.jl")
 export SimpleRandom
@@ -31,8 +37,8 @@ export BalancedAcceptance
 include("weightedbas.jl")
 export WeightedBalancedAcceptance
 
-include("adaptivespatial.jl")
-export AdaptiveSpatial
+include("adaptivehotspot.jl")
+export AdaptiveHotspotDetection
 
 include("cubesampling.jl")
 export CubeSampling
@@ -46,11 +52,11 @@ export GeneralizedRandomTessellatedStratified
 include("uniqueness.jl")
 export Uniqueness
 
-include("seed.jl")
-export seed, seed!
+#include("seed.jl")
+#export seed, seed!
 
-include("refine.jl")
-export refine, refine!
+#include("refine.jl")
+#export refine, refine!
 
 include("entropize.jl")
 export entropize, entropize!

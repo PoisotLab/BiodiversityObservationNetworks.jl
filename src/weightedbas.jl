@@ -3,7 +3,7 @@
 
 A `BONSeeder` that uses Balanced-Acceptance Sampling [@cite] combined with rejection sampling to create a set of sampling sites that is weighted toward values with higher uncertainty as a function of the parameter α.
 """
-Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSeeder
+Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSampler
     numsites::I = 30
     uncertainty::Matrix{F} = rand(50, 50)
     α::F = 1.0

@@ -3,12 +3,12 @@
 
 @Olsen
 """
-@kwdef struct GeneralizedRandomTessellatedStratified <: BONSeeder
+@kwdef struct GeneralizedRandomTessellatedStratified <: BONSampler
     numsites = 50
     dims = (100, 100)
 end
 
-maxsites(grts::GeneralizedRandomTessellatedStratified) = prod(dims)
+maxsites(grts::GeneralizedRandomTessellatedStratified) = prod(grts.dims)
 
 function check_arguments(grts::GeneralizedRandomTessellatedStratified)
     check(TooManySites, grts)
@@ -65,5 +65,8 @@ function _generate!(
     code_numbers = sum([10^(i - 1) .* ag for (i, ag) in enumerate(address_grids)])
     sort_idx = sortperm([code_numbers[cidx] for cidx in eachindex(code_numbers)])
 
-    return coords .= CartesianIndices(code_numbers)[sort_idx][1:(grts.numsites)]
+    return filter(
+        idx -> idx[1] <= grts.dims[1] && idx[2] <= grts.dims[2],
+        CartesianIndices(code_numbers)[sort_idx],
+    )[1:(grts.numsites)]
 end

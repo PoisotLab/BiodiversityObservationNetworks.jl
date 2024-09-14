@@ -4,17 +4,20 @@
 A `BONSeeder` that uses Balanced-Acceptance Sampling (Van-dem-Bates et al. 2017
 https://doi.org/10.1111/2041-210X.13003)
 """
-Base.@kwdef struct BalancedAcceptance{I <: Integer} <: BONSeeder
+Base.@kwdef struct BalancedAcceptance{I <: Integer} <: BONSampler
     numsites::I = 30
-    dims::Tuple{I, I} = (50, 50)
-    function BalancedAcceptance(numsites, dims)
-        bas = new{typeof(numsites)}(numsites, dims)
-        check_arguments(bas)
+    mask::BitMatrix = rand(50, 50) .< 0.5
+    function BalancedAcceptance(numsites::Integer, mask::BitMatrix) 
+        bas = new{typeof(numsites)}(numsites, mask)
+        check_arguments(bas) 
         return bas
     end
 end
 
-maxsites(bas::BalancedAcceptance) = prod(bas.dims)
+BalancedAcceptance(M::Matrix{T}; numsites = 30) where T = BalancedAcceptance(numsites, size(M))
+BalancedAcceptance(l::Layer; numsites = 30) = BalancedAcceptance(numsites, l.layer.indices)
+
+maxsites(bas::BalancedAcceptance) = prod(size(bas.mask))
 
 function check_arguments(bas::BalancedAcceptance)
     check(TooFewSites, bas)
@@ -22,16 +25,31 @@ function check_arguments(bas::BalancedAcceptance)
     return nothing
 end
 
-function _generate!(
-    coords::Vector{CartesianIndex},
+function _sample!(
+    coords::Sites,
     ba::BalancedAcceptance,
 )
     seed = rand(Int32.(1e0:1e7), 2)
-    x, y = ba.dims
-    for (idx, ptct) in enumerate(eachindex(coords))
+    n = numsites(ba)
+    x,y = size(ba.mask)
+
+    # This is sequentially adding points, needs to check if that value is masked
+    # at each step and skip if so  
+    exp_needed = 10 * Int(ceil(sum(ba.mask) / prod(size(ba.mask)) .* n))
+
+    ct = 1
+    for ptct in 1:exp_needed
         i, j = haltonvalue(seed[1] + ptct, 2), haltonvalue(seed[2] + ptct, 3)
-        coords[idx] = CartesianIndex(convert.(Int32, [ceil(x * i), ceil(y * j)])...)
+        proposal = CartesianIndex(convert.(Int32, [ceil(x * i), ceil(y * j)])...)
+        if ct > n 
+            break
+        end 
+        if ba.mask[proposal]
+            coords[ct] = proposal
+            ct += 1
+        end 
     end
+    coords.coordinates = coords.coordinates[1:ct-1]
     return coords
 end
 

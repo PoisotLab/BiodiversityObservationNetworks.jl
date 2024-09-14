@@ -7,7 +7,7 @@ Base.showerror(io::IO, e::E) where {E <: BONException} =
         "{bold red}$(supertype(E)){/bold red} |  {bold yellow}$(e.message){/bold yellow}\n",
     )
 
-function _check_arguments(sampler::S) where {S <: Union{BONSeeder, BONRefiner}}
+function _check_arguments(sampler::BONSampler) 
     sampler.numsites > 1 || throw(TooFewSites())
     return nothing
 end

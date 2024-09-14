@@ -1,9 +1,9 @@
 """
     FractalTriad
 
-A `BONSeeder` that generates `FractalTriad` designs
+A `BONSampler` that generates `FractalTriad` designs
 """
-Base.@kwdef struct FractalTriad{I <: Integer, F <: AbstractFloat} <: BONSeeder
+Base.@kwdef struct FractalTriad{I <: Integer, F <: AbstractFloat} <: BONSampler
     numsites::I = 81
     horizontal_padding::F = 0.1
     vertical_padding::F = 0.1
