@@ -12,9 +12,9 @@ so that it is close to 1 for values close to the median, and close to 0 for
 values close to the extreme of the distribution.
 """
 function entropize!(U::Matrix{RT}, A::Matrix{T}) where {RT <: AbstractFloat, T <: Number}
-    for i in eachindex(A)
-        p_high = mean(A .< A[i])
-        p_low = mean(A .>= A[i])
+    for i in findall(!isnan, A)
+        p_high = mean(skipmissing(A .< A[i]))
+        p_low = mean(skipmissing(A .>= A[i]))
         e_high = p_high .* log2(p_high)
         e_low = p_low .* log2(p_low)
         U[i] = -e_high .- e_low
@@ -22,8 +22,8 @@ function entropize!(U::Matrix{RT}, A::Matrix{T}) where {RT <: AbstractFloat, T <
     U[findall(isnan, U)] .= zero(eltype(U))
     m = maximum(U)
     for i in eachindex(U)
-            U[i] /= m
-        end
+        U[i] /= m
+    end
     return U
 end
 
