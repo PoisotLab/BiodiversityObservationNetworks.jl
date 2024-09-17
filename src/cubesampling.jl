@@ -5,85 +5,105 @@ A `BONRefiner` that uses Cube Sampling (Tillé 2011)
 
 ...
 
-**numpoints**, an Integer (def. 50), specifying the number of points to use.
+**numsites**, an Integer (def. 50), specifying the number of points to use.
 
 **fast**, a Boolean (def. true) indicating whether to use the fast flight algorithm. 
 
 **x**, a Matrix of auxillary variables for the candidate points, with one row for each variable and one column for each candidate point.
 
-**πₖ**, a Float Vector indicating the probabilities of inclusion for each candidate point; should sum to numpoints value.
+**πₖ**, a Float Vector indicating the probabilities of inclusion for each candidate point; should sum to numsites value.
 """
 
-Base.@kwdef mutable struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONRefiner
-    numpoints::I = 50
+Base.@kwdef struct CubeSampling{I <: Integer, M <: Matrix, V <: Vector} <: BONSampler
+    numsites::I = 50
     fast::Bool = true
     x::M = rand(0:4, 3, 50)
-    πₖ::V = zeros(size(x,2))
-
-    function CubeSampling(numpoints, fast, x, πₖ)
-
-        if numpoints < one(numpoints)
-            throw(ArgumentError("You cannot have a CubeSampling with fewer than one point.",),)
-        end
-        if numpoints > length(πₖ)
-            throw(ArgumentError("You cannot select more points than the number of candidate points.",),)
-        end
-        if length(πₖ) != size(x, 2)
-            throw(DimensionMismatch("The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",),)
-        end
-        return new{typeof(numpoints), typeof(x), typeof(πₖ)}(numpoints, fast, x, πₖ)
+    πₖ::V = zeros(size(x, 2))
+    function CubeSampling(numsites, fast, x, πₖ)
+        cs = new{typeof(numsites), typeof(x), typeof(πₖ)}(numsites, fast, x, πₖ)
+        _check_arguments(cs)
+        return cs
     end
+end
+
+numsites(cubesampling::CubeSampling) = cubesampling.numsites
+maxsites(cubesampling::CubeSampling) = size(cubesampling.x, 2)
+
+function check_arguments(cubesampling::CubeSampling)
+    check(TooFewSites, cubesampling)
+    check(TooManySites, cubesampling)
+
+    if numsites > length(cubesampling.πₖ)
+        throw(
+            ArgumentError(
+                "You cannot select more points than the number of candidate points.",
+            ),
+        )
+    end
+    if length(cubesampling.πₖ) != size(cubesampling.x, 2)
+        throw(
+            DimensionMismatch(
+                "The number of inclusion probabilites does not match the dimensions of the auxillary variable matrix.",
+            ),
+        )
+    end
+    return
 end
 
 function check_conditions(coords, pool, sampler)
     πₖ = sampler.πₖ
     if sum(sampler.πₖ) == 0
         @info "Probabilities of inclusion were not provided, so we assume equal probability design."
-        πₖ = fill(sampler.numpoints/length(pool), length(pool))
-    end 
-    if round(Int, sum(πₖ)) != sampler.numpoints
-        @warn "The inclusion probabilities sum to $(round(Int, sum(πₖ))), which will be your sample size instead of numpoints."
+        πₖ = [sampler.numsites / length(pool) for _ in eachindex(pool)]
+    end
+    if round(Int, sum(πₖ)) != sampler.numsites
+        @warn "The inclusion probabilities sum to $(round(Int, sum(πₖ))), which will be your sample size instead of numsites."
     end
     if length(pool) != length(πₖ)
-        throw(DimensionMismatch("The πₖ vector does not match the number of candidate points.",),)
+        throw(
+            DimensionMismatch(
+                "The πₖ vector does not match the number of candidate points.",
+            ),
+        )
     end
     if length(πₖ) != size(sampler.x, 2)
-        throw(DimensionMismatch("There is a mismatch in the number of inclusion probabilities and the points in the auxillary matrix.",),)
+        throw(
+            DimensionMismatch(
+                "There is a mismatch in the number of inclusion probabilities and the points in the auxillary matrix.",
+            ),
+        )
     end
-    πₖ
-
+    return πₖ
 end
 
-
 function _generate!(
-    coords::Vector{CartesianIndex}, 
+    coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::CubeSampling,
-    uncertainty::Matrix{T}
-    ) where {T <: AbstractFloat}
-
+    uncertainty::Matrix{T},
+) where {T <: AbstractFloat}
     πₖ = check_conditions(coords, pool, sampler)
 
     # sort points by distance in auxillary variable space
     dist = mahalanobis(πₖ, sampler.x)
-    perm = sortperm(dist, rev=true)
-    pool, πₖ = pool[perm],  πₖ[perm]
+    perm = sortperm(dist; rev = true)
+    pool, πₖ = pool[perm], πₖ[perm]
 
-    x = sampler.x[:,perm]
- 
+    x = sampler.x[:, perm]
+
     # To keep the sample size enforced, add πₖ as an aux variable
     x = vcat(transpose(πₖ), x)
 
     # pick flight phase algorithm
     π_optimal_flight = sampler.fast ? cubefastflight(πₖ, x) : cubeflight(πₖ, x)
     # check if there are non-integer probabilities
-    non_int_ind = findall(u -> u .∉ Ref(Set([0,1])), π_optimal_flight)
+    non_int_ind = findall(u -> u .∉ Ref(Set([0, 1])), π_optimal_flight)
     # if so, perform landing phase to resolve them
     π_optimal = isempty(non_int_ind) ? π_optimal_flight : cubeland(π_optimal_flight, πₖ, x)
 
-    selected = pool[findall(z -> z == 1, π_optimal)]
+    selected = pool[findall(isequal(1), π_optimal)]
 
-    for i = 1:length(selected)
+    for i in eachindex(selected)
         coords[i] = pool[i]
     end
 
@@ -91,16 +111,15 @@ function _generate!(
 end
 
 function cubeflight(πₖ, x)
-    
     N = length(πₖ)
     rowdim = size(x)[1]
 
     j = 0
-    set_nullspace = zeros(1,2)
+    set_nullspace = zeros(1, 2)
     π_optimal = πₖ
     # check if there is a possible u to satisfy the conditions
     while size(set_nullspace)[2] != 0
-        j = j+1
+        j = j + 1
 
         ## STEP 1 ##
 
@@ -108,11 +127,11 @@ function cubeflight(πₖ, x)
         # A is the matrix of auxillary variables didvided by the inclusion probability
         # for the population unit
         A = similar(x, Float64)
-        for i = 1:N
-            if π_optimal[i] .∈ Ref(Set([0,1]))
-                A[:,i] = zeros(rowdim) 
-            else 
-                A[:,i] = x[:,i] ./ π_optimal[i]
+        for i in 1:N
+            if π_optimal[i] .∈ Ref(Set([0, 1]))
+                A[:, i] = zeros(rowdim)
+            else
+                A[:, i] = x[:, i] ./ π_optimal[i]
             end
         end
 
@@ -123,13 +142,13 @@ function cubeflight(πₖ, x)
         # let's make sure the rows that need it satisfy that condition
 
         # get index where π_optimal is 0 or 1
-        π_integer = findall(u -> u .∈ Ref(Set([0,1])), π_optimal)
+        π_integer = findall(u -> u .∈ Ref(Set([0, 1])), π_optimal)
 
         # if none of the π_optimal's are fixed yet (as 0 or 1) u can be a vector from the nullspace
         if length(π_integer) == 0
             u = kernel[:, rand(1:size(kernel)[2])]
-        
-        # if only one is fixed, can also pick a u vector but it shouldn't be the trivial indicator vector
+
+            # if only one is fixed, can also pick a u vector but it shouldn't be the trivial indicator vector
         elseif length(π_integer) == 1
             sums = sum(eachrow(kernel))
             # find indicator vector
@@ -139,12 +158,12 @@ function cubeflight(πₖ, x)
             ind = deleteat!(collect(1:size(kernel)[2]), ind)
             u = kernel[:, rand(ind)]
 
-        # otherwise, need to make sure u_k = 0 condition is satisfied for fixed pikstar's
+            # otherwise, need to make sure u_k = 0 condition is satisfied for fixed pikstar's
         else
             # get rows of A's nullspace corresponding to those pikstar's
             set_A = kernel[π_integer, :]
             # get the nullspace of that matrix
-            
+
             set_nullspace = nullspace(set_A)
 
             if size(set_nullspace)[2] == 0
@@ -175,38 +194,36 @@ function cubeflight(πₖ, x)
         #    λ₁ = -πₖ⁺/u
         #    λ₂ = (πₖ⁺ - 1)/u
 
-        λ₁_max(; u, πₖ) = @. ifelse(u > 0, (1 - πₖ) / u, - πₖ / u)
+        λ₁_max(; u, πₖ) = @. ifelse(u > 0, (1 - πₖ) / u, -πₖ / u)
         λ₂_max(; u, πₖ) = @. ifelse(u > 0, πₖ / u, (πₖ - 1) / u)
 
-        λ₁ = minimum(filter(x -> isfinite(x), λ₁_max(u = u, πₖ = πₖ)))
-        λ₂ = minimum(filter(x -> isfinite(x), λ₂_max(u = u, πₖ = πₖ)))
+        λ₁ = minimum(filter(isfinite, λ₁_max(; u = u, πₖ = πₖ)))
+        λ₂ = minimum(filter(isfinite, λ₂_max(; u = u, πₖ = πₖ)))
 
         ## STEP 3 ##
 
         # calculate the inequality expression for both lambdas
-        λ1_ineq = @. πₖ + ( λ₁ * u)
-        λ2_ineq = @. πₖ - ( λ₂ * u)
+        λ1_ineq = @. πₖ + (λ₁ * u)
+        λ2_ineq = @. πₖ - (λ₂ * u)
 
         ineq_mat = reduce(hcat, [λ1_ineq, λ2_ineq])
         # the new inclusion probability π is one of the lambda expressions with a given probability q1, q2
-        q₁ = λ₂/(λ₁ + λ₂)
+        q₁ = λ₂ / (λ₁ + λ₂)
         q₂ = 1 - q₁
 
-        π_optimal = map(r -> sample(r, Weights([q₁,q₂])), eachrow(ineq_mat))
-    end 
-    return(π_optimal)
+        π_optimal = map(r -> sample(r, Weights([q₁, q₂])), eachrow(ineq_mat))
+    end
+    return (π_optimal)
 end
 
 function cubefastflight(πₖ, x)
-
-    ## Initialization ##
 
     # number of auxillary variables
     num_aux = size(x)[1]
 
     # get all non-integer probabilities
     non_int_ind = findall(u -> u .∉ Ref(Set([0, 1])), πₖ)
-    
+
     π_nonint = πₖ[non_int_ind]
 
     Ψ = π_nonint[1:(num_aux + 1)]
@@ -217,11 +234,10 @@ function cubefastflight(πₖ, x)
 
     k = num_aux + 2
 
-
     while k <= length(π_nonint)
-        Ψ = update_psi(Ψ, B) 
+        Ψ = update_psi(Ψ, B)
 
-        if length(findall(z -> z .<0, Ψ)) > 0
+        if length(findall(z -> z .< 0, Ψ)) > 0
             throw(error("Negative inclusion probability"))
         end
 
@@ -245,45 +261,45 @@ function cubefastflight(πₖ, x)
     # now do the final iteration
     Ψ = update_psi(Ψ, B)
     π_nonint[r] = Ψ
-    return(π_nonint)
+    return (π_nonint)
 end
 
 function update_psi(Ψ, B)
-     # get vector u in the kernel of B
-     u = nullspace(B)[:, 1]
+    # get vector u in the kernel of B
+    u = nullspace(B)[:, 1]
 
-     # want max  λ₁, λ₂ such that 0 <= Ψ + λ₁*u <= 1 and 0 <= Ψ - λ₂*u <= 1
-     # solve the inequalities for λ and you get max values for u > 0 and u < 0
-     # for λ₁ : for u > 0, λ₁ = (1-Ψ)/u; for u < 0, λ₁ = -Ψ/u
-     # for λ₂ : for u > 0, λ₂ = Ψ/u; for u < 0, λ₂ = (Ψ - 1)/u
+    # want max  λ₁, λ₂ such that 0 <= Ψ + λ₁*u <= 1 and 0 <= Ψ - λ₂*u <= 1
+    # solve the inequalities for λ and you get max values for u > 0 and u < 0
+    # for λ₁ : for u > 0, λ₁ = (1-Ψ)/u; for u < 0, λ₁ = -Ψ/u
+    # for λ₂ : for u > 0, λ₂ = Ψ/u; for u < 0, λ₂ = (Ψ - 1)/u
 
-     λ₁_max(; u, πₖ) = @. ifelse(u > 0, (1 - πₖ) / u, -πₖ / u)
-     λ₂_max(; u, πₖ) = @. ifelse(u > 0, πₖ / u, (πₖ - 1) / u)
+    λ₁_max(; u, πₖ) = @. ifelse(u > 0, (1 - πₖ) / u, -πₖ / u)
+    λ₂_max(; u, πₖ) = @. ifelse(u > 0, πₖ / u, (πₖ - 1) / u)
 
-     λ₁_vec = filter(x -> isfinite(x), λ₁_max(; u = u, πₖ = Ψ))
-     λ₂_vec = filter(x -> isfinite(x), λ₂_max(; u = u, πₖ = Ψ))
+    λ₁_vec = filter(x -> isfinite(x), λ₁_max(; u = u, πₖ = Ψ))
+    λ₂_vec = filter(x -> isfinite(x), λ₂_max(; u = u, πₖ = Ψ))
 
-     deleteat!(λ₁_vec, λ₁_vec .<= 0)
-     deleteat!(λ₂_vec, λ₂_vec .<= 0)
+    deleteat!(λ₁_vec, λ₁_vec .<= 0)
+    deleteat!(λ₂_vec, λ₂_vec .<= 0)
 
-     λ₁ = minimum(λ₁_vec)
-     λ₂ = minimum(λ₂_vec)
+    λ₁ = minimum(λ₁_vec)
+    λ₂ = minimum(λ₂_vec)
 
-     # calculate the inequality expression for both lambdas
-     λ₁_ineq = @. Ψ + (λ₁ * u)
-     λ₂_ineq = @. Ψ - (λ₂ * u)
+    # calculate the inequality expression for both lambdas
+    λ₁_ineq = @. Ψ + (λ₁ * u)
+    λ₂_ineq = @. Ψ - (λ₂ * u)
 
-     # checking for floating point issues
-     tol = 1e-13
-     λ₁_ineq[abs.(λ₁_ineq) .< tol] .= 0
-     λ₂_ineq[abs.(λ₂_ineq) .< tol] .= 0
+    # checking for floating point issues
+    tol = 1e-13
+    λ₁_ineq[abs.(λ₁_ineq) .< tol] .= 0
+    λ₂_ineq[abs.(λ₂_ineq) .< tol] .= 0
 
-     # the new inclusion probability π is one of the lambda expressions with a given probability q1, q2
-     q₁ = λ₂ / (λ₁ + λ₂)
+    # the new inclusion probability π is one of the lambda expressions with a given probability q1, q2
+    q₁ = λ₂ / (λ₁ + λ₂)
 
-     new_πₖ = rand() < q₁ ? λ₁_ineq : λ₂_ineq
-     return(new_πₖ)
-end    
+    new_πₖ = rand() < q₁ ? λ₁_ineq : λ₂_ineq
+    return (new_πₖ)
+end
 
 function cubeland(pikstar, πₖ, x)
     ### Landing Phase ###
@@ -292,7 +308,7 @@ function cubeland(pikstar, πₖ, x)
 
     pikstar_return = copy(pikstar)
     # get all non-integer probabilities
-    non_int_ind = findall(u -> u .∉ Ref(Set([0,1])), pikstar_return)
+    non_int_ind = findall(u -> u .∉ Ref(Set([0, 1])), pikstar_return)
     non_int_piks = pikstar_return[non_int_ind]
     N_land = length(non_int_piks)
 
@@ -309,7 +325,7 @@ function cubeland(pikstar, πₖ, x)
 
     # then get matrix of potential sample design
     # get vector with appropriate allocation of 0's and 1's
-    base_vec = vcat(repeat([1.0], outer = n_land), repeat([0.0], outer = (N_land - n_land)))
+    base_vec = vcat(repeat([1.0]; outer = n_land), repeat([0.0]; outer = (N_land - n_land)))
 
     samps = reduce(vcat, transpose.(unique_permutations(base_vec)))
 
@@ -322,18 +338,18 @@ function cubeland(pikstar, πₖ, x)
 
     # let's get A for the non-integer units
     A_land = x_land ./ reshape(πₖ[non_int_ind], :, N_land)
-    
 
     sample_pt = A_land * transpose(sub_mat)
     ## FIXME: need to deal with the case that there are fixed zeros in πₖ
     #A = x ./ reshape(πₖ, :, N)
-    zero_pik_ind = findall(u -> u == 0, πₖ)
-    A = x[:, setdiff(1:end, zero_pik_ind)] ./ reshape(πₖ[setdiff(1:end, zero_pik_ind)], :, length(πₖ) - length(zero_pik_ind))
-    
+    zero_pik_ind = findall(isequal(0), πₖ)
+    A =
+        x[:, setdiff(1:end, zero_pik_ind)] ./
+        reshape(πₖ[setdiff(1:end, zero_pik_ind)], :, length(πₖ) - length(zero_pik_ind))
 
-    cost = zeros(size(samps,1))
+    cost = zeros(size(samps, 1))
     for i in 1:size(samps)[1]
-        cost[i] = transpose(sample_pt[:, i]) * inv(A*transpose(A)) * sample_pt[:, i]
+        cost[i] = transpose(sample_pt[:, i]) * inv(A * transpose(A)) * sample_pt[:, i]
     end
 
     # get matrix of samples and costs
@@ -343,22 +359,26 @@ function cubeland(pikstar, πₖ, x)
     ## linear programing ##
     model = Model(HiGHS.Optimizer)
 
-    @variable(model, ps[1:size(samps,1)] >= 0)
+    @variable(model, ps[1:size(samps, 1)] >= 0)
 
     # multiple cost (lp_mat[2]) by ps[id], where id is lp_mat[1]
-    @objective(model, Min, sum(sample[2] * ps[trunc(Int, sample[1])] for sample in eachrow(lp_mat)))
+    @objective(
+        model,
+        Min,
+        sum(sample[2] * ps[trunc(Int, sample[1])] for sample in eachrow(lp_mat))
+    )
 
     @constraint(model, sum(ps[id]) == 1)
 
-    for i in 1:size(samps,2)
-        @constraint(model, sum(ps .* (samps.>0)[:,i]) == non_int_piks[i])
+    for i in 1:size(samps, 2)
+        @constraint(model, sum(ps .* (samps .> 0)[:, i]) == non_int_piks[i])
     end
 
     optimize!(model)
 
-    if has_values(model) 
+    if has_values(model)
         samp_prob = value.(ps)
-        
+
         # pick a sample based on their probabilities
         samp_ind = sample(1:length(samp_prob), Weights(samp_prob))
 
@@ -366,23 +386,26 @@ function cubeland(pikstar, πₖ, x)
         pikstar_return[non_int_ind] = samps[samp_ind, :]
     else
         @warn "The linear program did not find a feasible solution."
-        pikstar_return[non_int_ind] = samps[sample(1:size(samps,1)), :]
-    end 
+        pikstar_return[non_int_ind] = samps[sample(1:size(samps, 1)), :]
+    end
 
-    return(pikstar_return)
+    return pikstar_return
 end
 
 # all credit to stackoverflow https://stackoverflow.com/questions/65051953/julia-generate-all-non-repeating-permutations-in-set-with-duplicates
-function unique_permutations(x::T, prefix=T()) where T
+function unique_permutations(x::T, prefix = T()) where {T}
     if length(x) == 1
         return [[prefix; x]]
     else
         t = T[]
         for i in eachindex(x)
-            if i > firstindex(x) && x[i] == x[i-1]
+            if i > firstindex(x) && x[i] == x[i - 1]
                 continue
             end
-            append!(t, unique_permutations([x[begin:i-1];x[i+1:end]], [prefix; x[i]]))
+            append!(
+                t,
+                unique_permutations([x[begin:(i - 1)]; x[(i + 1):end]], [prefix; x[i]]),
+            )
         end
         return t
     end
@@ -398,21 +421,33 @@ function mahalanobis(πₖ, x)
     p = size(x, 1)
 
     x̂ = x ./ reshape(πₖ, :, N)
-    mean_x̂ = (1/N) .* sum(x̂, dims = 2)
+    mean_x̂ = (1 / N) .* sum(x̂; dims = 2)
 
     k_vecs = x̂ .- mean_x̂
     outer_prods = Array{Float64}(undef, p, p, N)
     for i in 1:N
         outer_prods[:, :, i] = k_vecs[1:p, i] * transpose(k_vecs[1:p, i])
     end
-    
-    sigma = (1/(N-1)) * dropdims(sum(outer_prods, dims = 3), dims = 3)
+
+    sigma = (1 / (N - 1)) * dropdims(sum(outer_prods; dims = 3); dims = 3)
     inv_sigma = inv(sigma)
-    
+
     d = Vector{Float64}(undef, N)
     for i in 1:N
         d[i] = (transpose(x̂[1:p, i] - mean_x̂) * inv_sigma * (x̂[1:p, i] - mean_x̂))[1]
     end
 
     return d
+end
+
+# ====================================================
+#
+#   Tests
+#
+# =====================================================
+
+@testitem "CubeSampling throws exception with too few points" begin
+    @test_throws TooFewSites CubeSampling(numsites = -1)
+    @test_throws TooFewSites CubeSampling(numsites = 0)
+    @test_throws TooFewSites CubeSampling(numsites = 1)
 end
