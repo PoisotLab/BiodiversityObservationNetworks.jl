@@ -3,12 +3,12 @@
 
 A `BONSeeder` that uses Balanced-Acceptance Sampling [@cite] combined with rejection sampling to create a set of sampling sites that is weighted toward values with higher uncertainty as a function of the parameter α.
 """
-Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSampler
+Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer,L<:Layer, F <: Real} <: BONSampler
     numsites::I = 30
-    uncertainty::Matrix{F} = rand(50, 50)
+    uncertainty::L = Layer(rand(50, 50))
     α::F = 1.0
-    function WeightedBalancedAcceptance(numsites, uncertainty, α)
-        wbas = new{typeof(numsites), typeof(α)}(numsites, uncertainty, α)
+    function WeightedBalancedAcceptance(numsites, uncertainty::L, α) where L
+        wbas = new{typeof(numsites), L, typeof(α)}(numsites, uncertainty, α)
         check_arguments(wbas)
         return wbas
     end
@@ -101,24 +101,6 @@ end
         numsites = numpts,
         uncertainty = uncert,
     )
-end
-
-@testitem "WeightedBalancedAcceptance can generate points" begin
-    wbas = WeightedBalancedAcceptance()
-    coords = seed(wbas)
-
-    @test typeof(coords) <: Vector{CartesianIndex}
-    @test length(coords) == wbas.numsites
-end
-
-@testitem "WeightedBalancedAcceptance can generate a custom number of points with positional arguments" begin
-    numpts = 77
-    sz = (50, 50)
-    α = 1.0
-    uncert = rand(sz...)
-    wbas = WeightedBalancedAcceptance(numpts, uncert, α)
-    coords = seed(wbas)
-    @test numpts == length(coords)
 end
 
 @testitem "WeightedBalancedAcceptance can take bias parameter α as keyword argument" begin

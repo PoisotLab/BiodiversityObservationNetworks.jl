@@ -3,41 +3,32 @@
 
 Implements Simple Random spatial sampling (each location has equal probability of selection)
 """
-Base.@kwdef struct SimpleRandom{I<:Integer,S<:Sites} <: BONSampler
+Base.@kwdef struct SimpleRandom{I<:Integer} <: BONSampler
     numsites::I = 30
-    pool::S = Sites(vec(collect(CartesianIndices((1:50, 1:50)))))
-    function SimpleRandom(numsites::I, pool::J) where{I<:Integer,J<:Sites}
-        srs = new{typeof(numsites), typeof(pool)}(numsites, pool)
+    function SimpleRandom(numsites::I) where{I<:Integer}
+        srs = new{typeof(numsites)}(numsites)
         check_arguments(srs)
         return srs
     end
 end
-maxsites(srs::SimpleRandom) = length(pool(srs))
-
-function SimpleRandom(layer::Layer, numsites = 50)
-    candidates = pool(layer)
-    srs = SimpleRandom(numsites, candidates)
-    check_arguments(srs)
-    return srs
-end
-
 
 function check_arguments(srs::SRS) where {SRS <: SimpleRandom}
     check(TooFewSites, srs)
-    check(TooManySites, srs)
     return nothing
 end
 
+_default_pool(::SimpleRandom) = pool((50,50))
+
 function _sample!(
-    sites::Sites{T},
+    selections::S,
+    candidates::C,
     sampler::SimpleRandom{I},
-) where {T,I}
-    candidates = coordinates(pool(sampler))
-    _coords = Distributions.sample(candidates, sampler.numsites; replace = false)
+) where {S<:Sites,C<:Sites,I}
+    _coords = Distributions.sample(candidates.coordinates, sampler.numsites; replace = false)
     for (i,c) in enumerate(_coords)
-        sites[i] = c
+        selections[i] = c
     end
-    return sites
+    return selections
 end
 
 # ====================================================
@@ -61,11 +52,4 @@ end
     N = 314
     srs = SimpleRandom(; numsites = N)
     @test srs.numsites == N
-end
-
-@testitem "SimpleRandom throws exception if there are more sites than candidates" begin
-    numpts, numcandidates = 26, 25
-    dims = Int.(floor.((sqrt(numcandidates), sqrt(numcandidates))))
-    srs = @test prod(dims) < numpts
-    @test_throws TooManySites SimpleRandom(; numsites = numpts, dims = dims)
 end

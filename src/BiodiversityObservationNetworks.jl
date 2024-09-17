@@ -1,5 +1,6 @@
 module BiodiversityObservationNetworks
 
+using SimpleSDMLayers
 using Distributions
 using Random
 using HaltonSequences
@@ -38,7 +39,7 @@ include("weightedbas.jl")
 export WeightedBalancedAcceptance
 
 include("adaptivehotspot.jl")
-export AdaptiveHotspotDetection
+export AdaptiveHotspot
 
 include("cubesampling.jl")
 export CubeSampling

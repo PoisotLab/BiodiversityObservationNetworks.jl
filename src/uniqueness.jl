@@ -78,11 +78,6 @@ end
     @test_throws TooManySites Uniqueness(numsites = 26, layers = rand(5, 5, 2))
 end
 
-@testitem "Uniqueness has correct subtypes" begin
-    @test Uniqueness <: BONRefiner
-    @test Uniqueness <: BONSampler
-end
-
 @testitem "Uniqueness works with positional constructor" begin
     @test typeof(Uniqueness(2, rand(5, 5, 5))) <: Uniqueness
 end

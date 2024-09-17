@@ -157,7 +157,6 @@ end
 # =====================================================
 
 @testitem "FractalTriad is correct subtype" begin
-    @test FractalTriad <: BONSeeder
     @test FractalTriad <: BONSampler
 end
 

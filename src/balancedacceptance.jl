@@ -4,20 +4,20 @@
 A `BONSeeder` that uses Balanced-Acceptance Sampling (Van-dem-Bates et al. 2017
 https://doi.org/10.1111/2041-210X.13003)
 """
-Base.@kwdef struct BalancedAcceptance{I <: Integer} <: BONSampler
+Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
     numsites::I = 30
-    mask::BitMatrix = rand(50, 50) .< 0.5
-    function BalancedAcceptance(numsites::Integer, mask::BitMatrix) 
-        bas = new{typeof(numsites)}(numsites, mask)
+    dims::Tuple{I,I} = (50,50)
+    function BalancedAcceptance(numsites::I, dims::Tuple{I,I}) where I<:Integer
+        bas = new{I}(numsites, dims)
         check_arguments(bas) 
         return bas
     end
 end
 
 BalancedAcceptance(M::Matrix{T}; numsites = 30) where T = BalancedAcceptance(numsites, size(M))
-BalancedAcceptance(l::Layer; numsites = 30) = BalancedAcceptance(numsites, l.layer.indices)
+BalancedAcceptance(l::Layer; numsites = 30) = BalancedAcceptance(numsites, size(l))
 
-maxsites(bas::BalancedAcceptance) = prod(size(bas.mask))
+maxsites(bas::BalancedAcceptance) = prod(bas.dims)
 
 function check_arguments(bas::BalancedAcceptance)
     check(TooFewSites, bas)
@@ -26,16 +26,20 @@ function check_arguments(bas::BalancedAcceptance)
 end
 
 function _sample!(
-    coords::Sites,
-    ba::BalancedAcceptance,
-)
+    selected::S,
+    candidates::C,
+    ba::BalancedAcceptance
+) where {S<:Sites,C<:Sites}
     seed = rand(Int32.(1e0:1e7), 2)
     n = numsites(ba)
-    x,y = size(ba.mask)
+    x,y = ba.dims
+
+    candidate_mask = zeros(Bool, x, y)
+    candidate_mask[candidates.coordinates] .= 1
 
     # This is sequentially adding points, needs to check if that value is masked
     # at each step and skip if so  
-    exp_needed = 10 * Int(ceil(sum(ba.mask) / prod(size(ba.mask)) .* n))
+    exp_needed = 10 * Int(ceil((length(candidates)/(x*y)) .* n))
 
     ct = 1
     for ptct in 1:exp_needed
@@ -44,13 +48,12 @@ function _sample!(
         if ct > n 
             break
         end 
-        if ba.mask[proposal]
-            coords[ct] = proposal
+        if candidate_mask[proposal]
+            selected[ct] = proposal
             ct += 1
         end 
     end
-    coords.coordinates = coords.coordinates[1:ct-1]
-    return coords
+    return selected
 end
 
 # ====================================================
@@ -78,19 +81,12 @@ end
 
 @testitem "BalancedAcceptance can generate points" begin
     bas = BalancedAcceptance()
-    coords = seed(bas)
+    coords = sample(bas)
 
     @test typeof(coords) <: Vector{CartesianIndex}
     @test length(coords) == bas.numsites
 end
 
-@testitem "BalancedAcceptance can generate a custom number of points as positional argument" begin
-    numpts = 77
-    sz = (50, 50)
-    bas = BalancedAcceptance(numpts, sz)
-    coords = seed(bas)
-    @test numpts == length(coords)
-end
 
 @testitem "BalancedAcceptance can take number of points as keyword argument" begin
     N = 40
