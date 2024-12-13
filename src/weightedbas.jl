@@ -3,22 +3,18 @@
 
 A `BONSeeder` that uses Balanced-Acceptance Sampling [@cite] combined with rejection sampling to create a set of sampling sites that is weighted toward values with higher uncertainty as a function of the parameter α.
 """
-Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer,L<:Layer, F <: Real} <: BONSampler
+Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSampler
     numsites::I = 30
-    uncertainty::L = Layer(rand(50, 50))
     α::F = 1.0
-    function WeightedBalancedAcceptance(numsites, uncertainty::L, α) where L
-        wbas = new{typeof(numsites), L, typeof(α)}(numsites, uncertainty, α)
+    function WeightedBalancedAcceptance(numsites, α)
+        wbas = new{typeof(numsites), typeof(α)}(numsites, α)
         check_arguments(wbas)
         return wbas
     end
 end
 
-maxsites(wbas::WeightedBalancedAcceptance) = prod(size(wbas.uncertainty))
-
 function check_arguments(wbas::WeightedBalancedAcceptance)
     check(TooFewSites, wbas)
-    check(TooManySites, wbas)
     wbas.α > 0 ||
         throw(
             ArgumentError("WeightedBalancedAcceptance requires α to be greater than 0 "),
@@ -26,19 +22,20 @@ function check_arguments(wbas::WeightedBalancedAcceptance)
     return nothing
 end
 
-function _generate!(
-    coords::Vector{CartesianIndex},
+function _sample!(
+    coords::S,
+    candidates::C,
     sampler::WeightedBalancedAcceptance{I, T},
-) where {I <: Integer, T <: AbstractFloat}
+    weights::L
+) where {S<:Sites,C<:Sites,I <: Integer, T <: AbstractFloat,L<:Layer}
     seed = rand(I.(1e0:1e7), 2)
-    uncertainty = sampler.uncertainty
     α = sampler.α
-    x, y = size(uncertainty)
+    x, y = size(weights)
 
-    nonnan_indices = findall(!isnan, uncertainty)
-    stduncert = similar(uncertainty)
+    nonnan_indices = findall(!isnan, weights)
+    stduncert = similar(weights)
 
-    uncert_values = uncertainty[nonnan_indices]
+    uncert_values = weights[nonnan_indices]
     stduncert_values = similar(uncert_values)
     zfit = nothing
     if var(uncert_values) > 0
@@ -47,8 +44,8 @@ function _generate!(
     end
 
     nonnan_counter = 1
-    for i in eachindex(uncertainty)
-        if isnan(uncertainty[i])
+    for i in eachindex(weights)
+        if isnan(weights[i])
             stduncert[i] = NaN
         elseif !isnothing(zfit)
             stduncert[i] = stduncert_values[nonnan_counter]
@@ -95,12 +92,12 @@ end
     numpts, numcandidates = 26, 25
     @test numpts > numcandidates   # who watches the watchmen?
     dims = Int.(floor.((sqrt(numcandidates), sqrt(numcandidates))))
-    uncert = rand(dims...)
+    uncert = Layer(rand(dims...))
 
-    @test_throws TooManySites WeightedBalancedAcceptance(
+    bas = WeightedBalancedAcceptance(
         numsites = numpts,
-        uncertainty = uncert,
     )
+    @test_throws TooManySites sample(bas, uncert)
 end
 
 @testitem "WeightedBalancedAcceptance can take bias parameter α as keyword argument" begin

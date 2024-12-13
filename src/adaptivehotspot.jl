@@ -5,22 +5,17 @@
 - **pool**: the sites that could potentially be picked 
 - **uncertainty**: a `Layer` specifying the current uncertainty at each site
 """
-Base.@kwdef mutable struct AdaptiveHotspot{T <: Integer, F <: AbstractFloat} <: BONSampler
+Base.@kwdef mutable struct AdaptiveHotspot{T <: Integer} <: BONSampler
     numsites::T = 30
-    uncertainty::Layer = Layer(rand(50, 50))
-    function AdaptiveHotspot(numsites, uncertainty)
-        as = new{typeof(numsites), typeof(uncertainty[begin])}(numsites, uncertainty)
+    function AdaptiveHotspot(numsites)
+        as = new{typeof(numsites)}(numsites)
         check_arguments(as)
         return as
     end
 end
 
-AdaptiveHotspot(uncertainty::Matrix{T}; numsites = 30) where T = AdaptiveHotspot(numsites, uncertainty)
-
-maxsites(as::AdaptiveHotspot) = prod(size(as.uncertainty))
 function check_arguments(as::AdaptiveHotspot)
     check(TooFewSites, as)
-    check(TooManySites, as)
     return nothing
 end
 
@@ -28,8 +23,8 @@ function _generate!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
     sampler::AdaptiveHotspot,
-)
-    uncertainty = sampler.uncertainty
+    uncertainty::L
+) where L<:Layer
     # Distance matrix (inlined)
     d = zeros(Float64, Int((sampler.numsites * (sampler.numsites - 1)) / 2))
 

@@ -11,7 +11,7 @@ end
 function sample(alg::BONSampler, l::L) where L<:Layer
     _sample!(
         _allocate_sites(numsites(alg)), 
-        pool(l),
+        l,
         alg
     )
 end

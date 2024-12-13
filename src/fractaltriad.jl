@@ -19,6 +19,8 @@ Base.@kwdef struct FractalTriad{I <: Integer, F <: AbstractFloat} <: BONSampler
         return ft
     end
 end
+_default_pool(ft::FractalTriad) = pool(ft.dims)
+
 
 maxsites(ft::FractalTriad) = maximum(ft.dims) * 10  # gets numerically unstable for large values because float coords belong to the the same cell in the raster, and arctan breaks  
 function check_arguments(ft::FractalTriad)
@@ -121,12 +123,16 @@ end
 
 Fills `coords` with a set of points generated using the `FractalTriad` generator `ft`.
 """
-function _generate!(
-    coords::Vector{CartesianIndex},
+function _sample!(
+    coords::S,
+    candidates::C,
     ft::FractalTriad,
-)
+) where {S<:Sites,C<:Sites}
     base_triangle = _outer_triangle(ft)
-    coords[1:3] .= base_triangle
+    
+    coords.coordinates .= CartesianIndex(1,1)
+
+    coords.coordinates[1:3] .= base_triangle
     count = 4
 
     triangle = coords[1:3]

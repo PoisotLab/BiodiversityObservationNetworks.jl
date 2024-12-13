@@ -17,6 +17,8 @@ end
 _allocate_sites(n) = Sites(Array{CartesianIndex}(undef, n))
 coordinates(s::Sites) = s.coordinates
 Base.getindex(s::Sites, i::Integer) = getindex(coordinates(s), i)
+Base.getindex(s::Sites, i::UnitRange) = getindex(coordinates(s), i)
+
 Base.setindex!(s::Sites, v, i::Integer) = setindex!(coordinates(s), v,i)
 Base.length(s::Sites) = length(coordinates(s))
 Base.eachindex(s::Sites) = eachindex(s.coordinates)
@@ -46,6 +48,7 @@ function Layer(l::S; categorical = false) where S<:SimpleSDMLayers.SDMLayer
     Layer{T,S}(l)
 end 
 Layer(m::Matrix{I}) where I<:Integer = Layer{CategoricalData,typeof(m)}(m)
+Layer(m::Matrix{R}) where R<:Real = Layer{ContinousData,typeof(m)}(m)
 
 _indices(m::M) where M<:Matrix = findall(i->!isnothing(m[i]) && !isnan(m[i]) && !ismissing(m[i]), CartesianIndices(m))
 _indices(l::SDMLayer) = findall(l.indices)

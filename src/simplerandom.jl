@@ -19,6 +19,17 @@ end
 
 _default_pool(::SimpleRandom) = pool((50,50))
 
+function sample(::SimpleRandom, ::Layer) 
+end 
+function sample(::SimpleRandom, ::Matrix)
+end 
+function sample(sr::SimpleRandom, T::Tuple{I,I}) where I <: Integer 
+    
+end 
+
+
+
+
 function _sample!(
     selections::S,
     candidates::C,

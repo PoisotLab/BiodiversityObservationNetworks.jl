@@ -7,7 +7,7 @@ https://doi.org/10.1111/2041-210X.13003)
 Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
     numsites::I = 30
     dims::Tuple{I,I} = (50,50)
-    function BalancedAcceptance(numsites::I, dims::Tuple{I,I}) where I<:Integer
+    function BalancedAcceptance(numsites::I, dims::Tuple{J,J}) where {I<:Integer, J<:Integer}
         bas = new{I}(numsites, dims)
         check_arguments(bas) 
         return bas
