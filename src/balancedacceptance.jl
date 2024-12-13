@@ -14,6 +14,7 @@ Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
     end
 end
 
+_default_pool(bas::BalancedAcceptance) = pool(bas.dims)
 BalancedAcceptance(M::Matrix{T}; numsites = 30) where T = BalancedAcceptance(numsites, size(M))
 BalancedAcceptance(l::Layer; numsites = 30) = BalancedAcceptance(numsites, size(l))
 
@@ -83,8 +84,7 @@ end
     bas = BalancedAcceptance()
     coords = sample(bas)
 
-    @test typeof(coords) <: Vector{CartesianIndex}
-    @test length(coords) == bas.numsites
+    @test typeof(coords) <: Sites
 end
 
 

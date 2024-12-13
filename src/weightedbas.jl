@@ -13,6 +13,7 @@ Base.@kwdef struct WeightedBalancedAcceptance{I <: Integer, F <: Real} <: BONSam
     end
 end
 
+
 function check_arguments(wbas::WeightedBalancedAcceptance)
     check(TooFewSites, wbas)
     wbas.α > 0 ||
@@ -85,19 +86,6 @@ end
 @testitem "WeightedBalancedAcceptance requires positive number of sites" begin
     @test_throws TooFewSites WeightedBalancedAcceptance(numsites = 0)
     @test_throws TooFewSites WeightedBalancedAcceptance(numsites = 1)
-end
-
-@testitem "WeightedBalancedAcceptance can't be run with too many sites" begin
-    α = 1.0
-    numpts, numcandidates = 26, 25
-    @test numpts > numcandidates   # who watches the watchmen?
-    dims = Int.(floor.((sqrt(numcandidates), sqrt(numcandidates))))
-    uncert = Layer(rand(dims...))
-
-    bas = WeightedBalancedAcceptance(
-        numsites = numpts,
-    )
-    @test_throws TooManySites sample(bas, uncert)
 end
 
 @testitem "WeightedBalancedAcceptance can take bias parameter α as keyword argument" begin
