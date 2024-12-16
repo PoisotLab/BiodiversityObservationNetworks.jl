@@ -23,7 +23,7 @@ measurements = rand(MidpointDisplacement(), (200, 200)) .* 100
 heatmap(measurements)
 ```
 
-![](ahvfugp.png)
+![](miqllmb.png)
 
 Using the `entropize` function will convert these values into entropy at the pixel scale: 
 

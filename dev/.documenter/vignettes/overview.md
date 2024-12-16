@@ -17,7 +17,7 @@ U = rand(MidpointDisplacement(0.5), (100, 100))
 heatmap(U)
 ```
 
-![](zqpmxhf.png)
+![](jndzxmv.png)
 
 In practice, this uncertainty matrix is likely to be derived from an application of the hyper-parameters optimization step, which is detailed in other vignettes.
 

@@ -23,7 +23,7 @@ abstract type BONSampler end
 A `BONSampler` is any algorithm for proposing a set of sampling locations.
 
 
-[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/3585107e90ff73c0aadb83235747780d8004ba93/src/types.jl#L1-L5)
+[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/6322582496bd794d91f70bf1ce5deae9ccf32e28/src/types.jl#L1-L5)
 
 </details>
 
@@ -80,7 +80,7 @@ BalancedAcceptance
 A `BONSeeder` that uses Balanced-Acceptance Sampling (Van-dem-Bates et al. 2017 https://doi.org/10.1111/2041-210X.13003)
 
 
-[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/3585107e90ff73c0aadb83235747780d8004ba93/src/balancedacceptance.jl#L1-L6)
+[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/6322582496bd794d91f70bf1ce5deae9ccf32e28/src/balancedacceptance.jl#L1-L6)
 
 </details>
 
@@ -105,7 +105,7 @@ Uniqueness
 A `BONSampler`
 
 
-[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/3585107e90ff73c0aadb83235747780d8004ba93/src/uniqueness.jl#L1-L5)
+[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/6322582496bd794d91f70bf1ce5deae9ccf32e28/src/uniqueness.jl#L1-L5)
 
 </details>
 
@@ -132,7 +132,7 @@ This function turns a matrix `A` (storing measurement values) into pixel-wise en
 Pixel-wise entropy is determined by measuring the empirical probability of randomly picking a value in the matrix that is either lower or higher than the pixel value. The entropy of both these probabilities are calculated using the -p×log(2,p) formula. The entropy of the pixel is the _sum_ of the two entropies, so that it is close to 1 for values close to the median, and close to 0 for values close to the extreme of the distribution.
 
 
-[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/3585107e90ff73c0aadb83235747780d8004ba93/src/entropize.jl#L1-L13)
+[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/6322582496bd794d91f70bf1ce5deae9ccf32e28/src/entropize.jl#L1-L13)
 
 </details>
 
@@ -149,7 +149,7 @@ entropize(A::Matrix{Number})
 Allocation version of `entropize!`.
 
 
-[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/3585107e90ff73c0aadb83235747780d8004ba93/src/entropize.jl#L30-L34)
+[source](https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/6322582496bd794d91f70bf1ce5deae9ccf32e28/src/entropize.jl#L30-L34)
 
 </details>
 
