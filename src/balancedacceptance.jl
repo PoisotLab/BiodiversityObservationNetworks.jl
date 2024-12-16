@@ -4,78 +4,92 @@
 A `BONSeeder` that uses Balanced-Acceptance Sampling (Van-dem-Bates et al. 2017
 https://doi.org/10.1111/2041-210X.13003)
 """
-Base.@kwdef mutable struct BalancedAcceptance{I <: Integer, F <: AbstractFloat} <: BONSeeder
-    numpoints::I = 50
-    α::F = 1.0
-    function BalancedAcceptance(numpoints, α)
-        if numpoints < one(numpoints)
-            throw(
-                ArgumentError(
-                    "You cannot have a BalancedAcceptance with fewer than one point",
-                ),
-            )
-        end
-        if α < zero(α)
-            throw(
-                ArgumentError(
-                    "The value of α for BalancedAcceptance must be greater or equal to 0",
-                ),
-            )
-        end
-        return new{typeof(numpoints), typeof(α)}(numpoints, α)
+Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
+    numsites::I = 30
+    dims::Tuple{I,I} = (50,50)
+    function BalancedAcceptance(numsites::I, dims::Tuple{J,J}) where {I<:Integer, J<:Integer}
+        bas = new{I}(numsites, dims)
+        check_arguments(bas) 
+        return bas
     end
 end
 
-# TODO 
-# - make this not spaghetti code
-# - this should accept a boolean array mask arg which should
-#   get treated like NaNs 
-function _generate!(
-    coords::Vector{CartesianIndex},
-    sampler::BalancedAcceptance,
-    uncertainty::Matrix{T},
-) where {T <: AbstractFloat}
+_default_pool(bas::BalancedAcceptance) = pool(bas.dims)
+BalancedAcceptance(M::Matrix{T}; numsites = 30) where T = BalancedAcceptance(numsites, size(M))
+BalancedAcceptance(l::Layer; numsites = 30) = BalancedAcceptance(numsites, size(l))
+
+maxsites(bas::BalancedAcceptance) = prod(bas.dims)
+
+function check_arguments(bas::BalancedAcceptance)
+    check(TooFewSites, bas)
+    check(TooManySites, bas)
+    return nothing
+end
+
+function _sample!(
+    selected::S,
+    candidates::C,
+    ba::BalancedAcceptance
+) where {S<:Sites,C<:Sites}
     seed = rand(Int32.(1e0:1e7), 2)
-    np, α = sampler.numpoints, sampler.α
-    x, y = size(uncertainty)
+    n = numsites(ba)
+    x,y = ba.dims
 
+    candidate_mask = zeros(Bool, x, y)
+    candidate_mask[candidates.coordinates] .= 1
 
-    nonnan_indices = findall(!isnan, uncertainty)
-    stduncert = similar(uncertainty)
-    
-    uncert_values = uncertainty[nonnan_indices]
-    stduncert_values = similar(uncert_values)
-    zfit = nothing 
-    if var(uncert_values) > 0
-        zfit = StatsBase.fit(ZScoreTransform, uncert_values)
-        stduncert_values = StatsBase.transform(zfit, uncert_values)
-    end
-    
-    nonnan_counter = 1
-    for i in eachindex(uncertainty)
-        if isnan(uncertainty[i]) 
-            stduncert[i] = NaN
-        elseif !isnothing(zfit)
-            stduncert[i] = stduncert_values[nonnan_counter]
-            nonnan_counter += 1
-        else 
-            stduncert[i] = 1.
-        end
-    end
+    # This is sequentially adding points, needs to check if that value is masked
+    # at each step and skip if so  
+    exp_needed = 10 * Int(ceil((length(candidates)/(x*y)) .* n))
 
-    reluncert = broadcast(x -> isnan(x) ? NaN : exp(α * x) / (1 + exp(α * x)), stduncert)
-    ptct = 1
-    addedpts = 1
-    while addedpts <= length(coords)
+    ct = 1
+    for ptct in 1:exp_needed
         i, j = haltonvalue(seed[1] + ptct, 2), haltonvalue(seed[2] + ptct, 3)
-        candcoord = CartesianIndex(convert.(Int32, [ceil(x * i), ceil(y * j)])...)
-        prob = reluncert[candcoord]
-        if !isnan(prob) && rand() < prob
-            coords[addedpts] = candcoord
-            addedpts += 1
-        end
-        ptct += 1
+        proposal = CartesianIndex(convert.(Int32, [ceil(x * i), ceil(y * j)])...)
+        if ct > n 
+            break
+        end 
+        if candidate_mask[proposal]
+            selected[ct] = proposal
+            ct += 1
+        end 
     end
+    return selected
+end
 
-    return (coords, uncertainty)
+# ====================================================
+#
+#   Tests
+#
+# =====================================================
+
+@testitem "BalancedAcceptance default constructor works" begin
+    @test typeof(BalancedAcceptance()) <: BalancedAcceptance
+end
+
+@testitem "BalancedAcceptance requires positive number of sites" begin
+    @test_throws TooFewSites BalancedAcceptance(numsites = 1)
+    @test_throws TooFewSites BalancedAcceptance(numsites = 0)
+    @test_throws TooFewSites BalancedAcceptance(numsites = -1)
+end
+
+@testitem "BalancedAcceptance can't be run with too many sites" begin
+    numpts, numcandidates = 26, 25
+    @test numpts > numcandidates   # who watches the watchmen?
+    dims = Int32.(floor.((sqrt(numcandidates), sqrt(numcandidates))))
+    @test_throws TooManySites BalancedAcceptance(numpts, dims)
+end
+
+@testitem "BalancedAcceptance can generate points" begin
+    bas = BalancedAcceptance()
+    coords = sample(bas)
+
+    @test typeof(coords) <: Sites
+end
+
+
+@testitem "BalancedAcceptance can take number of points as keyword argument" begin
+    N = 40
+    bas = BalancedAcceptance(; numsites = N)
+    @test bas.numsites == N
 end

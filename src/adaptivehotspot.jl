@@ -1,42 +1,32 @@
 """
-    AdaptiveSpatial
+    AdaptiveHotspot
 
-...
-
-**numpoints**, an Integer (def. 50), specifying the number of points to use.
-
-**α**, an AbstractFloat (def. 1.0), specifying ...
+- **numsites**: an integer specifying the number of points to use (default is 30)
+- **pool**: the sites that could potentially be picked 
+- **uncertainty**: a `Layer` specifying the current uncertainty at each site
 """
-Base.@kwdef mutable struct AdaptiveSpatial{T <: Integer} <: BONRefiner
-    numpoints::T = 50
-    function AdaptiveSpatial(numpoints)
-        if numpoints < one(numpoints)
-            throw(
-                ArgumentError(
-                    "You cannot have an AdaptiveSpatial with fewer than one point",
-                ),
-            )
-        end
-        return new{typeof(numpoints)}(numpoints)
+Base.@kwdef mutable struct AdaptiveHotspot{T <: Integer} <: BONSampler
+    numsites::T = 30
+    function AdaptiveHotspot(numsites)
+        as = new{typeof(numsites)}(numsites)
+        check_arguments(as)
+        return as
     end
 end
 
-_generate!(
-    coords::Vector{CartesianIndex},
-    pool::Vector{CartesianIndex},
-    sampler::AdaptiveSpatial,
-    uncertainty) = throw(ArgumentError(
-        "You can only call AdaptiveSpatial with a single layer of type Matrix"))
+function check_arguments(as::AdaptiveHotspot)
+    check(TooFewSites, as)
+    return nothing
+end
 
 function _generate!(
     coords::Vector{CartesianIndex},
     pool::Vector{CartesianIndex},
-    sampler::AdaptiveSpatial,
-    uncertainty::Array{T,2},
-) where {T <: AbstractFloat}
-
+    sampler::AdaptiveHotspot,
+    uncertainty::L
+) where L<:Layer
     # Distance matrix (inlined)
-    d = zeros(Float64, Int((sampler.numpoints * (sampler.numpoints - 1)) / 2))
+    d = zeros(Float64, Int((sampler.numsites * (sampler.numsites - 1)) / 2))
 
     # Start with the point with maximum entropy
     imax = last(findmax([uncertainty[i] for i in pool]))
@@ -46,7 +36,7 @@ function _generate!(
     best_score = 0.0
     best_s = 1
 
-    for i in 2:(sampler.numpoints)
+    for i in 2:(sampler.numsites)
         for (ci, cs) in enumerate(pool)
             coords[i] = cs
             # Distance update
@@ -65,7 +55,7 @@ function _generate!(
         end
         coords[i] = popat!(pool, best_s)
     end
-    return (coords, uncertainty)
+    return coords
 end
 
 function _matérn(d, ρ, ν)
@@ -85,4 +75,24 @@ function _D(a1::T, a2::T) where {T <: CartesianIndex{2}}
     x1, y1 = a1.I
     x2, y2 = a2.I
     return sqrt((x1 - x2)^2.0 + (y1 - y2)^2.0)
+end
+
+# ====================================================
+#
+#   Tests
+#
+# =====================================================
+
+@testitem "AdaptiveHotspot default constructor works" begin
+    @test typeof(AdaptiveHotspot()) <: AdaptiveHotspot
+end
+
+@testitem "AdaptiveHotspot has right subtypes" begin
+    @test AdaptiveHotspot <: BONSampler
+end
+
+@testitem "AdaptiveHotspot requires positive number of sites" begin
+    @test_throws TooFewSites AdaptiveHotspot(numsites = 1)
+    @test_throws TooFewSites AdaptiveHotspot(numsites = 0)
+    @test_throws TooFewSites AdaptiveHotspot(numsites = -1)
 end

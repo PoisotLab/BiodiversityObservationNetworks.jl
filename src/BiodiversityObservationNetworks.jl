@@ -1,5 +1,6 @@
 module BiodiversityObservationNetworks
 
+using SimpleSDMLayers
 using Distributions
 using Random
 using HaltonSequences
@@ -10,44 +11,58 @@ using SliceMap
 using JuMP
 using HiGHS
 using LinearAlgebra
+using Term
+using TestItems
 
 include("types.jl")
-export BONSeeder, BONRefiner, BONSampler
+export BONSampler
+export Sites, numsites, pool
+export LayerType, DataLayer, InclusionProbability
+export Layer, Stack
+
+include("sample.jl")
+export sample
+
+include("exceptions.jl")
+export BONException, TooFewSites, TooManySites
 
 include("simplerandom.jl")
 export SimpleRandom
 
+include("spatialstratified.jl")
+export SpatiallyStratified
+
 include("balancedacceptance.jl")
 export BalancedAcceptance
 
-include("adaptivespatial.jl")
-export AdaptiveSpatial
+include("weightedbas.jl")
+export WeightedBalancedAcceptance
+
+include("adaptivehotspot.jl")
+export AdaptiveHotspot
 
 include("cubesampling.jl")
 export CubeSampling
 
+include("fractaltriad.jl")
+export FractalTriad
+
+include("grts.jl")
+export GeneralizedRandomTessellatedStratified
+
 include("uniqueness.jl")
 export Uniqueness
 
-include("seed.jl")
-export seed, seed!
+#include("seed.jl")
+#export seed, seed!
 
-include("refine.jl")
-export refine, refine!
+#include("refine.jl")
+#export refine, refine!
 
 include("entropize.jl")
 export entropize, entropize!
 
-include("optimize.jl")
-export optimize
-
 include("utils.jl")
-export stack, squish, _squish, _norm
-
-#=using Requires
-function __init__()
-    @require SpeciesDistributionToolkit="72b53823-5c0b-4575-ad0e-8e97227ad13b" include(joinpath("integrations", "simplesdms.jl"))
-    @require Zygote="e88e6eb3-aa80-5325-afca-941959d7151f" include(joinpath("integrations", "zygote.jl"))
-end=#
+export stack
 
 end
