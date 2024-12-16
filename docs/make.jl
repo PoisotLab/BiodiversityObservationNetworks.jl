@@ -12,7 +12,7 @@ makedocs(
     authors = "Michael D. Catchen, Timothée Poisot, Kari Norman, Hana Mayall, Tom Malpas",
     modules = [BiodiversityObservationNetworks],
     format = DocumenterVitepress.MarkdownVitepress(
-        repo="https://github.com/gottacatchenall/BiodiversityObservationNetworks.jl",
+        repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl",
         devurl="dev",
     ),
     warnonly = true,
