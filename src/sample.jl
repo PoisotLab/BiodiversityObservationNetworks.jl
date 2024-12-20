@@ -14,11 +14,23 @@ end
 
 const __BON_DOMAINS = Union{Raster, RasterStack, Polygon, Vector{<:Polygon}, BiodiversityObservationNetwork}
 
-function sample(sampler::BONSampler, geom::Any)
-    T = _what_did_you_pass(geom)
-    sample(sampler, Base.convert(T, geom))
+"""
+    sample
+
+Sample from `geom`. This is highest level dispatch which assumes nothing about
+the geometry the user is trying to apply [`BONSampler`](@ref) to.
+"""
+function sample(sampler::BONSampler, geom::T) where T
+    GEOM_TYPE = _what_did_you_pass(geom)
+    isnothing(GEOM_TYPE) && throw(ArgumentError("$T cannot be coerced to a valid Geometry"))
+    sample(sampler, Base.convert(GEOM_TYPE, geom))
 end
 
+"""
+    sample
+
+Attempt to use `BONSampler` to sample from a valid `geom`
+"""
 function sample(sampler::BONSampler, geom::__BON_DOMAINS)
     _sample(sampler, geom)
 end
