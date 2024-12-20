@@ -1,3 +1,4 @@
+#=
 """
     BalancedAcceptance
 
@@ -93,3 +94,5 @@ end
     bas = BalancedAcceptance(; numsites = N)
     @test bas.numsites == N
 end
+
+=#

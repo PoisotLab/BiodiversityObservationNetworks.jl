@@ -1,3 +1,4 @@
+#=
 """
     GeneralizedRandomTessellatedStratified
 
@@ -70,3 +71,5 @@ function _generate!(
         CartesianIndices(code_numbers)[sort_idx],
     )[1:(grts.numsites)]
 end
+
+=#
