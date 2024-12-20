@@ -1,5 +1,15 @@
 const __RASTER_TYPES = Union{SDMLayer, Matrix{<:Real}}
 
+"""
+    Raster
+
+A `Raster` stores gridded data. The internal representation of this data can be
+an SDMLayer (from
+[SimpleSDMLayers.jl](https://github.com/PoisotLab/SpeciesDistributionToolkit.jl))
+or a Matrix.
+
+`Raster` extends the RasterTrait type from GeoInterface.
+"""
 struct Raster{R <: __RASTER_TYPES}
     raster::R
 end
@@ -29,18 +39,16 @@ _get_raster_crs(raster::Raster{<:SDMLayer}) = GI.crs(raster.raster)
 _get_raster_crs(::Raster{<:Matrix}) = nothing
 
 
+# SpeciesDistributionToolkit Overloads
 SDT.eastings(r::Raster{<:Matrix}) = 0:(1/size(r)[2]):1
 SDT.northings(r::Raster{<:Matrix}) = 0:(1/size(r)[1]):1
-
 SDT.eastings(r::Raster{<:SDMLayer}) = eastings(r.raster)
 SDT.northings(r::Raster{<:SDMLayer}) = northings(r.raster)
 
-
+# GeoInterface overloads
 GI.isgeometry(::Raster)::Bool = true
 GI.geomtrait(::Raster)::DataType = GI.RasterTrait()
 GI.israster(::Raster)::Bool = true
 GI.trait(::Raster) = RasterTrait()
-
-
 GI.extent(::RasterTrait, raster::Raster)::GI.Extents.Extent = _get_raster_extent(raster)
 GI.crs(::RasterTrait, raster::Raster)::GeoFormatTypes.CoordinateReferenceSystem = _get_raster_crs(raster)

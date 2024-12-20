@@ -1,3 +1,9 @@
+"""
+    BONSampler
+
+An abstract type that is the supertype for all methods for sampling
+BiodiversityObservationNetworks. 
+"""
 abstract type BONSampler end 
 
 function _what_did_you_pass(geom)

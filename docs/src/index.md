@@ -8,3 +8,8 @@ data.
 
 !!! warning "This package is in development"
     The `BiodiversityObservationNetworks.jl` package is currently under development. The API is not expected to change a lot, but it may change in order to facilitate the integration of new features.
+
+```@autodocs
+Modules = [BiodiversityObservationNetworks]
+Order   = [:type, :function]
+```

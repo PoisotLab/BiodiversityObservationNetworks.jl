@@ -1,3 +1,9 @@
+"""
+    Polygon
+
+A Polygon extends the GeoInterface API for both PolygonTrait and
+MultiPolygonTraits. 
+"""
 struct Polygon{T, G}
     geometry::G
     function Polygon(::T, geom::G) where {T <: GI.AbstractTrait, G}
