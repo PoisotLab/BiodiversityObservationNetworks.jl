@@ -1,0 +1,46 @@
+const __RASTER_TYPES = Union{SDMLayer, Matrix{<:Real}}
+
+struct Raster{R <: __RASTER_TYPES}
+    raster::R
+end
+Base.show(io::IO, r::Raster) = print(io, "Raster with dimensions $(size(r))")
+Base.size(r::Raster) = size(r.raster)
+
+Raster(sdmlayer::SDMLayer) = Raster{typeof(sdmlayer)}(sdmlayer)
+
+datatype(::Raster{T}) where T = T.parameters[begin]
+
+Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(SDMLayer)
+Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
+
+is_rasterizable(::T) where T = T <: __RASTER_TYPES
+
+
+nonempty(r::Raster{<:SDMLayer}) = findall(r.raster.indices);
+nonempty(r::Raster{<:Matrix}) = findall(x-> !isnothing(x) && !isnan(x) && !ismissing(x), r.raster)
+
+_get_raster_extent(raster::Raster{<:SDMLayer}) = begin
+    bbox = SDT.boundingbox(raster.raster)
+    GI.Extent(X=(bbox.left, bbox.right), Y=(bbox.bottom, bbox.top))
+end 
+_get_raster_extent(::Raster{<:Matrix}) = GI.Extent(X=(0,1), Y=(0,1)) # rent on the unit square is out of control
+
+_get_raster_crs(raster::Raster{<:SDMLayer}) = GI.crs(raster.raster)
+_get_raster_crs(::Raster{<:Matrix}) = nothing
+
+
+SDT.eastings(r::Raster{<:Matrix}) = 0:(1/size(r)[2]):1
+SDT.northings(r::Raster{<:Matrix}) = 0:(1/size(r)[1]):1
+
+SDT.eastings(r::Raster{<:SDMLayer}) = eastings(r.raster)
+SDT.northings(r::Raster{<:SDMLayer}) = northings(r.raster)
+
+
+GI.isgeometry(::Raster)::Bool = true
+GI.geomtrait(::Raster)::DataType = GI.RasterTrait()
+GI.israster(::Raster)::Bool = true
+GI.trait(::Raster) = RasterTrait()
+
+
+GI.extent(::RasterTrait, raster::Raster)::GI.Extents.Extent = _get_raster_extent(raster)
+GI.crs(::RasterTrait, raster::Raster)::GeoFormatTypes.CoordinateReferenceSystem = _get_raster_crs(raster)

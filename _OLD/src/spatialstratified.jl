@@ -88,7 +88,6 @@ function _default_strata(sz)
     mat[begin:x, :] .= 1
     mat[(x + 1):end, begin:y] .= 2
     mat[(x + 1):end, (y + 1):end] .= 3
-
     return Layer(mat)
 end
 

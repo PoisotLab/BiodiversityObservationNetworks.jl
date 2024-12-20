@@ -8,7 +8,7 @@ using BiodiversityObservationNetworks
 bib = CitationBibliography(joinpath(@__DIR__, "BONs.bib"))
 
 makedocs(
-    sitename = "BiodiversityObservationNetwork.jl",
+    sitename = "BiodiversityObservationNetworks.jl",
     authors = "Michael D. Catchen, Timothée Poisot, Kari Norman, Hana Mayall, Tom Malpas",
     modules = [BiodiversityObservationNetworks],
     format = DocumenterVitepress.MarkdownVitepress(

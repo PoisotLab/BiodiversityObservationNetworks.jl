@@ -1,68 +1,41 @@
 module BiodiversityObservationNetworks
+    using Clustering
+    using DelaunayTriangulation
+    using Distributions
+    using GeometryOps
+    using GeoInterface
+    using MultivariateStats
+    using SpeciesDistributionToolkit
+    using Random
 
-using SimpleSDMLayers
-using Distributions
-using Random
-using HaltonSequences
-using StatsBase
-using SpecialFunctions
-using ProgressMeter
-using SliceMap
-using JuMP
-using HiGHS
-using LinearAlgebra
-using Term
-using TestItems
+    import GeoInterface as GI
+    import GeometryOps as GO
+    import SpeciesDistributionToolkit as SDT
+    import SpeciesDistributionToolkit.GeoJSON as GJSON
 
-include("types.jl")
-export BONSampler
-export Sites, numsites, pool
-export LayerType, DataLayer, InclusionProbability
-export Layer, Stack
+    export BiodiversityObservationNetwork
+    export Node
+    export Polygon
+    export Raster
+    export RasterStack
 
-include("sample.jl")
-export sample
+    export BONSampler
+    export SimpleRandom, Grid, KMeans, SpatiallyStratified
+    export sample
+    export datatype
+    export nonempty
+    export is_polygonizable, is_rasterizable, is_bonifyable
 
-include("exceptions.jl")
-export BONException, TooFewSites, TooManySites
+    include(joinpath("geometry", "bon.jl"))
+    include(joinpath("geometry", "polygon.jl"))
+    include(joinpath("geometry", "raster.jl"))
+    include(joinpath("geometry", "stack.jl"))
 
-include("simplerandom.jl")
-export SimpleRandom
+    include("sample.jl")
+    include(joinpath("samplers", "simplerandom.jl"))
+    include(joinpath("samplers", "grid.jl"))
+    include(joinpath("samplers", "kmeans.jl"))
+    include(joinpath("samplers", "spatiallystratified.jl"))
 
-include("spatialstratified.jl")
-export SpatiallyStratified
 
-include("balancedacceptance.jl")
-export BalancedAcceptance
-
-include("weightedbas.jl")
-export WeightedBalancedAcceptance
-
-include("adaptivehotspot.jl")
-export AdaptiveHotspot
-
-include("cubesampling.jl")
-export CubeSampling
-
-include("fractaltriad.jl")
-export FractalTriad
-
-include("grts.jl")
-export GeneralizedRandomTessellatedStratified
-
-include("uniqueness.jl")
-export Uniqueness
-
-#include("seed.jl")
-#export seed, seed!
-
-#include("refine.jl")
-#export refine, refine!
-
-include("entropize.jl")
-export entropize, entropize!
-
-include("utils.jl")
-export stack
-
-end
+end     
