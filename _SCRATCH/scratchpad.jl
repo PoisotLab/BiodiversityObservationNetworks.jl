@@ -4,6 +4,7 @@ Pkg.activate(@__DIR__)
 using BiodiversityObservationNetworks
 using CairoMakie, GeoMakie
 
+
 import BiodiversityObservationNetworks as BONs
 import BiodiversityObservationNetworks.SpeciesDistributionToolkit as SDT
 import BiodiversityObservationNetworks.GeoInterface as GI
@@ -20,6 +21,11 @@ bon = sample(SimpleRandom(10), col_states)
 bon = sample(SpatiallyStratified(100), col_states)
 bon = BONs.sample(Grid(), col)
 bon = BONs.sample(KMeans(75), bioclim)
+
+
+cornerplot(bioclim)
+
+
 
 begin 
     f = Figure(size=(900,900))

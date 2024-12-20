@@ -26,6 +26,8 @@ module BiodiversityObservationNetworks
     export nonempty
     export is_polygonizable, is_rasterizable, is_bonifyable
 
+    export cornerplot
+
     include(joinpath("geometry", "bon.jl"))
     include(joinpath("geometry", "polygon.jl"))
     include(joinpath("geometry", "raster.jl"))
@@ -36,6 +38,8 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "grid.jl"))
     include(joinpath("samplers", "kmeans.jl"))
     include(joinpath("samplers", "spatiallystratified.jl"))
+
+    include("plotting.jl")
 
 
 end     

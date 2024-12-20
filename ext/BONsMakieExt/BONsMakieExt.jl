@@ -8,4 +8,6 @@ else
     using ..Makie, ..BiodiversityObservationNetworks
 end
 
+include(joinpath(@__DIR__, "recipes.jl"))
+
 end
