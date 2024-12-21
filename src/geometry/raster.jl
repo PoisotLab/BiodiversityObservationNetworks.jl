@@ -15,14 +15,17 @@ struct Raster{R <: __RASTER_TYPES}
 end
 Base.show(io::IO, r::Raster) = print(io, "Raster with dimensions $(size(r))")
 Base.size(r::Raster) = size(r.raster)
+Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(SDMLayer)
+Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
+
+Base.getindex(r::Raster, i::Integer) = getindex(r.raster, i)
+Base.getindex(r::Raster, i::CartesianIndex) = getindex(r.raster, i)
+Base.getindex(r::Raster, node::Node) = r.raster[node.coordinate...]
+Base.getindex(r::Raster, bon::BiodiversityObservationNetwork) = [r.raster[node.coordinate...] for node in bon.nodes]
 
 Raster(sdmlayer::SDMLayer) = Raster{typeof(sdmlayer)}(sdmlayer)
 
 datatype(::Raster{T}) where T = T.parameters[begin]
-
-Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(SDMLayer)
-Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
-
 is_rasterizable(::T) where T = T <: __RASTER_TYPES
 
 

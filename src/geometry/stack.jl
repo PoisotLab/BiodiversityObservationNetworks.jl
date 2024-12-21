@@ -8,7 +8,10 @@ struct RasterStack{R<:Raster}
     stack::Vector{R}
 end
 Base.show(io::IO, ls::RasterStack) = print(io, "RasterStack with $(length(ls.stack)) layers")
+Base.getindex(ls::RasterStack, i::Vector{<:Integer})= RasterStack(ls.stack[i])
 Base.getindex(ls::RasterStack, i::Integer)= ls.stack[i]
+Base.getindex(rs::RasterStack, bon::BiodiversityObservationNetwork) = hcat([[r.raster[node.coordinate...] for r in rs.stack] for node in bon.nodes]...)
+
 Base.length(layers::RasterStack) = length(layers.stack)
 Base.iterate(layers::RasterStack, i) = iterate(layers.stack, i)
 Base.iterate(layers::RasterStack) = iterate(layers.stack)
