@@ -6,6 +6,7 @@ module BiodiversityObservationNetworks
     using GeoInterface
     using MultivariateStats
     using SpeciesDistributionToolkit
+    using StatsBase 
     using Random
 
     import GeoInterface as GI
@@ -26,7 +27,7 @@ module BiodiversityObservationNetworks
     export nonempty
     export is_polygonizable, is_rasterizable, is_bonifyable
 
-    export cornerplot
+    export cornerplot, bonplot
 
     include(joinpath("geometry", "bon.jl"))
     include(joinpath("geometry", "polygon.jl"))

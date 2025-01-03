@@ -11,29 +11,73 @@ import BiodiversityObservationNetworks.GeoInterface as GI
 import BiodiversityObservationNetworks.GeometryOps as GO
 
 
+can = SDT.gadm("CAN")
 col = SDT.gadm("COL")
 col_states = SDT.gadm("COL", 1)
+  
+bioclim = SDT.SDMLayer[SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(col)...) for i in 1:19]
+bioclim = RasterStack(SDT.SimpleSDMLayers.mask!(bioclim, col))
 
-bioclim = RasterStack([SDT.mask!(SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(col)...), col) for i in 1:19])
+
+cornerplot(bioclim, )
 
 bon = sample(SimpleRandom(50), bioclim)
-bon = sample(SimpleRandom(10), col_states)
+bon = sample(SimpleRandom(5), col_states)
 bon = sample(SpatiallyStratified(100), col_states)
-bon = BONs.sample(Grid(), col)
-bon = BONs.sample(KMeans(75), bioclim)
+bon = sample(Grid(), col)
+
+ 
+findfirst(x->nothing in x, eachcol(bioclim[bon]))
+
+f = Figure(size=(800, 1200))
+bonplot(f[1,1], bon, col, axistype=GeoAxis)
+f
 
 
-cornerplot(bioclim)
+# How to measure the distance between a BON and the whole env space in layer
+# stack?
+# Marginals instead of MvNormal bc everything gets fucky 
+# But can penalize w/ weighted distance between Covariance matrices
 
-
-
-begin 
-    f = Figure(size=(900,900))
-    ga = GeoAxis(f[1,1])
-    for (i,st) in enumerate(convert(Polygon, col_states))
-    poly!(ga, st.geometry, strokewidth=2, color=Symbol("grey", string(20+2*i)))
-    scatter!(ga, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+function _js_thing(rs::RasterStack, bon::BiodiversityObservationNetwork)
+    function _js(P,Q) 
+        M = BONs.Distributions.MixtureModel([P,Q], [0.5,0.5])
+        div = 0.5*BONs.Distributions.kldivergence(P,M) + 0.5 * BONs.Distributions.kldivergence(Q,M)
+        return sqrt(div / log(2))    
     end
-    f
+    _, Xfull = BONs.features(rs)
+    Xsampled = rs[bon]
+
+    nlayers = length(rs)
+    
+    Σ₁, Σ₂ = zeros(nlayers, nlayers), zeros(nlayers, nlayers)
+
+    𝓛_js = 0.
+    for i in axes(Xfull,1)
+        𝓝₁ = BONs.Distributions.fit(BONs.Distributions.Normal, Xfull[i,:])
+        𝓝₂ = BONs.Distributions.fit(BONs.Distributions.Normal, Xsampled[i,:])
+        𝓛_js += _js(𝓝₁, 𝓝₂) 
+        for j in i+1:nlayers
+            Σ₁[i,j] = BONs.Distributions.cov(Xfull[:,i],Xfull[:,j])
+            Σ₁[j,i] = Σ₁[i,j]
+
+            Σ₂[i,j] = BONs.Distributions.cov(Xsampled[:,i],Xsampled[:,j])
+            Σ₂[j,i] = Σ₂[i,j]
+        end 
+    end
+    𝓛_covariance = sqrt(sum((Σ₁ .- Σ₂).^2))
+
+    𝓛_js, 𝓛_covariance
 end 
 
+
+n_reps = 500
+n_nodes = [2^i for i in 4:9]
+begin 
+    f = Figure()
+    ax = Axis(f[1,1])
+    for n in n_nodes
+        density!(ax, [_js_thing(bioclim, sample(SimpleRandom(n), bioclim))[1] for _ in 1:n_reps])
+    end 
+    f
+end 
