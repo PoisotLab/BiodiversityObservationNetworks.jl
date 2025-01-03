@@ -1,7 +1,7 @@
 name = "BiodiversityObservationNetworks"
 uuid = "a5b868d3-191d-4bba-a38a-ad28190da010"
 authors = ["michael catchen <michael.catchen@colorado.edu>"]
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
