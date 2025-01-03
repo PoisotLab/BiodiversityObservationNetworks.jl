@@ -1,3 +1,56 @@
+"""
+    BalancedAcceptance
+
+`BalancedAcceptance` is a type of [`BONSampler`](@ref) for generating
+[`BiodiversityObservationNetwork`](@ref)s with spatial spreading.
+
+*Arguments*:
+- `number_of_nodes`: the number of sites to select
+- `grid_size`: 
+"""
+Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
+    number_of_nodes::I = 100
+    grid_size::Tuple{I,I} = (250, 250)
+end 
+
+_sample(::BalancedAcceptance, ::T) where T = throw(ArgumentError("Can't use BalancedAcceptance on a $T"))
+
+function _sample(sampler::BalancedAcceptance, polygon::Polygon) 
+    x, y = GI.extent(polygon)
+    grid_size = sampler.grid_size
+    N = sampler.number_of_nodes
+
+
+    Δx = (x[2]-x[1])/grid_size[1]
+    Δy = (y[2]-y[1])/grid_size[2]
+
+    Es = [x[1] + i*Δx for i in 1:grid_size[1]]
+    Ns = [y[1] + i*Δy for i in 1:grid_size[2]]
+
+    seed = rand(Int.(1e0:1e7), 2)
+
+
+
+    selected_points = Node[]
+    ct = 0
+    candct = 0
+    while ct < N 
+        i, j = haltonvalue(seed[1] + candct, 2), haltonvalue(seed[2] + candct, 3)
+        candct += 1
+        
+        # this gets the latlong by gridding the extent with the dims provided in sampler
+        candx, candy = convert.(Int, [ceil(grid_size[1] * i), ceil(grid_size[2] * j)])
+        candidate = (Es[candx], Ns[candy])
+        if GeometryOps.contains(polygon, candidate)
+            push!(selected_points, Node(candidate))
+            ct += 1
+         end
+    end
+    BiodiversityObservationNetwork(selected_points)
+
+end 
+
+
 #=
 """
     BalancedAcceptance

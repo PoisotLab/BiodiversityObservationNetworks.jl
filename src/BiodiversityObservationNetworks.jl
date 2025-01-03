@@ -4,6 +4,7 @@ module BiodiversityObservationNetworks
     using Distributions
     using GeometryOps
     using GeoInterface
+    using HaltonSequences
     using MultivariateStats
     using SpeciesDistributionToolkit
     using StatsBase 
@@ -21,7 +22,7 @@ module BiodiversityObservationNetworks
     export RasterStack
 
     export BONSampler
-    export SimpleRandom, Grid, KMeans, SpatiallyStratified
+    export SimpleRandom, Grid, KMeans, SpatiallyStratified, BalancedAcceptance
     export sample
     export datatype
     export nonempty
@@ -39,6 +40,8 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "grid.jl"))
     include(joinpath("samplers", "kmeans.jl"))
     include(joinpath("samplers", "spatiallystratified.jl"))
+    include(joinpath("samplers", "balancedacceptance.jl"))
+
 
     include("plotting.jl")
 

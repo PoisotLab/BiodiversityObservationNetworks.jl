@@ -26,8 +26,7 @@ bon = sample(SimpleRandom(5), col_states)
 bon = sample(SpatiallyStratified(100), col_states)
 bon = sample(Grid(), col)
 
- 
-findfirst(x->nothing in x, eachcol(bioclim[bon]))
+bon = sample(BalancedAcceptance(grid_size=(50,50)), col)
 
 f = Figure(size=(800, 1200))
 bonplot(f[1,1], bon, col, axistype=GeoAxis)
