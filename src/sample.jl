@@ -1,26 +1,36 @@
+"""
+    BONSampler
 
-function sample(alg::BONSampler) 
-    _sample!(
-        _allocate_sites(numsites(alg)), 
-        _default_pool(alg),
-        alg
-    )
+An abstract type that is the supertype for all methods for sampling
+BiodiversityObservationNetworks. 
+"""
+abstract type BONSampler end 
+
+function _what_did_you_pass(geom)
+    is_polygonizable(geom) && return Polygon
+    is_rasterizable(geom) && return Raster
+    is_bonifyable(geom) && return BiodiversityObservationNetwork
 end
 
+const __BON_DOMAINS = Union{Raster, RasterStack, Polygon, Vector{<:Polygon}, BiodiversityObservationNetwork}
 
-function sample(alg::BONSampler, l::L) where L<:Layer
-    _sample!(
-        _allocate_sites(numsites(alg)), 
-        l,
-        alg
-    )
+"""
+    sample
+
+Sample from `geom`. This is highest level dispatch which assumes nothing about
+the geometry the user is trying to apply [`BONSampler`](@ref) to.
+"""
+function sample(sampler::BONSampler, geom::T) where T
+    GEOM_TYPE = _what_did_you_pass(geom)
+    isnothing(GEOM_TYPE) && throw(ArgumentError("$T cannot be coerced to a valid Geometry"))
+    sample(sampler, Base.convert(GEOM_TYPE, geom))
 end
 
+"""
+    sample
 
-function sample(alg::BONSampler, candidates::C) where C<:Sites
-    _sample!(
-        _allocate_sites(numsites(alg)), 
-        candidates,
-        alg
-    )
+Attempt to use `BONSampler` to sample from a valid `geom`
+"""
+function sample(sampler::BONSampler, geom::__BON_DOMAINS)
+    _sample(sampler, geom)
 end

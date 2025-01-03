@@ -1,3 +1,4 @@
+#=
 """
     FractalTriad
 
@@ -187,3 +188,5 @@ end
     @test_throws TooFewSites FractalTriad(; numsites = -1)
     @test_throws TooFewSites FractalTriad(; numsites = 0)
 end
+
+=#

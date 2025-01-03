@@ -1,3 +1,4 @@
+#=
 """
     AdaptiveHotspot
 
@@ -96,3 +97,4 @@ end
     @test_throws TooFewSites AdaptiveHotspot(numsites = 0)
     @test_throws TooFewSites AdaptiveHotspot(numsites = -1)
 end
+=#

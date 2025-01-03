@@ -1,3 +1,4 @@
+#=
 """
     CubeSampling
 
@@ -451,3 +452,5 @@ end
     @test_throws TooFewSites CubeSampling(numsites = 0)
     @test_throws TooFewSites CubeSampling(numsites = 1)
 end
+
+=#
