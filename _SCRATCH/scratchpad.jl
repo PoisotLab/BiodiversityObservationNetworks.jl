@@ -11,7 +11,7 @@ import BiodiversityObservationNetworks.GeoInterface as GI
 import BiodiversityObservationNetworks.GeometryOps as GO
 
 
-can = SDT.gadm("CAN")
+fra = SDT.gadm("FRA", 1)
 col = SDT.gadm("COL")
 col_states = SDT.gadm("COL", 1)
   
@@ -25,10 +25,14 @@ bon = sample(SimpleRandom(50), bioclim)
 bon = sample(SimpleRandom(5), col_states)
 bon = sample(SpatiallyStratified(100), col_states)
 bon = sample(Grid(), col)
+bon = sample(SimpleRandom(100), fra)
 
-bon = sample(BalancedAcceptance(grid_size=(50,50)), col)
+bon = sample(BalancedAcceptance(number_of_nodes=100), bioclim)
 
-f = Figure(size=(800, 1200))
+sample(BalancedAcceptance(), bioclim)
+
+
+f = Figure(size=(500, 500))
 bonplot(f[1,1], bon, col, axistype=GeoAxis)
 f
 

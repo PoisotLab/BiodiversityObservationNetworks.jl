@@ -14,6 +14,9 @@ Base.@kwdef struct Grid{F<:Real} <: BONSampler
     latitude_spacing::F  = 1.
 end 
 
+_valid_geometries(::Grid) = (Polygon, Raster, RasterStack)
+
+
 function _generate_grid(sampler::Grid, domain) 
     x, y = GeoInterface.extent(domain)
     x_step, y_step = sampler.longitude_spacing, sampler.latitude_spacing

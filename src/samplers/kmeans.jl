@@ -13,6 +13,9 @@ struct KMeans{I<:Integer} <: BONSampler
     k::I
 end 
 
+_valid_geometries(::KMeans) = (RasterStack)
+
+
 function _sample(::KMeans, ::T) where T 
     @error "Can't use KMeans on a $T"
 end 

@@ -8,6 +8,8 @@ extent has the same probability of inclusion.
 struct SimpleRandom{I<:Integer} <: BONSampler
     number_of_nodes::I
 end
+_valid_geometries(::SimpleRandom) = (Polygon, Raster, Vector{Polygon}, RasterStack)
+
 
 function _sample(sampler::SimpleRandom, polygon::Polygon)
     x, y = GI.extent(polygon)
