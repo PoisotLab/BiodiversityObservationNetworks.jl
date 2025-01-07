@@ -16,8 +16,8 @@ end
 
 _valid_geometries(::BalancedAcceptance) = (Polygon, Raster, Vector{Polygon}, RasterStack)
 
-function _sample(sampler::BalancedAcceptance, raster::T) where T<:Union{Polygon,Raster,Vector{<:Polygon}}
-    _balanced_acceptance(sampler, raster)
+function _sample(sampler::BalancedAcceptance, geometry::T) where T<:Union{Polygon,Raster,Vector{<:Polygon}}
+    _balanced_acceptance(sampler, geometry)
 end 
 
 function _sample(sampler::BalancedAcceptance, layers::RasterStack)
@@ -25,10 +25,8 @@ function _sample(sampler::BalancedAcceptance, layers::RasterStack)
 end 
 
 _get_easting_and_northing(::BalancedAcceptance, raster::Raster) = SDT.eastings(raster), SDT.northings(raster)
-
 _get_easting_and_northing(sampler::BalancedAcceptance, layers::RasterStack) = _get_easting_and_northing(sampler, first(layers))
-
-function _get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon)
+_get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon) = begin 
     x, y = GI.extent(polygon)
     grid_size = sampler.grid_size
     Δx = (x[2]-x[1])/grid_size[1]
@@ -40,10 +38,10 @@ function _get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon
     return Es, Ns
 end 
 
+# TODO: this is redundant and a similar thing is in BalancedAcceptance, unify
 _check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[1]], Ns[candidate[2]]))
-
-function _check_candidate(_, _, candidate, raster::Raster)
-    val = raster.raster[candidate[2], candidate[1]] #long/lat is flipped 
+function _check_candidate(coord, raster::Raster)
+    val = raster.raster[coord]
     !isnothing(val) && !ismissing(val) && !isnan(val)
 end
 

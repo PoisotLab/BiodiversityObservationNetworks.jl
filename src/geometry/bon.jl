@@ -13,6 +13,8 @@ end
 Base.show(io::IO, node::Node) = print(io, "Node at $(node.coordinate)")
 Base.getindex(node::Node, i) = getindex(node.coordinate, i)
 
+Node(x::T, y::T) where T<:Number = Node((x,y))
+
 GI.isgeometry(::Node)::Bool = true
 GI.geomtrait(::Node)::DataType = PointTrait()
 GI.ncoord(::PointTrait, ::Node)::Integer = 1

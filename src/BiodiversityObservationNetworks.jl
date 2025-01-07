@@ -22,7 +22,7 @@ module BiodiversityObservationNetworks
     export RasterStack
 
     export BONSampler
-    export SimpleRandom, Grid, KMeans, SpatiallyStratified, BalancedAcceptance
+    export SimpleRandom, Grid, KMeans, SpatiallyStratified, BalancedAcceptance, GeneralizedRandomTessellatedStratified
     export sample
     export datatype
     export nonempty
@@ -41,6 +41,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "kmeans.jl"))
     include(joinpath("samplers", "spatiallystratified.jl"))
     include(joinpath("samplers", "balancedacceptance.jl"))
+    include(joinpath("samplers", "grts.jl"))
 
 
     include("plotting.jl")

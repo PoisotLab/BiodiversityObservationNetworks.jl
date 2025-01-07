@@ -15,6 +15,8 @@ struct Raster{R <: __RASTER_TYPES}
 end
 Base.show(io::IO, r::Raster) = print(io, "Raster with dimensions $(size(r))")
 Base.size(r::Raster) = size(r.raster)
+Base.size(r::Raster, i::Integer) = size(r.raster, i)
+
 Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(SDMLayer)
 Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
 
