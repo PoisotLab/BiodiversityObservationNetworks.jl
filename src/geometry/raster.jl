@@ -17,11 +17,17 @@ Base.show(io::IO, r::Raster) = print(io, "Raster with dimensions $(size(r))")
 Base.size(r::Raster) = size(r.raster)
 Base.size(r::Raster, i::Integer) = size(r.raster, i)
 
+Base.findall(r::Raster{<:SDMLayer}) = findall(r.raster.indices)
+Base.findall(r::Raster{<:Matrix}) = findall(x->!ismissing(x) && !isnothing(x) && !isnan(x), r.raster)
+
+
 Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(SDMLayer)
 Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
 
 Base.getindex(r::Raster, i::Integer) = getindex(r.raster, i)
 Base.getindex(r::Raster, i::CartesianIndex) = getindex(r.raster, i)
+Base.getindex(r::Raster, idx::Vector{<:CartesianIndex}) = map(i->getindex(r.raster, i), idx)
+Base.getindex(r::Raster, bmat::BitMatrix) = [getindex(r.raster, i) for i in findall(bmat)]
 Base.getindex(r::Raster, node::Node) = r.raster[node.coordinate...]
 Base.getindex(r::Raster, bon::BiodiversityObservationNetwork) = [r.raster[node.coordinate...] for node in bon.nodes]
 

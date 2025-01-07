@@ -33,5 +33,6 @@ end
 Attempt to use `BONSampler` to sample from a valid `geom`
 """
 function sample(sampler::BONSampler, geom::__BON_DOMAINS)
+    typeof(geom) <: _valid_geometries(sampler) || throw(ArgumentError("Invalid geometry of type $(typeof(geom).name.name) passed for sampler of type $(typeof(sampler).name.name). $(typeof(sampler).name.name) only accepts $(_valid_geometries(sampler))"))
     _sample(sampler, geom)
 end

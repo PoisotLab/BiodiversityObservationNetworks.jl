@@ -3,7 +3,7 @@ Pkg.activate(@__DIR__)
 
 using BiodiversityObservationNetworks
 using CairoMakie, GeoMakie
-
+using NeutralLandscapes
 
 import BiodiversityObservationNetworks as BONs
 import BiodiversityObservationNetworks.SpeciesDistributionToolkit as SDT
@@ -26,15 +26,20 @@ bon = sample(SimpleRandom(5), col_states)
 bon = sample(SpatiallyStratified(100), col_states)
 bon = sample(Grid(), col)
 bon = sample(SimpleRandom(100), fra)
-
-bon = sample(BalancedAcceptance(number_of_nodes=100), bioclim)
-
+bon = sample(BalancedAcceptance(number_of_nodes=50), bioclim)
 bon = sample(GeneralizedRandomTessellatedStratified(number_of_nodes=50), col)
+bon = sample(GeneralizedRandomTessellatedStratified(number_of_nodes=50), col)
+bon = sample(AdaptiveHotspot(), bioclim[1])
 
+#bon = sample(UncertaintySampling(300), H)
+
+heatmap(0:0.02:1, 0:0.02:1, nl)
+scatter!([n.coordinate for n in bon.nodes], color=:red)
+current_figure()
 
 
 f = Figure(size=(500, 500))
-bonplot(f[1,1], bon, col, axistype=GeoAxis)
+bonplot(f[1,1], bon, bioclim[1], axistype=GeoAxis)
 f
 
 
@@ -46,7 +51,7 @@ f
 function _js_thing(rs::RasterStack, bon::BiodiversityObservationNetwork)
     function _js(P,Q) 
         M = BONs.Distributions.MixtureModel([P,Q], [0.5,0.5])
-        div = 0.5*BONs.Distributions.kldivergence(P,M) + 0.5 * BONs.Distributions.kldivergence(Q,M)
+        div = 0.5*BONs.Distributions.kldivergence(P,M) + 0.5*BONs.Distributions.kldivergence(Q,M)
         return sqrt(div / log(2))    
     end
     _, Xfull = BONs.features(rs)

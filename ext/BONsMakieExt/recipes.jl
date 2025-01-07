@@ -78,3 +78,17 @@ function BiodiversityObservationNetworks.bonplot(
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
+
+
+
+function BiodiversityObservationNetworks.bonplot(
+    position::GridPosition,
+    bon::BiodiversityObservationNetwork,
+    raster::Raster;
+    axistype=Makie.Axis
+)
+    ax = axistype(position)
+    heatmap!(ax, raster.raster)
+    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+    Makie.AxisPlot(ax, plot)
+end

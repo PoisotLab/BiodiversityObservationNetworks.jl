@@ -40,8 +40,8 @@ end
 
 # TODO: this is redundant and a similar thing is in BalancedAcceptance, unify
 _check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[1]], Ns[candidate[2]]))
-function _check_candidate(coord, raster::Raster)
-    val = raster.raster[coord]
+function _check_candidate(_, _, coord, raster::Raster)
+    val = raster.raster[coord[2],coord[1]]
     !isnothing(val) && !ismissing(val) && !isnan(val)
 end
 

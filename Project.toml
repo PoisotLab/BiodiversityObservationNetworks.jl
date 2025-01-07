@@ -27,7 +27,6 @@ TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [weakdeps]
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
-NeutralLandscapes = "71847384-8354-4223-ac08-659a5128069f"
 
 [extensions]
 BONsMakieExt = "Makie"
