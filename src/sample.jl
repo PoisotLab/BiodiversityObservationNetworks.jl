@@ -6,6 +6,33 @@ BiodiversityObservationNetworks.
 """
 abstract type BONSampler end 
 
+struct MultistageSampler <: BONSampler  
+    samplers::Vector{<:BONSampler} 
+end
+
+const __BON_DOMAINS = Union{Raster, RasterStack, Polygon, Vector{<:Polygon}, BiodiversityObservationNetwork}
+
+
+Base.getindex(samplers::MultistageSampler, i::Integer) = samplers.samplers[i]
+Base.firstindex(samplers::MultistageSampler) = firstindex(samplers.samplers)
+Base.eachindex(samplers::MultistageSampler) = eachindex(samplers.samplers)
+Base.iterate(samplers ::MultistageSampler) = iterate(samplers, firstindex(samplers.samplers))
+Base.iterate(samplers ::MultistageSampler, i) = Base.iterate(samplers.samplers, i)
+
+
+# so its possible that there will be a polygon and a raster/rasterstack 
+# anything that works on a rasterstack can also work on a BON with set of
+# covariates.
+
+
+function sample(samplers::MultistageSampler, domain::__BON_DOMAINS)
+    bon = sample(first(samplers), domain)
+    for i in eachindex(samplers)[2:end]
+        bon = sample(samplers[i], domain, bon)
+    end
+    return bon
+end 
+
 function _what_did_you_pass(geom)
     is_polygonizable(geom) && return Polygon
     is_rasterizable(geom) && return Raster
@@ -13,7 +40,18 @@ function _what_did_you_pass(geom)
     return nothing
 end
 
-const __BON_DOMAINS = Union{Raster, RasterStack, Polygon, Vector{<:Polygon}, BiodiversityObservationNetwork}
+
+
+
+# annoying scenario that arises for cube sampling (and potentially others):
+# we need to pass a BON w/ associated covariates.
+# motivation is for cases where its computationally inefficient to look at
+# covariates, so there is some type of multistage design to select points
+# first, and then consider the covariates only at those points
+
+# this highlights general need for multistage sampler types 
+
+
 
 """
     sample
@@ -32,7 +70,13 @@ end
 
 Attempt to use `BONSampler` to sample from a valid `geom`
 """
-function sample(sampler::BONSampler, geom::__BON_DOMAINS)
-    typeof(geom) <: _valid_geometries(sampler) || throw(ArgumentError("Invalid geometry of type $(typeof(geom).name.name) passed for sampler of type $(typeof(sampler).name.name). $(typeof(sampler).name.name) only accepts $(_valid_geometries(sampler))"))
-    _sample(sampler, geom)
+sample(sampler::BONSampler, geom::__BON_DOMAINS) = _sample(sampler, geom)
+
+"""
+    sample
+
+Attempt to use `BONSampler` to sample from a valid `geom`
+"""
+function sample(sampler::BONSampler, geom::__BON_DOMAINS, bon::BiodiversityObservationNetwork)
+    _sample(sampler, geom, bon)
 end

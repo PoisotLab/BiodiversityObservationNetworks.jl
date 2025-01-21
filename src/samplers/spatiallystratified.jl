@@ -61,6 +61,13 @@ function _sample(
 
     nodes_per_stratum = fixed_weights ? _assign_fixed_inclusions(N, weights) : _sample_inclusions(N, weights)
     
+
+    # todo: ther's no reason this can't be a sampler from a set of acceptable
+    # samplers
+    # this proves harded when it doesn't dispatch on the same tpe that
+    # SpatialStratified does, but it may not be impossible. 
+        # if it has the same dispatch its ez. 
+
     vcat([_sample(SimpleRandom(nodes_per_stratum[i]), polygons[i]) for i in eachindex(polygons) if nodes_per_stratum[i] > 0])
 end
 

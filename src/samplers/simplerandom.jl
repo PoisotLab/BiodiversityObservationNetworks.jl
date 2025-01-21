@@ -11,6 +11,19 @@ end
 _valid_geometries(::SimpleRandom) = (Polygon, Raster, Vector{Polygon}, RasterStack)
 
 
+# TODO: this should dispatch on individual states if it gets a vector of
+# polygons
+
+function _sample(sampler::SimpleRandom, polygons::Vector{<:Polygon}, bon::BiodiversityObservationNetwork)
+    vcat([_sample(sampler, poly, bon) for poly in polygons])
+end
+
+function _sample(sampler::SimpleRandom, ::Any, bon::BiodiversityObservationNetwork)
+    N = sampler.number_of_nodes
+    BiodiversityObservationNetwork(Distributions.sample(bon.nodes, N, replace=false))
+end 
+
+
 function _sample(sampler::SimpleRandom, polygon::Polygon)
     x, y = GI.extent(polygon)
     N = sampler.number_of_nodes

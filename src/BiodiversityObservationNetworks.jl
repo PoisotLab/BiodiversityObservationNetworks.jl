@@ -5,6 +5,9 @@ module BiodiversityObservationNetworks
     using GeometryOps
     using GeoInterface
     using HaltonSequences
+    using HiGHS
+    using JuMP
+    using LinearAlgebra
     using MultivariateStats
     using SpecialFunctions
     using SpeciesDistributionToolkit
@@ -23,9 +26,11 @@ module BiodiversityObservationNetworks
     export RasterStack
 
     export BONSampler
+    export MultistageSampler
     export SimpleRandom
     export Grid
     export KMeans
+    export CubeSampling
     export SpatiallyStratified
     export BalancedAcceptance
     export GeneralizedRandomTessellatedStratified
@@ -35,7 +40,7 @@ module BiodiversityObservationNetworks
     export datatype
     export nonempty
     export is_polygonizable, is_rasterizable, is_bonifyable
-
+    
     export cornerplot, bonplot
 
     include(joinpath("geometry", "bon.jl"))
@@ -47,6 +52,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "simplerandom.jl"))
     include(joinpath("samplers", "grid.jl"))
     include(joinpath("samplers", "kmeans.jl"))
+    include(joinpath("samplers", "cube.jl"))
     include(joinpath("samplers", "spatiallystratified.jl"))
     include(joinpath("samplers", "balancedacceptance.jl"))
     include(joinpath("samplers", "grts.jl"))

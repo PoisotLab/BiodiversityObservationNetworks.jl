@@ -80,6 +80,22 @@ function BiodiversityObservationNetworks.bonplot(
 end
 
 
+function BiodiversityObservationNetworks.bonplot(
+    position::GridPosition,
+    bon::BiodiversityObservationNetwork,
+    poly::Vector{<:Polygon};
+    axistype=Makie.Axis
+)
+    ax = axistype(position)
+    for p in poly
+        poly!(ax, p.geometry, strokewidth=1, color=(:grey, 0.1))
+    end
+    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+    Makie.AxisPlot(ax, plot)
+end
+
+
+
 
 function BiodiversityObservationNetworks.bonplot(
     position::GridPosition,

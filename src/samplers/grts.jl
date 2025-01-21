@@ -30,6 +30,9 @@ Base.@kwdef struct GeneralizedRandomTessellatedStratified{I<:Integer} <: BONSamp
     number_of_nodes::I = 100
     grid_size::Tuple{I,I} = (250, 250)
 end 
+GeneralizedRandomTessellatedStratified(n::Integer; grid_size=(250,250)) = GeneralizedRandomTessellatedStratified(n, grid_size)
+
+
 _valid_geometries(::GeneralizedRandomTessellatedStratified) = (Polygon, Raster, Vector{Polygon}, RasterStack)
 
 """

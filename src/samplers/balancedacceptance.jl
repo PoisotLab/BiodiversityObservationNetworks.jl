@@ -13,6 +13,7 @@ Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
     number_of_nodes::I = 100
     grid_size::Tuple{I,I} = (250, 250)
 end 
+BalancedAcceptance(n::Integer; grid_size=(250, 250)) = BalancedAcceptance(n, grid_size)
 
 _valid_geometries(::BalancedAcceptance) = (Polygon, Raster, Vector{Polygon}, RasterStack)
 
