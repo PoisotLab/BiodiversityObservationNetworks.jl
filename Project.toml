@@ -1,11 +1,12 @@
 name = "BiodiversityObservationNetworks"
 uuid = "a5b868d3-191d-4bba-a38a-ad28190da010"
 authors = ["michael catchen <michael.catchen@colorado.edu>"]
-version = "0.3.0"
+version = "0.4.0"
 
 [deps]
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
 DelaunayTriangulation = "927a84f5-c5f4-47a5-9785-b46e178433df"
+Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
 GeometryOps = "3251bfac-6a57-4b6d-aa61-ac1fef2975ab"
@@ -34,6 +35,7 @@ BONsMakieExt = "Makie"
 [compat]
 Clustering = "0.15.7"
 DelaunayTriangulation = "1.6.3"
+Distances = "0.10.12"
 Distributions = "0.25"
 GeoInterface = "1.4.0"
 GeometryOps = "0.1.13"

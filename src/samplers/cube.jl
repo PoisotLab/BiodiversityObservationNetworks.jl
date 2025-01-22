@@ -14,9 +14,30 @@ end
 
 _valid_geometries(::CubeSampling) = (BiodiversityObservationNetwork, RasterStack, Raster)
 
+
+# for multistage
+function _sample(sampler::CubeSampling, layers::RasterStack, bon::BiodiversityObservationNetwork)
+    cart_idx = _get_cartesian_idx(layers, bon)
+    feat = layers[cart_idx]
+    N = sampler.number_of_nodes
+    π_optimal, candidate_pool = _cube(N, cart_idx, feat)
+    Es, Ns = eastings(layers), northings(layers)
+    selected = candidate_pool[findall(isequal(1), π_optimal)]
+    return BiodiversityObservationNetwork([Node(Es[idx[2]], Ns[idx[1]]) for idx in selected])
+
+end
+
 function _sample(sampler::CubeSampling, layers::RasterStack)
     cart_idx, feat = features(layers)
-    πₖ = [sampler.number_of_nodes / size(feat, 2) for _ in axes(feat, 2)]
+    N = sampler.number_of_nodes
+    π_optimal, candidate_pool = _cube(N, cart_idx, feat)
+    Es, Ns = eastings(layers), northings(layers)
+    selected = candidate_pool[findall(isequal(1), π_optimal)]
+    return BiodiversityObservationNetwork([Node(Es[idx[2]], Ns[idx[1]]) for idx in selected])
+end
+
+function _cube(N, cart_idx, feat)
+    πₖ = [N / size(feat, 2) for _ in axes(feat, 2)]
 
     # sort points by distance in auxillary variable space
     dist = mahalanobis(πₖ, feat)
@@ -31,16 +52,11 @@ function _sample(sampler::CubeSampling, layers::RasterStack)
 
     π_optimal_flight = cubefastflight(πₖ, x)
     # check if there are non-integer probabilities
-    non_int_ind = findall(u -> u .∉ Ref(Set([0, 1])), π_optimal_flight)
+    non_int_idx = findall(u -> u != 0 && u != 1, π_optimal_flight)
     # if so, perform landing phase to resolve them
-    π_optimal = isempty(non_int_ind) ? π_optimal_flight : cubeland(π_optimal_flight, πₖ, x)
+    π_optimal = isempty(non_int_idx) ? π_optimal_flight : cubeland(π_optimal_flight, πₖ, x)
 
-    
-    Es, Ns = eastings(layers), northings(layers)
-    selected = candidate_pool[findall(isequal(1), π_optimal)]
-
-
-    BiodiversityObservationNetwork([Node(Es[idx[2]], Ns[idx[1]]) for idx in selected])
+    return π_optimal, candidate_pool
 end
 
 
@@ -80,7 +96,7 @@ function cubefastflight(πₖ, x)
     num_aux = size(x)[1]
 
     # get all non-integer probabilities
-    non_int_ind = findall(u -> u .∉ Ref(Set([0, 1])), πₖ)
+    non_int_ind = findall(u -> u != 0 && u != 1, πₖ)
 
     π_nonint = πₖ[non_int_ind]
 
@@ -148,7 +164,7 @@ function update_psi(Ψ, B)
     λ₂_ineq = @. Ψ - (λ₂ * u)
 
     # checking for floating point issues
-    tol = 1e-13
+    tol = 1e-13 # TODO: make this a sampler param
     λ₁_ineq[abs.(λ₁_ineq) .< tol] .= 0
     λ₂_ineq[abs.(λ₂_ineq) .< tol] .= 0
 

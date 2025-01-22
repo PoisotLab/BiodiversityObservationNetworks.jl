@@ -10,11 +10,19 @@ end
 Base.show(io::IO, ls::RasterStack) = print(io, "RasterStack with $(length(ls.stack)) layers")
 Base.getindex(ls::RasterStack, i::Vector{<:Integer})= RasterStack(ls.stack[i])
 Base.getindex(ls::RasterStack, i::Integer)= ls.stack[i]
-Base.getindex(rs::RasterStack, bon::BiodiversityObservationNetwork) = hcat([[r.raster[node.coordinate...] for r in rs.stack] for node in bon.nodes]...)
+Base.getindex(ls::RasterStack, i::CartesianIndex) = [getindex(r.raster, i) for r in ls]
+Base.getindex(ls::RasterStack, idxs::Vector{<:CartesianIndex}) = Matrix(hcat([getindex(r, idxs) for r in ls]...)')
+
+Base.getindex(rs::RasterStack, bon::BiodiversityObservationNetwork) = hcat([[r[node] for r in rs.stack] for node in bon.nodes]...)
+Base.getindex(rs::RasterStack, node::Node) = [r.raster[node.coordinate...] for r in rs.stack]
 
 Base.length(layers::RasterStack) = length(layers.stack)
 Base.iterate(layers::RasterStack, i) = iterate(layers.stack, i)
 Base.iterate(layers::RasterStack) = iterate(layers.stack)
+
+_get_cartesian_idx(layers::RasterStack, node::Node) = _get_cartesian_idx(first(layers), node)
+_get_cartesian_idx(layers::RasterStack, bon::BiodiversityObservationNetwork) = _get_cartesian_idx(first(layers), bon)
+
 
 function _common_mask!(sdmlayers::Vector{S}) where S<:SDMLayer
     mask_grid = reduce(.&, [l.indices for l in sdmlayers])

@@ -10,9 +10,11 @@ import BiodiversityObservationNetworks.SpeciesDistributionToolkit as SDT
 import BiodiversityObservationNetworks.GeoInterface as GI
 import BiodiversityObservationNetworks.GeometryOps as GO
 
-  
-_COUNTRY = SDT.gadm("FRA")
-_STATES = SDT.gadm("FRA", 1)
+
+country_coda = "COL"
+
+_COUNTRY = SDT.gadm(country_coda)
+_STATES = SDT.gadm(country_coda, 1)
 
 
 bioclim = SDT.SDMLayer[SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(_COUNTRY)...) for i in 1:19]
@@ -38,16 +40,18 @@ bon = sample(AdaptiveHotspot(), bioclim[1])
 # default 
 bon = sample(MultistageSampler([BalancedAcceptance(20), SimpleRandom(10)]), _STATES)
 
+
 bon = sample(CubeSampling(), bioclim)
 
 
+bon = sample(MultistageSampler([BalancedAcceptance(500), CubeSampling()]), bioclim)
 
 # NOTES: possible to imagine a situation where we want the number of BAS points
 # in each state to be distributed by state area. There are several ways that
 # this could be realized: 
 # - SpatiallySpatified could take an argument that uses a specific sampler
 #   within each spatial strata, rather than always SRS.
-bon = sample(BalancedAcceptance(10), _STATES)
+bon = sample(BalancedAcceptance(200), bioclim)
 
 
 f = Figure(size=(500, 500))

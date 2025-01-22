@@ -41,18 +41,6 @@ function _what_did_you_pass(geom)
 end
 
 
-
-
-# annoying scenario that arises for cube sampling (and potentially others):
-# we need to pass a BON w/ associated covariates.
-# motivation is for cases where its computationally inefficient to look at
-# covariates, so there is some type of multistage design to select points
-# first, and then consider the covariates only at those points
-
-# this highlights general need for multistage sampler types 
-
-
-
 """
     sample
 

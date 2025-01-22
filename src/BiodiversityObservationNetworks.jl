@@ -1,6 +1,7 @@
 module BiodiversityObservationNetworks
     using Clustering
     using DelaunayTriangulation
+    using Distances
     using Distributions
     using GeometryOps
     using GeoInterface
