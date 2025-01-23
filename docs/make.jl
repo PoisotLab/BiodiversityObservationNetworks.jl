@@ -15,6 +15,17 @@ makedocs(
         repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl",
         devurl="dev",
     ),
+    pages = [
+        "Overview" => "index.md",
+        "Tutorials" => [],
+        "How To" => [],
+        "Samplers" => [
+            joinpath("samplers", "simplerandom.md")
+        ],
+        "Utilities" => [],
+        "API Reference" => [],
+        "Bibliography" => "bibliography.md"
+    ],
     warnonly = true,
     plugins = [bib]
 )

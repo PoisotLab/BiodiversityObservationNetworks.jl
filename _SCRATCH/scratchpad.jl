@@ -44,7 +44,7 @@ bon = sample(MultistageSampler([BalancedAcceptance(20), SimpleRandom(10)]), _STA
 bon = sample(CubeSampling(), bioclim)
 
 
-bon = sample(MultistageSampler([BalancedAcceptance(500), CubeSampling()]), bioclim)
+bon = sample(MultistageSampler([BalancedAcceptance(250), CubeSampling()]), bioclim)
 
 # NOTES: possible to imagine a situation where we want the number of BAS points
 # in each state to be distributed by state area. There are several ways that
