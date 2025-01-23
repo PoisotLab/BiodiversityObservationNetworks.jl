@@ -23,7 +23,7 @@ makedocs(
             joinpath("samplers", "simplerandom.md")
         ],
         "Utilities" => [],
-        "API Reference" => [],
+        "API Reference" => "api.md",
         "Bibliography" => "bibliography.md"
     ],
     warnonly = true,
