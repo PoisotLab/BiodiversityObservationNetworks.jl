@@ -1,7 +1,7 @@
 # Public API
 
 ```@autodocs
-Modules = [Foo]
+Modules = [BiodiversityObservationNetworks]
 Private = false
 Order = [:type, :function]
 ```
