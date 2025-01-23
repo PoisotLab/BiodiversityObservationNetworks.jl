@@ -1,6 +1,6 @@
 # Simple Random Sampling
 
 
-```@docs
+```@docs; canonical=false
 SimpleRandom
 ```
