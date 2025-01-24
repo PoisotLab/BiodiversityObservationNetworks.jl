@@ -33,18 +33,67 @@ bonplot(f[1,1], bon, corsica, axistype=GeoAxis)
 f
 ```
 
-### Using a raster 
+### Using a vector of Polygons
 
-First, load mean annual temperature for Corsica using SDT
+First, load France and its administrative regions:
 
 ```@example 1
-temp = SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=1, SDT.boundingbox(corsica)...)
+france_states = SDT.gadm("FRA", 1)
+```
+
+Now sample a BON. For a vector of polygons, [`SimpleRandom`](@ref) will sample
+from each polygon separately. Here we'll sample 10 nodes in each administrative region.
+
+
+```@example 1
+bon = sample(SimpleRandom(10), france_states)
+```
+
+And now plot
+
+```@example 1
+f = Figure(size=(500, 500))
+bonplot(f[1,1], bon, france_states, axistype=GeoAxis)
+f
+```
+
+### Using a raster 
+
+First, load mean annual temperature for France using SDT
+
+```@example 1
+france = SDT.gadm("FRA")
+temp = SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=1, SDT.boundingbox(france)...)
 ```
 
 now sample a BON
 
 ```@example 1
-bon = sample(SimpleRandom(num_nodes), temp)
+bon = sample(SimpleRandom(50), temp)
+```
+
+and plot
+
+```@example 1
+f = Figure(size=(500, 500))
+bonplot(f[1,1], bon, temp, axistype=GeoAxis)
+f
+```
+
+### Using a Raster Stack 
+
+Sampling with a [`RasterStack`](@ref) works nearly identically to using a
+[`Raster`]. First let's load a raster stack with two layers.
+
+```@example 1
+france = SDT.gadm("FRA")
+layers = RasterStack(SDT.SDMLayer[SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...) for i in [1,12]])
+```
+
+now sample a BON
+
+```@example 1
+bon = sample(SimpleRandom(50), layers)
 ```
 
 and plot
@@ -60,13 +109,13 @@ f
 [`SimpleRandom`](@ref) also works with [`BiodiversityObservationNetwork`](@ref)
 as a domain.
 
-Lets generate 250 points using the Corsica [`Polygon`](@ref) first, and plot for good measure
+Lets generate 500 points using the Corsica [`Polygon`](@ref) first, and plot for good measure
 
 ```@example 1
-bon_candidate = sample(SimpleRandom(250), corsica)
+bon_candidate = sample(SimpleRandom(500), corsica)
 
 f = Figure(size=(500, 500))
-bonplot(f[1,1], bon, corsica, axistype=GeoAxis)
+bonplot(f[1,1], bon_candidate, corsica, axistype=GeoAxis)
 f
 ```
 
