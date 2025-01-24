@@ -64,6 +64,7 @@ First, load mean annual temperature for France using SDT
 ```@example 1
 france = SDT.gadm("FRA")
 temp = SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=1, SDT.boundingbox(france)...)
+temp = SDT.mask!(temp, france)
 ```
 
 now sample a BON
@@ -87,7 +88,7 @@ Sampling with a [`RasterStack`](@ref) works nearly identically to using a
 
 ```@example 1
 france = SDT.gadm("FRA")
-layers = RasterStack(SDT.SDMLayer[SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...) for i in [1,12]])
+layers = RasterStack(SDT.SDMLayer[SDT.mask!(SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...), france) for i in [1,12]])
 ```
 
 now sample a BON
