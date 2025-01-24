@@ -1,4 +1,5 @@
 const MAX_CORNERPLOT_DIMS_BEFORE_PCA = 20
+const BONs = BiodiversityObservationNetworks
 
 # NOTES:
 # The easiest way to make this compatable with GeoMakie (if loaded) or 
@@ -11,7 +12,7 @@ const MAX_CORNERPLOT_DIMS_BEFORE_PCA = 20
 # e.g. ZScoreTransform, and some things provided by MVStats, e.g. Whitening), 
 # but also of type MVStats.AbstractDimensionalityReductoin (e.g. PCA, PPCA)
 
-function BiodiversityObservationNetworks.cornerplot(
+function BONs.cornerplot(
     layers::RasterStack;
     pca_layers = false,
     sz = (1600,1600)
@@ -20,10 +21,10 @@ function BiodiversityObservationNetworks.cornerplot(
     _, mat = BiodiversityObservationNetworks.features(layers)
     num_layers = length(layers)
     if num_layers > MAX_CORNERPLOT_DIMS_BEFORE_PCA || pca_layers
-        pca = BiodiversityObservationNetworks.MultivariateStats.fit(BiodiversityObservationNetworks.MultivariateStats.PCA, mat)
+        pca = BONs.MultivariateStats.fit(BiodiversityObservationNetworks.MultivariateStats.PCA, mat)
         @info length(pca.prinvars)
         num_layers = length(pca.prinvars)
-        mat = BiodiversityObservationNetworks.MultivariateStats.transform(pca, mat)    
+        mat = BONs.MultivariateStats.transform(pca, mat)    
     end 
 
     f = Figure(size=sz)
@@ -45,7 +46,7 @@ function BiodiversityObservationNetworks.cornerplot(
 end
 
 
-function BiodiversityObservationNetworks.bonplot(
+function BONs.bonplot(
     position::GridPosition, 
     bon::BiodiversityObservationNetwork;
     axistype = Makie.Axis
@@ -55,19 +56,20 @@ function BiodiversityObservationNetworks.bonplot(
     Makie.AxisPlot(ax, plot)
 end
 
-
-function BiodiversityObservationNetworks.bonplot(
+function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    poly::Any;
+    geom::T;
     axistype = Makie.Axis
-)
-    bonspoly = BiodiversityObservationNetworks._convert_to_bons_polygon(poly)
-    BiodiversityObservationNetworks.bonplot(position, bon, bonspoly; axistype=axistype)
+) where T
+    @info geom, T
+    GEOM_TYPE = BONs._what_did_you_pass(geom)
+    isnothing(GEOM_TYPE) && throw(ArgumentError("$T cannot be coerced to a valid Geometry"))
+    BONs.bonplot(position, bon, Base.convert(GEOM_TYPE, geom); axistype=axistype)
 end
 
 
-function BiodiversityObservationNetworks.bonplot(
+function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
     poly::Polygon;
@@ -80,7 +82,7 @@ function BiodiversityObservationNetworks.bonplot(
 end
 
 
-function BiodiversityObservationNetworks.bonplot(
+function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
     poly::Vector{<:Polygon};
@@ -95,9 +97,7 @@ function BiodiversityObservationNetworks.bonplot(
 end
 
 
-
-
-function BiodiversityObservationNetworks.bonplot(
+function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
     raster::Raster;

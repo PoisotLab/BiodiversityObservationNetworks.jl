@@ -21,7 +21,7 @@ Base.findall(r::Raster{<:SDMLayer}) = findall(r.raster.indices)
 Base.findall(r::Raster{<:Matrix}) = findall(x->!ismissing(x) && !isnothing(x) && !isnan(x), r.raster)
 
 
-Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(SDMLayer)
+Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(sdmlayer)
 Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
 
 Base.getindex(r::Raster, i::Integer) = getindex(r.raster, i)

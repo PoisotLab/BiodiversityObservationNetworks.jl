@@ -8,17 +8,23 @@ extent has the same probability of inclusion.
 struct SimpleRandom{I<:Integer} <: BONSampler
     number_of_nodes::I
 end
-_valid_geometries(::SimpleRandom) = (Polygon, Raster, Vector{Polygon}, RasterStack)
+_valid_geometries(::SimpleRandom) = (Polygon, Raster, Vector{Polygon}, RasterStack, BiodiversityObservationNetwork)
 
 
 # TODO: this should dispatch on individual states if it gets a vector of
 # polygons
-
 function _sample(sampler::SimpleRandom, polygons::Vector{<:Polygon}, bon::BiodiversityObservationNetwork)
     vcat([_sample(sampler, poly, bon) for poly in polygons])
 end
 
+# For multistage
 function _sample(sampler::SimpleRandom, ::Any, bon::BiodiversityObservationNetwork)
+    N = sampler.number_of_nodes
+    BiodiversityObservationNetwork(Distributions.sample(bon.nodes, N, replace=false))
+end 
+
+
+function _sample(sampler::SimpleRandom, bon::BiodiversityObservationNetwork)
     N = sampler.number_of_nodes
     BiodiversityObservationNetwork(Distributions.sample(bon.nodes, N, replace=false))
 end 
