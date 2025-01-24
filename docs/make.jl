@@ -20,7 +20,11 @@ makedocs(
         "Tutorials" => [],
         "How To" => [],
         "Samplers" => [
-            joinpath("samplers", "simplerandom.md")
+            joinpath("samplers", "simplerandom.md"),
+            joinpath("samplers", "balancedacceptance.md"),
+            joinpath("samplers", "grts.md"),
+            joinpath("samplers", "cube.md"),
+            joinpath("samplers", "adaptivehotspot.md"),
         ],
         "Utilities" => [],
         "API Reference" => "api.md",

@@ -17,7 +17,7 @@ using GeoMakie
 import SpeciesDistributionToolkit as SDT
 ```
 
-now sample a BON
+now sample a [`BiodiversityObservationNetwork`](@ref)
 
 ```@example 1
 num_nodes = 50
@@ -84,7 +84,7 @@ f
 ### Using a Raster Stack 
 
 Sampling with a [`RasterStack`](@ref) works nearly identically to using a
-[`Raster`]. First let's load a raster stack with two layers.
+[`Raster`](@ref). First let's load a raster stack with two layers.
 
 ```@example 1
 france = SDT.gadm("FRA")
@@ -110,10 +110,10 @@ f
 [`SimpleRandom`](@ref) also works with [`BiodiversityObservationNetwork`](@ref)
 as a domain.
 
-Lets generate 500 points using the Corsica [`Polygon`](@ref) first, and plot for good measure
+Lets generate 250 points using the Corsica [`Polygon`](@ref) first, and plot for good measure
 
 ```@example 1
-bon_candidate = sample(SimpleRandom(500), corsica)
+bon_candidate = sample(SimpleRandom(250), corsica)
 
 f = Figure(size=(500, 500))
 bonplot(f[1,1], bon_candidate, corsica, axistype=GeoAxis)
