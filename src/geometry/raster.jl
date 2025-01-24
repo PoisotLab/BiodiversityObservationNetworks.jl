@@ -26,8 +26,6 @@ Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
 
 Base.getindex(r::Raster, i::Integer) = getindex(r.raster, i)
 Base.getindex(r::Raster, i::CartesianIndex) = getindex(r.raster, i)
-Base.getindex(r::Raster, idxs::Vector{<:CartesianIndex}) = [getindex(r.raster, i) for i in idxs]
-
 Base.getindex(r::Raster, idx::Vector{<:CartesianIndex}) = map(i->getindex(r.raster, i), idx)
 Base.getindex(r::Raster, bmat::BitMatrix) = [getindex(r.raster, i) for i in findall(bmat)]
 Base.getindex(r::Raster, node::Node) = r.raster[node.coordinate...]
