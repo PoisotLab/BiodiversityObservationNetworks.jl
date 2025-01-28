@@ -19,6 +19,8 @@ module BiodiversityObservationNetworks
     import GeometryOps as GO
     import SpeciesDistributionToolkit as SDT
     import SpeciesDistributionToolkit.GeoJSON as GJSON
+    import SpeciesDistributionToolkit.SimpleSDMLayers.ArchGDAL as AGDAL
+    import DelaunayTriangulation as DT
 
     export BiodiversityObservationNetwork
     export Node
@@ -41,6 +43,8 @@ module BiodiversityObservationNetworks
     export datatype
     export nonempty
     export is_polygonizable, is_rasterizable, is_bonifyable
+
+    export voronoi
     
     export cornerplot, bonplot
 
@@ -59,6 +63,8 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "grts.jl"))
     include(joinpath("samplers", "adaptivehotspot.jl"))
 
+
+    include(joinpath("utilities", "voronoi.jl"))
 
     include("plotting.jl")
 

@@ -10,8 +10,8 @@ struct Polygon{T, G}
         return new{T, G}(geom)
     end
 end
-Base.show(io, ::Polygon) = print(io, "Polygon")
-Base.show(io, vec::Vector{<:Polygon}) = print(io, "Vector of $(length(vec)) Polygons")
+Base.show(io::IO, ::Polygon{T,V}) where {T,V} = print(io, "Polygon with inner geometry $V")
+Base.show(io::IO, vec::Vector{<:Polygon}) = print(io, "Vector of $(length(vec)) Polygons")
 
 
 GI.isgeometry(::Polygon)::Bool = true
@@ -25,7 +25,7 @@ GO.area(geom::Polygon) = GO.area(geom.geometry)
 
 Base.convert(::Type{Polygon}, foo) = _convert_to_bons_polygon(foo)
 
-const __POLYGONIZABLE_TYPES = Union{<:GJSON.FeatureCollection,<:GJSON.MultiPolygon,Vector{<:GJSON.MultiPolygon}}
+const __POLYGONIZABLE_TYPES = Union{<:GJSON.FeatureCollection,<:GJSON.MultiPolygon,Vector{<:GJSON.MultiPolygon}, <:AGDAL.IGeometry{AGDAL.wkbPolygon}}
 
 is_polygonizable(::T) where T = T <: __POLYGONIZABLE_TYPES
 
@@ -50,3 +50,11 @@ function _convert_to_bons_polygon(fc::SDT.GeoJSON.FeatureCollection)
         @error e
     end  
 end 
+
+
+# =================================================================
+# ArchGDAL handlers
+# 
+function _convert_to_bons_polygon(geom::AGDAL.IGeometry{AGDAL.wkbPolygon})
+    Polygon(GI.trait(geom), geom)
+end

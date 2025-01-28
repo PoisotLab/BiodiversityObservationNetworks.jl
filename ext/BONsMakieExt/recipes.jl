@@ -22,7 +22,6 @@ function BONs.cornerplot(
     num_layers = length(layers)
     if num_layers > MAX_CORNERPLOT_DIMS_BEFORE_PCA || pca_layers
         pca = BONs.MultivariateStats.fit(BiodiversityObservationNetworks.MultivariateStats.PCA, mat)
-        @info length(pca.prinvars)
         num_layers = length(pca.prinvars)
         mat = BONs.MultivariateStats.transform(pca, mat)    
     end 
@@ -62,7 +61,6 @@ function BONs.bonplot(
     geom::T;
     axistype = Makie.Axis
 ) where T
-    @info geom, T
     GEOM_TYPE = BONs._what_did_you_pass(geom)
     isnothing(GEOM_TYPE) && throw(ArgumentError("$T cannot be coerced to a valid Geometry"))
     BONs.bonplot(position, bon, Base.convert(GEOM_TYPE, geom); axistype=axistype)
@@ -108,3 +106,21 @@ function BONs.bonplot(
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
+
+
+function Makie.voronoiplot(bon::BiodiversityObservationNetwork, geom)
+    vor = voronoi(bon, geom)
+
+    
+end 
+
+Makie.poly(poly::Polygon, x...; kwargs...) = begin 
+    Makie.poly(poly.geometry, x...; kwargs...)
+end
+
+Makie.poly!(ax, poly::Polygon, x...; kwargs...) = begin 
+    Makie.poly!(ax, poly.geometry, x...; kwargs...)
+end
+
+
+

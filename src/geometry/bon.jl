@@ -48,3 +48,9 @@ GI.isgeometry(::BiodiversityObservationNetwork)::Bool = true
 GI.geomtrait(::BiodiversityObservationNetwork)::DataType = MultiPointTrait()
 GI.ngeom(::MultiPointTrait, bon::BiodiversityObservationNetwork)::Integer = length(bon)
 GI.getgeom(::MultiPointTrait, bon::BiodiversityObservationNetwork, i) = bon[i]
+
+function GI.extent(bon::BiodiversityObservationNetwork)
+    coords = [n.coordinate for n in bon]
+    (bot, top), (left, right) = extrema(first.(coords)), extrema(last.(coords))
+    GI.Extent(X=(left, right), Y=(bot, top))
+end
