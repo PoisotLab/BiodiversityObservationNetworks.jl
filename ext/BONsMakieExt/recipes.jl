@@ -110,7 +110,7 @@ end
 
 function Makie.voronoiplot(bon::BiodiversityObservationNetwork, geom)
     vor = voronoi(bon, geom)
-
+    
     
 end 
 

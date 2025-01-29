@@ -32,7 +32,6 @@ bon = sample(Grid(), _COUNTRY)
 bon = sample(SimpleRandom(100), _COUNTRY)
 bon = sample(BalancedAcceptance(number_of_nodes=50), bioclim)
 bon = sample(GeneralizedRandomTessellatedStratified(number_of_nodes=50), _COUNTRY)
-bon = sample(GeneralizedRandomTessellatedStratified(number_of_nodes=50), _COUNTRY)
 bon = sample(AdaptiveHotspot(), bioclim[1])
 
 #bon = sample(UncertaintySampling(300), H) 
@@ -61,9 +60,21 @@ ax, plt = bonplot(f[1,1], bon, _STATES, axistype=GeoAxis)
 f
 
 
-voronoi(bon, _COUNTRY)
+vor = voronoi(bon, _COUNTRY)
 
-poly(voronoi(bon, _COUNTRY), color=(:blue, 0.1), strokewidth=1)
+viridis = 
+[Makie.ColorSchemes.viridis[i/length(vor)] for i in 1:length(vor)]
+
+
+f = Figure()
+ax = Axis(f[1,1])
+for (i,v) in enumerate(vor)
+    poly!(ax, v, color=(viridis[i], 0.7))
+end
+poly!(ax, _COUNTRY.geometry, color=(:blue, 0), strokewidth=1)
+scatter!(ax, [n.coordinate for n in bon], color=:red)
+f
+
 
 
 f = Figure()
@@ -71,6 +82,10 @@ ax, plt = bonplot(f[1,1], bon, _STATES, axistype=GeoAxis)
 poly!(p, strokewidth=2, color=(:white, 0))
 f
 
+tri = DT.triangulate([n.coordinate for n in bon])
+vor = DT.voronoi(tri)
+
+vor
 
 
 f = Figure()
