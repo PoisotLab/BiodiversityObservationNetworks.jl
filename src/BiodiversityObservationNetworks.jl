@@ -1,68 +1,72 @@
 module BiodiversityObservationNetworks
+    using Clustering
+    using DelaunayTriangulation
+    using Distances
+    using Distributions
+    using GeometryOps
+    using GeoInterface
+    using HaltonSequences
+    using HiGHS
+    using JuMP
+    using LinearAlgebra
+    using MultivariateStats
+    using SpecialFunctions
+    using SpeciesDistributionToolkit
+    using StatsBase 
+    using Random
 
-using SimpleSDMLayers
-using Distributions
-using Random
-using HaltonSequences
-using StatsBase
-using SpecialFunctions
-using ProgressMeter
-using SliceMap
-using JuMP
-using HiGHS
-using LinearAlgebra
-using Term
-using TestItems
+    import GeoInterface as GI
+    import GeometryOps as GO
+    import SpeciesDistributionToolkit as SDT
+    import SpeciesDistributionToolkit.GeoJSON as GJSON
+    import SpeciesDistributionToolkit.SimpleSDMLayers.ArchGDAL as AGDAL
+    import DelaunayTriangulation as DT
 
-include("types.jl")
-export BONSampler
-export Sites, numsites, pool
-export LayerType, DataLayer, InclusionProbability
-export Layer, Stack
+    export BiodiversityObservationNetwork
+    export Node
+    export Polygon
+    export Raster
+    export RasterStack
 
-include("sample.jl")
-export sample
+    export BONSampler
+    export MultistageSampler
+    export SimpleRandom
+    export Grid
+    export KMeans
+    export CubeSampling
+    export SpatiallyStratified
+    export BalancedAcceptance
+    export GeneralizedRandomTessellatedStratified
+    export AdaptiveHotspot
 
-include("exceptions.jl")
-export BONException, TooFewSites, TooManySites
+    export sample
+    export datatype
+    export nonempty
+    export is_polygonizable, is_rasterizable, is_bonifyable
 
-include("simplerandom.jl")
-export SimpleRandom
+    export voronoi
+    
+    export cornerplot, bonplot
 
-include("spatialstratified.jl")
-export SpatiallyStratified
+    include(joinpath("geometry", "bon.jl"))
+    include(joinpath("geometry", "polygon.jl"))
+    include(joinpath("geometry", "raster.jl"))
+    include(joinpath("geometry", "stack.jl"))
 
-include("balancedacceptance.jl")
-export BalancedAcceptance
+    include("sample.jl")
+    include(joinpath("samplers", "simplerandom.jl"))
+    include(joinpath("samplers", "grid.jl"))
+    include(joinpath("samplers", "kmeans.jl"))
+    include(joinpath("samplers", "cube.jl"))
+    include(joinpath("samplers", "spatiallystratified.jl"))
+    include(joinpath("samplers", "balancedacceptance.jl"))
+    include(joinpath("samplers", "grts.jl"))
+    include(joinpath("samplers", "adaptivehotspot.jl"))
 
-include("weightedbas.jl")
-export WeightedBalancedAcceptance
 
-include("adaptivehotspot.jl")
-export AdaptiveHotspot
+    include(joinpath("utilities", "voronoi.jl"))
 
-include("cubesampling.jl")
-export CubeSampling
+    include("plotting.jl")
 
-include("fractaltriad.jl")
-export FractalTriad
 
-include("grts.jl")
-export GeneralizedRandomTessellatedStratified
-
-include("uniqueness.jl")
-export Uniqueness
-
-#include("seed.jl")
-#export seed, seed!
-
-#include("refine.jl")
-#export refine, refine!
-
-include("entropize.jl")
-export entropize, entropize!
-
-include("utils.jl")
-export stack
-
-end
+end     
