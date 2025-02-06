@@ -6,8 +6,7 @@ const __RASTER_TYPES = Union{SDMLayer, Matrix{<:Real}}
 # An alternative design decision here would be to not have a parameterized type,
 # but to convert any matrix/other-rasterlike object to a SDMLayer.
 # 
-# A different alternative is enforce the SDT-useful fields similarly, as an
-# interface
+# A different alternative is enforce the SDT-useful fields here
     
 
 """
