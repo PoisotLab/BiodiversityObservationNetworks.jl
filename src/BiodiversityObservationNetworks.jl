@@ -38,6 +38,7 @@ module BiodiversityObservationNetworks
     export BalancedAcceptance
     export GeneralizedRandomTessellatedStratified
     export AdaptiveHotspot
+    export UncertaintySampling
 
     export sample
     export datatype
@@ -54,6 +55,7 @@ module BiodiversityObservationNetworks
     include(joinpath("geometry", "stack.jl"))
 
     include("sample.jl")
+    
     include(joinpath("samplers", "simplerandom.jl"))
     include(joinpath("samplers", "grid.jl"))
     include(joinpath("samplers", "kmeans.jl"))
@@ -62,7 +64,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "balancedacceptance.jl"))
     include(joinpath("samplers", "grts.jl"))
     include(joinpath("samplers", "adaptivehotspot.jl"))
-
+    include(joinpath("samplers", "uncertainty.jl"))
 
     include(joinpath("utilities", "voronoi.jl"))
 
