@@ -39,6 +39,7 @@ module BiodiversityObservationNetworks
     export GeneralizedRandomTessellatedStratified
     export AdaptiveHotspot
     export UncertaintySampling
+    export Pivotal
 
     export sample
     export datatype
@@ -63,6 +64,8 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "spatiallystratified.jl"))
     include(joinpath("samplers", "balancedacceptance.jl"))
     include(joinpath("samplers", "grts.jl"))
+    include(joinpath("samplers", "pivotal.jl"))
+
     include(joinpath("samplers", "adaptivehotspot.jl"))
     include(joinpath("samplers", "uncertainty.jl"))
 
