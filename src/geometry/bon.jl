@@ -35,9 +35,13 @@ struct BiodiversityObservationNetwork{N <: Node}
     nodes::Vector{N}
 end
 
+Base.length(bon::BiodiversityObservationNetwork) = length(bon.nodes)
+Base.size(bon::BiodiversityObservationNetwork) = length(bon)
 Base.show(io::IO, bon::BiodiversityObservationNetwork) =
     print(io, "BiodiversityObservationNetwork with $(length(bon)) nodes")
 Base.getindex(bon::BiodiversityObservationNetwork, i::Integer) = bon.nodes[i]
+Base.getindex(bon::BiodiversityObservationNetwork, i::Vector{<:Integer}) = bon.nodes[i]
+
 Base.length(bon::BiodiversityObservationNetwork) = length(bon.nodes)
 Base.iterate(bon::BiodiversityObservationNetwork, i) = iterate(bon.nodes, i)
 Base.iterate(bon::BiodiversityObservationNetwork) = iterate(bon.nodes)

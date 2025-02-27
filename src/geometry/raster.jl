@@ -40,6 +40,8 @@ Base.getindex(r::Raster, bmat::BitMatrix) = [getindex(r.raster, i) for i in find
 Base.getindex(r::Raster, node::Node) = r.raster[node.coordinate...]
 Base.getindex(r::Raster, bon::BiodiversityObservationNetwork) = [r.raster[node.coordinate...] for node in bon.nodes]
 
+Base.eachindex(r::Raster) = eachindex(r.raster)
+
 _get_cartesian_idx(r::Raster, node::Node) = CartesianIndex(SDT.SimpleSDMLayers.__get_grid_coordinate_by_latlon(r.raster, node.coordinate...))
 _get_cartesian_idx(r::Raster, bon::BiodiversityObservationNetwork) = [_get_cartesian_idx(r, node) for node in bon]
 
