@@ -10,6 +10,7 @@ module BiodiversityObservationNetworks
     using JuMP
     using LinearAlgebra
     using MultivariateStats
+    using NearestNeighbors
     using SpecialFunctions
     using SpeciesDistributionToolkit
     using StatsBase 
@@ -38,6 +39,7 @@ module BiodiversityObservationNetworks
     export GeneralizedRandomTessellatedStratified
     export AdaptiveHotspot
     export UncertaintySampling
+    export SpatiallyCorrelatedPoisson
 
     export PivotalMethod, KPivotal, KDTreePivotal, ClassicPivotal
     export Pivotal
@@ -67,6 +69,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "balancedacceptance.jl"))
     include(joinpath("samplers", "grts.jl"))
     include(joinpath("samplers", "pivotal.jl"))
+    include(joinpath("samplers", "scps.jl"))
 
     include(joinpath("samplers", "adaptivehotspot.jl"))
     include(joinpath("samplers", "uncertainty.jl"))
@@ -75,6 +78,4 @@ module BiodiversityObservationNetworks
     include(joinpath("utilities", "clustering.jl"))
 
     include("plotting.jl")
-
-
 end     
