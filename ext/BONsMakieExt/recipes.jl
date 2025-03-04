@@ -101,9 +101,12 @@ function BONs.bonplot(
     raster::Raster;
     axistype=Makie.Axis
 )
+
+    xs, ys = LinRange(0,1,size(raster,1)), LinRange(0,1,size(raster,2))
+
     ax = axistype(position)
-    heatmap!(ax, raster.raster)
-    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+    heatmap!(ax, xs, ys, raster.raster)
+    plot = scatter!(ax, [node[2] for node in bon], [node[1] for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
 

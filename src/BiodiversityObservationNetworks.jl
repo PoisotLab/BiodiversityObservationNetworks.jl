@@ -10,6 +10,7 @@ module BiodiversityObservationNetworks
     using JuMP
     using LinearAlgebra
     using MultivariateStats
+    using NearestNeighbors
     using SpecialFunctions
     using SpeciesDistributionToolkit
     using StatsBase 
@@ -32,20 +33,26 @@ module BiodiversityObservationNetworks
     export MultistageSampler
     export SimpleRandom
     export Grid
-    export KMeans
     export CubeSampling
     export SpatiallyStratified
     export BalancedAcceptance
     export GeneralizedRandomTessellatedStratified
     export AdaptiveHotspot
+    export UncertaintySampling
+    export SpatiallyCorrelatedPoisson
+
+    export PivotalMethod, KPivotal, KDTreePivotal, ClassicPivotal
+    export Pivotal
 
     export sample
     export datatype
     export nonempty
     export is_polygonizable, is_rasterizable, is_bonifyable
 
+    export cluster
+    export KMeans, KMedoids
+
     export voronoi
-    
     export cornerplot, bonplot
 
     include(joinpath("geometry", "bon.jl"))
@@ -54,19 +61,21 @@ module BiodiversityObservationNetworks
     include(joinpath("geometry", "stack.jl"))
 
     include("sample.jl")
+    
     include(joinpath("samplers", "simplerandom.jl"))
     include(joinpath("samplers", "grid.jl"))
-    include(joinpath("samplers", "kmeans.jl"))
     include(joinpath("samplers", "cube.jl"))
     include(joinpath("samplers", "spatiallystratified.jl"))
     include(joinpath("samplers", "balancedacceptance.jl"))
     include(joinpath("samplers", "grts.jl"))
-    include(joinpath("samplers", "adaptivehotspot.jl"))
+    include(joinpath("samplers", "pivotal.jl"))
+    include(joinpath("samplers", "scps.jl"))
 
+    include(joinpath("samplers", "adaptivehotspot.jl"))
+    include(joinpath("samplers", "uncertainty.jl"))
 
     include(joinpath("utilities", "voronoi.jl"))
+    include(joinpath("utilities", "clustering.jl"))
 
     include("plotting.jl")
-
-
 end     
