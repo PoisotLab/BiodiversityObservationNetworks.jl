@@ -7,6 +7,7 @@
 """
     CubeSampling
 
+[Deville2004EffBal](@cite)
 """
 Base.@kwdef struct CubeSampling{I<:Integer} <: BONSampler
     number_of_nodes::I = 50

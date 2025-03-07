@@ -16,7 +16,7 @@
 """ 
     SpatiallyCorrelatedPoisson
 
-Spatially Correlated Poisson Sampling (from Grafstrom 2012).
+Spatially Correlated Poisson Sampling [Grafstrom2012SpaCor](@cite)
 
 """
 Base.@kwdef struct SpatiallyCorrelatedPoisson{I<:Integer} <: BONSampler
@@ -32,8 +32,6 @@ function _sample(
     bon::BiodiversityObservationNetwork,
     Π = fill(sampler.number_of_nodes/size(bon), size(bon))
 ) 
-   # n = sampler.number_of_nodes
-
     inclusion_indicator = zeros(Bool, size(bon))
     Πⱼ₋₁ = deepcopy(Π)
     weights = zeros(size(bon))
@@ -48,11 +46,10 @@ function _sample(
 
         weights .= 0
         Πⱼ₋₁ .= Π
-    
-        remaining_weight = 1.
+            
         for i in closest_idx_mat[j,:]
             if i > j 
-                weights[i] = min(_max_weight(Πⱼ₋₁, i, j), remaining_weight)
+                weights[i] = _max_weight(Πⱼ₋₁, i, j)
             end
         end 
         
@@ -63,12 +60,7 @@ function _sample(
                 Π[i] = Πⱼ₋₁[i] - (Iⱼ - Πⱼ₋₁[j]) * weights[i]
             end 
         end 
-    
-        #sum(inclusion_indicator) == n && break
     end    
-    BiodiversityObservationNetwork(bon[inclusion_indicator])
+    return BiodiversityObservationNetwork(bon[inclusion_indicator])
 end 
-
-#dist_mat = BONs._get_distance_matrix(bon)
-#closest_idx_mat = vcat([sortperm(r)[2:end] for r in  eachrow(dist_mat)]'...)
 

@@ -1,7 +1,9 @@
 """
     AdaptiveHotspot
 
-@Andrade-Pacheco2020
+[Andrade-Pacheco2020FinHot](@cite)
+
+
 """
 Base.@kwdef mutable struct AdaptiveHotspot{I <: Integer} <: BONSampler
     number_of_nodes::I = 50

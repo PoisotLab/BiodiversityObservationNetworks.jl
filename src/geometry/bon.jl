@@ -19,6 +19,7 @@ GI.isgeometry(::Node)::Bool = true
 GI.geomtrait(::Node)::DataType = PointTrait()
 GI.ncoord(::PointTrait, ::Node)::Integer = 1
 GI.getcoord(::PointTrait, node::Node, i)::Real = node[i]
+GI.coordinates(node::Node) = node.coordinate
 
 is_bonifyable(::T) where T = T <: Union{<:__COORDINATE_TYPES,Vector{<:__COORDINATE_TYPES}}
 
@@ -51,6 +52,7 @@ GI.isgeometry(::BiodiversityObservationNetwork)::Bool = true
 GI.geomtrait(::BiodiversityObservationNetwork)::DataType = MultiPointTrait()
 GI.ngeom(::MultiPointTrait, bon::BiodiversityObservationNetwork)::Integer = length(bon)
 GI.getgeom(::MultiPointTrait, bon::BiodiversityObservationNetwork, i) = bon[i]
+GI.coordinates(bon::BiodiversityObservationNetwork) = map(GI.coordinates, bon)
 
 function GI.extent(bon::BiodiversityObservationNetwork)
     coords = [n.coordinate for n in bon]

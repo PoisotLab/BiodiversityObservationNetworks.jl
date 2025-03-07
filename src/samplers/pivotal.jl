@@ -1,3 +1,9 @@
+"""
+    Pivotal 
+
+The Local Pivotal Method [Grafstrom2012SpaBal](@cite) is used for generating
+spatially balanced samples. 
+"""
 Base.@kwdef struct Pivotal{I<:Integer} <: BONSampler
     number_of_nodes::I = 100
     maximum_iterations::I = 10^6

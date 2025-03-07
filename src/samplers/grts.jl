@@ -4,13 +4,13 @@
 `GeneralizedRandomTessellatedStratified` is a type of [`BONSampler`](@ref) for
 generating [`BiodiversityObservationNetwork`](@ref)s with spatial spreading.
 
+GRTS was initially proposed in [Stevens2004SpaBal](@cite).
+
 *Arguments*:
 - `number_of_nodes`: the number of sites to select
 - `grid_size`: if being used on a polygon, the dimensions of the grid used to
   cover the extent. GRTS sampling uses discrete Cartesian indices
 
-
-@Olsen
 
 GRTS represents each cell of a rasterized version of the sampling domain
 using an address, where the address of each cell is represented as a `D`-digit
