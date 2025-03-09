@@ -1,8 +1,33 @@
 
-# How to measure the distance between a BON and the whole env space in layer
-# stack?
-# Marginals instead of MvNormal bc everything gets fucky 
-# But can penalize w/ weighted distance between Covariance matrices
+function _standardize(Xfull, Xsampled)
+    # This needs to work on each variable separately
+    mi, mx = extrema(Xfull)
+    Xfull_std = (Xfull .- mi) ./ (mx - mi)
+    Xsampled_std = (Xsampled .- mi) ./ (mx - mi)
+    return Xfull_std, Xsampled_std
+end
+
+""" 
+    jensenshannon
+
+The [Jensen-Shannon
+Divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence) is
+a method for measuring the distance between two probability distibutions.
+
+This method provides a comparison between the distribution of environmental
+variables in a [`RasterStack`](@ref) `layers` to the values of those variables at the
+sites within a [`BiodiversityObservationNetwork`](@ref) `bon`. 
+"""
+function jensenshannon(
+    layers::RasterStack, 
+    bon::BiodiversityObservationNetwork
+)
+    _, Xfull = BONs.features(layers)
+    Xsampled = layers[bon]
+    Xf, Xs = _standardize(Xfull, Xsampled)
+
+
+end 
 
 function _js_thing(rs::RasterStack, bon::BiodiversityObservationNetwork)
     function _js(P,Q) 
@@ -80,16 +105,4 @@ function _js_thing(rs::RasterStack, bon::BiodiversityObservationNetwork)
     𝓛_covariance = sqrt(sum((Σ₁ .- Σ₂).^2))
 
     𝓛_js, 𝓛_covariance
-end 
-
-
-n_reps = 500
-n_nodes = [2^i for i in 4:9]
-begin 
-    f = Figure()
-    ax = Axis(f[1,1])
-    for n in n_nodes
-        density!(ax, [_js_thing(bioclim, sample(SimpleRandom(n), bioclim))[1] for _ in 1:n_reps])
-    end 
-    f
 end 

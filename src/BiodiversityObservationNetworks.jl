@@ -36,6 +36,7 @@ module BiodiversityObservationNetworks
     export CubeSampling
     export SpatiallyStratified
     export BalancedAcceptance
+    export WeightedBalancedAcceptance
     export GeneralizedRandomTessellatedStratified
     export AdaptiveHotspot
     export UncertaintySampling
@@ -67,6 +68,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "cube.jl"))
     include(joinpath("samplers", "spatiallystratified.jl"))
     include(joinpath("samplers", "balancedacceptance.jl"))
+    include(joinpath("samplers", "weightedbas.jl"))
     include(joinpath("samplers", "grts.jl"))
     include(joinpath("samplers", "pivotal.jl"))
     include(joinpath("samplers", "scps.jl"))
