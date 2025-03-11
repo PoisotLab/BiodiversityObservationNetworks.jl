@@ -42,7 +42,7 @@ _get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon) = begin
 end 
 
 # TODO: this is redundant and a similar thing is in BalancedAcceptance, unify
-_check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[1]], Ns[candidate[2]]))
+_check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[2]], Ns[candidate[1]]))
 function _check_candidate(_, _, coord, raster::Raster)
     val = raster.raster[coord[2],coord[1]]
     !isnothing(val) && !ismissing(val) && !isnan(val)
@@ -62,10 +62,10 @@ function _balanced_acceptance(sampler, geometry)
         i, j = haltonvalue(seed[1] + candct, 2), haltonvalue(seed[2] + candct, 3)
         candct += 1
         candx, candy = convert.(Int, [ceil(y_dim * i), ceil(x_dim * j)])
-    candidate = CartesianIndex(candx,candy)
+        candidate = CartesianIndex(candx,candy)
 
         if _check_candidate(Es, Ns, candidate, geometry)
-            push!(selected_points, Node((Es[candidate[1]], Ns[candidate[2]])))
+            push!(selected_points, Node((Es[candidate[2]], Ns[candidate[1]])))
             ct += 1
          end
     end
