@@ -49,7 +49,7 @@ function _sample(sampler::WeightedBalancedAcceptance, raster::Raster)
         cand_value = z_raster[candidate]
 
         if !isnothing(cand_value) && rand() < inclusion_probability(cand_value)
-            push!(selected_points, Node((Es[candidate[2]], Ns[candidate[1]])))
+            push!(selected_points, Node((Es[candidate[1]], Ns[candidate[2]])))
             ct += 1
         end
     end
