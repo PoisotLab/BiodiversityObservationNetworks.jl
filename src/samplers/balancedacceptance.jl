@@ -65,7 +65,7 @@ function _balanced_acceptance(sampler, geometry)
     candidate = CartesianIndex(candx,candy)
 
         if _check_candidate(Es, Ns, candidate, geometry)
-            push!(selected_points, Node((Es[candidate[2]], Ns[candidate[1]])))
+            push!(selected_points, Node((Es[candidate[1]], Ns[candidate[2]])))
             ct += 1
          end
     end
