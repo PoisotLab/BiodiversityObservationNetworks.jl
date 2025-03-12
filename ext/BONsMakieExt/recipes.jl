@@ -101,20 +101,26 @@ function BONs.bonplot(
     raster::Raster;
     axistype=Makie.Axis
 )
-
-    xs, ys = LinRange(0,1,size(raster,1)), LinRange(0,1,size(raster,2))
-
     ax = axistype(position)
-    heatmap!(ax, xs, ys, raster.raster)
-    plot = scatter!(ax, [node[2] for node in bon], [node[1] for node in bon], color=(:red))
+    heatmap!(ax, raster.raster)
+    plot = scatter!(ax, [node.coordinate for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
 
 
-function Makie.voronoiplot(bon::BiodiversityObservationNetwork, geom)
+function Makie.voronoiplot(
+    position::GridPosition,
+    bon::BiodiversityObservationNetwork, 
+    geom::Polygon;
+    axistype = Makie.Axis
+)
     vor = voronoi(bon, geom)
     
-    
+    ax = axistype(position)
+    hidedecorations!(ax)
+    map(v->poly!(ax, v, strokewidth=1), vor)
+    scatter!(ax, [n.coordinate for n in bon], color=:red)
+    poly!(ax, geom, color=(:white, 0), strokewidth=1)
 end 
 
 Makie.poly(poly::Polygon, x...; kwargs...) = begin 
