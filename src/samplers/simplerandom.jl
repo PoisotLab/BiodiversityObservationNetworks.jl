@@ -5,8 +5,8 @@
 [`BiodiversityObservationNetwork`](@ref)s where each location in the spatial
 extent has the same probability of inclusion. 
 """
-struct SimpleRandom{I<:Integer} <: BONSampler
-    number_of_nodes::I
+@kwdef struct SimpleRandom{I<:Integer} <: BONSampler
+    number_of_nodes::I = 50
 end
 _valid_geometries(::SimpleRandom) = (Polygon, Raster, Vector{Polygon}, RasterStack, BiodiversityObservationNetwork)
 

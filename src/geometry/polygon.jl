@@ -23,9 +23,16 @@ GI.extent(geom::Polygon) = GI.extent(geom.geometry)
 GO.contains(geom::Polygon, coord) = GO.contains(geom.geometry, coord)
 GO.area(geom::Polygon) = GO.area(geom.geometry)
 
+
+SDT.SimpleSDMLayers.mask!(layers, geom) = SDT.SimpleSDMLayers.mask!(layers, SDT.GeoJSON.read(AGDAL.toJSON(geom.geometry.geom)))
+SDT.boundingbox(geom::Polygon) = begin
+    (xm,xM), (ym,yM)  = GI.extent(geom)
+    return (left=xm, right=xM, bottom=ym, top=yM)
+end 
+
 Base.convert(::Type{Polygon}, foo) = _convert_to_bons_polygon(foo)
 
-const __POLYGONIZABLE_TYPES = Union{<:GJSON.FeatureCollection,<:GJSON.MultiPolygon,Vector{<:GJSON.MultiPolygon}, <:AGDAL.IGeometry{AGDAL.wkbPolygon}}
+const __POLYGONIZABLE_TYPES = Union{<:GJSON.FeatureCollection,<:GJSON.MultiPolygon,Vector{<:GJSON.MultiPolygon}, <:AGDAL.IGeometry{AGDAL.wkbPolygon}, <:GI.Wrappers.Polygon}
 
 is_polygonizable(::T) where T = T <: __POLYGONIZABLE_TYPES
 
@@ -33,6 +40,7 @@ is_polygonizable(::T) where T = T <: __POLYGONIZABLE_TYPES
 # =================================================================
 # GeoJSON handlers
 # 
+_convert_to_bons_polygon(geom::GI.Wrappers.Polygon) = Polygon(GI.trait(geom), geom)
 function _convert_to_bons_polygon(geom::SDT.GeoJSON.MultiPolygon)
     Polygon(GI.trait(geom), geom)
 end
@@ -56,5 +64,9 @@ end
 # ArchGDAL handlers
 # 
 function _convert_to_bons_polygon(geom::AGDAL.IGeometry{AGDAL.wkbPolygon})
+    Polygon(GI.trait(geom), geom)
+end
+
+function _convert_to_bons_polygon(geom::AGDAL.IGeometry{AGDAL.wkbMultiPolygon})
     Polygon(GI.trait(geom), geom)
 end

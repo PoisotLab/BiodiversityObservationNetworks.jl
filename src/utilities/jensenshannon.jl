@@ -1,9 +1,27 @@
+"""
+    _standardize
 
+Standardizes the values of a matrix of predictors across the entire population
+`Xfull`, and a set of predictors associated with the sampled sites, `Xsampled`
+by scaling each dimension of the predictors to [0,1].
+
+`Xsampled` is standardized based on the minimum and maximum values of each
+predictor across the population, so both matrices a return on the same scale.
+
+*Arguments*:
+- `Xfull`: an `n` x `d` matrix, where `n` is the size of the population, and `d`
+  is the number of predictors
+- `Xsampled`: an `m` x `d` matrix, where `m` < `n` is the size of the sample
+
+"""
 function _standardize(Xfull, Xsampled)
-    # This needs to work on each variable separately
-    mi, mx = extrema(Xfull)
-    Xfull_std = (Xfull .- mi) ./ (mx - mi)
-    Xsampled_std = (Xsampled .- mi) ./ (mx - mi)
+    Xsampled_std = zeros(size(Xsampled))
+    Xfull_std = zeros(size(Xfull))
+    for i in axes(Xfull, 1)
+        mi, mx = extrema(Xfull[i,:])
+        Xfull_std[i,:] .= (Xfull[i,:] .- mi) ./ (mx - mi)
+        Xsampled_std[i,:] = (Xsampled[i,:] .- mi) ./ (mx - mi)
+    end 
     return Xfull_std, Xsampled_std
 end
 
@@ -22,87 +40,16 @@ function jensenshannon(
     layers::RasterStack, 
     bon::BiodiversityObservationNetwork
 )
-    _, Xfull = BONs.features(layers)
+    cart_idx, Xfull = features(layers)
     Xsampled = layers[bon]
-    Xf, Xs = _standardize(Xfull, Xsampled)
-
-
-end 
-
-function _js_thing(rs::RasterStack, bon::BiodiversityObservationNetwork)
-    function _js(P,Q) 
-        M = BONs.Distributions.MixtureModel([P,Q], [0.5,0.5])
-        div = 0.5*BONs.Distributions.kldivergence(P,M) + 0.5*BONs.Distributions.kldivergence(Q,M)
-        return sqrt(div / log(2))    
-    end
-    _, Xfull = BONs.features(rs)
-    Xsampled = rs[bon]
-
-    nlayers = length(rs)
     
-    Σ₁, Σ₂ = zeros(nlayers, nlayers), zeros(nlayers, nlayers)
+    Xf, Xs = _standardize(Xfull, Xsampled)
+    linear_idx = [findfirst(isequal(i), cart_idx) for i in BONs._get_cartesian_idx(layers, bon)]
 
-    𝓛_js = 0.
-    for i in axes(Xfull,1)
-        𝓝₁ = BONs.Distributions.fit(BONs.Distributions.Normal, Xfull[i,:])
-        𝓝₂ = BONs.Distributions.fit(BONs.Distributions.Normal, Xsampled[i,:])
-        𝓛_js += _js(𝓝₁, 𝓝₂) 
-        for j in i+1:nlayers
-            Σ₁[i,j] = BONs.Distributions.cov(Xfull[:,i],Xfull[:,j])
-            Σ₁[j,i] = Σ₁[i,j]
-            # How to measure the distance between a BON and the whole env space in layer
-            # stack?
-            # Marginals instead of MvNormal bc everything gets fucky 
-            # But can penalize w/ weighted distance between Covariance matrices
-            
-            function _js_thing(rs::RasterStack, bon::BiodiversityObservationNetwork)
-                function _js(P,Q) 
-                    M = BONs.Distributions.MixtureModel([P,Q], [0.5,0.5])
-                    div = 0.5*BONs.Distributions.kldivergence(P,M) + 0.5*BONs.Distributions.kldivergence(Q,M)
-                    return sqrt(div / log(2))    
-                end
-                _, Xfull = BONs.features(rs)
-                Xsampled = rs[bon]
-            
-                nlayers = length(rs)
-                
-                Σ₁, Σ₂ = zeros(nlayers, nlayers), zeros(nlayers, nlayers)
-            
-                𝓛_js = 0.
-                for i in axes(Xfull,1)
-                    𝓝₁ = BONs.Distributions.fit(BONs.Distributions.Normal, Xfull[i,:])
-                    𝓝₂ = BONs.Distributions.fit(BONs.Distributions.Normal, Xsampled[i,:])
-                    𝓛_js += _js(𝓝₁, 𝓝₂) 
-                    for j in i+1:nlayers
-                        Σ₁[i,j] = BONs.Distributions.cov(Xfull[:,i],Xfull[:,j])
-                        Σ₁[j,i] = Σ₁[i,j]
-            
-                        Σ₂[i,j] = BONs.Distributions.cov(Xsampled[:,i],Xsampled[:,j])
-                        Σ₂[j,i] = Σ₂[i,j]
-                    end 
-                end
-                𝓛_covariance = sqrt(sum((Σ₁ .- Σ₂).^2))
-            
-                𝓛_js, 𝓛_covariance
-            end 
-            
-            
-            n_reps = 500
-            n_nodes = [2^i for i in 4:9]
-            begin 
-                f = Figure()
-                ax = Axis(f[1,1])
-                for n in n_nodes
-                    density!(ax, [_js_thing(bioclim, sample(SimpleRandom(n), bioclim))[1] for _ in 1:n_reps])
-                end 
-                f
-            end 
+    Xhat = zeros(size(Xf))
+    Xhat[:, linear_idx] .= Xs
 
-            Σ₂[i,j] = BONs.Distributions.cov(Xsampled[:,i],Xsampled[:,j])
-            Σ₂[j,i] = Σ₂[i,j]
-        end 
-    end
-    𝓛_covariance = sqrt(sum((Σ₁ .- Σ₂).^2))
+    M = 0.5(Xhat + Xf)
 
-    𝓛_js, 𝓛_covariance
+    return 0.5StatsBase.kldivergence(Xf, M) + 0.5StatsBase.kldivergence(Xf, M)
 end 

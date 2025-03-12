@@ -53,8 +53,15 @@ module BiodiversityObservationNetworks
     export cluster
     export KMeans, KMedoids
 
+    export features
+    export jensenshannon
     export voronoi
+
+    export gadm
+
     export cornerplot, bonplot
+
+
 
     include(joinpath("geometry", "bon.jl"))
     include(joinpath("geometry", "polygon.jl"))
@@ -78,6 +85,8 @@ module BiodiversityObservationNetworks
 
     include(joinpath("utilities", "voronoi.jl"))
     include(joinpath("utilities", "clustering.jl"))
+
+    include("overloads.jl")
 
     include("plotting.jl")
 end     
