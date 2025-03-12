@@ -27,7 +27,7 @@ If we define ``v_i`` as the total inclusion probability across all elements of
 the population in Voronoi polygon `i`, i.e.
 
 ```math
-v_i = \sum_{j \in i} \pi_j 
+v_i = \\sum_{j \\in i} \\pi_j 
 ```
 
 then we can assess the spatial balance of a sample by measuring the distance of
@@ -35,7 +35,7 @@ then we can assess the spatial balance of a sample by measuring the distance of
 metric `B`, defined as 
 
 ```math
-B = \frac{1}{n} \sum_{i=1}^n (v_i - 1)^2
+B = \\frac{1}{n} \\sum_{i=1}^n (v_i - 1)^2
 ```
 
 to measure spatial balance, where *smaller values indicate better spatial balance*.
