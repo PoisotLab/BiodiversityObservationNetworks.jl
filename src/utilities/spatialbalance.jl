@@ -9,8 +9,8 @@ struct MoransI <: SpatialBalanceMetric end
     VoronoiVariance
 
 The `VoronoiVariance` method for characterizing the spatial balance of a sample
-is based on the initial method proposed by [Stevens2004SpaBal](@ref), and then
-extended by [Grafstrom2012SpaCor](@ref).
+is based on the initial method proposed by [Stevens2004SpaBal](cite), and then
+extended by [Grafstrom2012SpaCor](cite).
 
 For a given [`BiodiversityObservationNetwork`](@ref) `bon`, the [Voronoi
 tesselation](https://en.wikipedia.org/wiki/Voronoi_diagram) splits the plane
