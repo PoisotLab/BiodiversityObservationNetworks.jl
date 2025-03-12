@@ -50,5 +50,8 @@ function spatialbalance(
     bon::BiodiversityObservationNetwork,
     geom
 )
+    vor = voronoi(bon, geom)
 
+    total_inclusion_prob = 50 .* GO.area.(vor) ./ GO.area(geom)
+    return sum((total_inclusion_prob .- 1).^2)
 end

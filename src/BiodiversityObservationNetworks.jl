@@ -56,6 +56,9 @@ module BiodiversityObservationNetworks
     export features
     export jensenshannon
     export voronoi
+    
+    export spatialbalance
+    export MoransI, VoronoiVariance
 
     export gadm
 
@@ -85,6 +88,8 @@ module BiodiversityObservationNetworks
 
     include(joinpath("utilities", "voronoi.jl"))
     include(joinpath("utilities", "clustering.jl"))
+    include(joinpath("utilities", "spatialbalance.jl"))
+
 
     include("overloads.jl")
 
