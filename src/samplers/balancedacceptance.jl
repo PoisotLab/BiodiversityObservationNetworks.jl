@@ -32,27 +32,31 @@ _get_easting_and_northing(sampler::BalancedAcceptance, layers::RasterStack) = _g
 _get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon) = begin 
     x, y = GI.extent(polygon)
     grid_size = sampler.grid_size
-    Δx = (x[2]-x[1])/grid_size[1]
-    Δy = (y[2]-y[1])/grid_size[2]
 
-    Es = [x[1] + i*Δx for i in 1:grid_size[1]]
-    Ns = [y[1] + i*Δy for i in 1:grid_size[2]]
+    # these are flipped to match the behavior of Rasters
+    easting_ticks, northing_ticks = grid_size[2], grid_size[1]
 
+    Δx = (x[2]-x[1])/easting_ticks
+    Δy = (y[2]-y[1])/northing_ticks
+
+    Es = [x[1] + i*Δx for i in 1:easting_ticks]
+    Ns = [y[1] + i*Δy for i in 1:northing_ticks]
     return Es, Ns
 end 
 
 # TODO: this is redundant and a similar thing is in BalancedAcceptance, unify
-_check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[2]], Ns[candidate[1]]))
+_check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[1]], Ns[candidate[2]]))
 function _check_candidate(_, _, coord, raster::Raster)
-    val = raster.raster[coord[2],coord[1]]
+    (coord[1] > size(raster, 1) || coord[2] > size(raster, 2)) && return false
+    val = raster.raster[coord[1],coord[2]]
     !isnothing(val) && !ismissing(val) && !isnan(val)
 end
 
 function _balanced_acceptance(sampler, geometry) 
     num_nodes = sampler.number_of_nodes
-    Es, Ns = _get_easting_and_northing(sampler, geometry)
 
-    x_dim, y_dim = length(Es), length(Ns)
+    Es, Ns = _get_easting_and_northing(sampler, geometry)
+    num_eastings, num_northings = length(Es), length(Ns)
 
     seed = rand(Int.(1e0:1e7), 2)
     selected_points = Node[]
@@ -61,9 +65,9 @@ function _balanced_acceptance(sampler, geometry)
     while ct < num_nodes
         i, j = haltonvalue(seed[1] + candct, 2), haltonvalue(seed[2] + candct, 3)
         candct += 1
-        candx, candy = convert.(Int, [ceil(y_dim * i), ceil(x_dim * j)])
-        candidate = CartesianIndex(candx,candy)
 
+        # northings are the first dim, eastings are the second
+        candidate = CartesianIndex(convert.(Int, [ceil(num_northings * i), ceil(num_eastings * j)])...)
         if _check_candidate(Es, Ns, candidate, geometry)
             push!(selected_points, Node((Es[candidate[2]], Ns[candidate[1]])))
             ct += 1
@@ -79,3 +83,24 @@ function _sample(sampler::BalancedAcceptance, domain::Vector{<:Polygon})
 
     vcat([_sample(sampler, p) for p in domain])
 end 
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use BalancedAcceptance with default arguments on a Raster" begin
+    raster = Raster(zeros(50, 100))
+    bas = BalancedAcceptance()
+    bon = sample(bas, raster)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == bas.number_of_nodes
+end
+
+
+@testitem "We can use BalancedAcceptance with default arguments on a Polygon" begin
+    polygon = gadm("COL")
+    bas = BalancedAcceptance()
+    bon = sample(bas, polygon)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == bas.number_of_nodes
+end
