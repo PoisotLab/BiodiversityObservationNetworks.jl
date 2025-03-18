@@ -96,13 +96,18 @@ _get_address_length(sampler, raster::Raster) = Int(ceil(max(log(2, size(raster,1
 """
     _get_easting_and_northing
 
-Rn this is just copy/pasted from BAS. It should dispatch on a set of samplers,
+Rn this is just copy/pasted from BAS. 
+
+TODO: everything is fucked because Raster dims are represented as (northings/eastings)
+
+It should dispatch on a set of samplers,
 with the assumption that the sampler always has a field called grid_size (this
 also only matters for polygons)
 """
 _get_easting_and_northing(::GeneralizedRandomTessellatedStratified, raster::Raster) = SDT.eastings(raster), SDT.northings(raster)
 _get_easting_and_northing(sampler::GeneralizedRandomTessellatedStratified, layers::RasterStack) = _get_easting_and_northing(sampler, first(layers))
 _get_easting_and_northing(sampler::GeneralizedRandomTessellatedStratified, polygon::Polygon) = begin
+    #=
     x, y = GI.extent(polygon)
     grid_size = sampler.grid_size
     Δx = (x[2]-x[1])/grid_size[1]
@@ -110,6 +115,18 @@ _get_easting_and_northing(sampler::GeneralizedRandomTessellatedStratified, polyg
 
     Es = [x[1] + i*Δx for i in 1:grid_size[1]]
     Ns = [y[1] + i*Δy for i in 1:grid_size[2]]
+    return Es, Ns=#
+    x, y = GI.extent(polygon)
+    grid_size = sampler.grid_size
+
+    # these are flipped to match the behavior of Rasters
+    easting_ticks, northing_ticks = grid_size[2], grid_size[1]
+
+    Δx = (x[2]-x[1])/easting_ticks
+    Δy = (y[2]-y[1])/northing_ticks
+
+    Es = [x[1] + i*Δx for i in 1:easting_ticks]
+    Ns = [y[1] + i*Δy for i in 1:northing_ticks]
     return Es, Ns
 end 
 
@@ -135,7 +152,7 @@ _get_cartesian_index_bounds(sampler, ::Polygon) = sampler.grid_size
 _check_validity(geometry::Polygon, coord) = GO.contains(geometry, coord)
 
 _check_validity(geometry::Raster, coord) = begin 
-    val = geometry.raster[coord...]
+    val = geometry.raster[coord[1], coord[2]]
     !isnothing(val) && !ismissing(val) && !isnan(val)
 end 
 function _pick_nodes(sampler, geometry, addresses)
@@ -153,7 +170,9 @@ function _pick_nodes(sampler, geometry, addresses)
         if candidate[1] <= xbound && candidate[2] <= ybound
             coord = (Es[candidate[2]], Ns[candidate[1]])
             
-            if _check_validity(geometry, coord)
+            # hacky, but it works
+            c = geometry isa Polygon ? coord : candidate
+            if _check_validity(geometry, c)
                 push!(selected_nodes, Node(coord))
                 num_selected += 1
             end
@@ -168,6 +187,30 @@ function _grts(sampler, geometry)
     selected_nodes = _pick_nodes(sampler, geometry, addresses)
     return BiodiversityObservationNetwork(selected_nodes)
 end 
+
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use GRTS with default arguments on a Raster" begin
+    raster = Raster(zeros(50, 100))
+    grts = GeneralizedRandomTessellatedStratified()
+    bon = sample(grts, raster)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == grts.number_of_nodes
+end
+
+
+@testitem "We can use GRTS with default arguments on a Polygon" begin
+    poly = gadm("COL")
+    grts = GeneralizedRandomTessellatedStratified()
+    bon = sample(grts, poly)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == grts.number_of_nodes
+end
+
+
 #=
 """
     GeneralizedRandomTessellatedStratified
