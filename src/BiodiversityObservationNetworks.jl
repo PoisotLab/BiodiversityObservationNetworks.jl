@@ -14,6 +14,7 @@ module BiodiversityObservationNetworks
     using SpecialFunctions
     using SpeciesDistributionToolkit
     using StatsBase 
+    using TestItems
     using Random
 
     import GeoInterface as GI
