@@ -3,8 +3,8 @@
 
 `SpatiallyStratified` is a [`BONSampler`](@ref) for choosing sites across a set of different spatial stratum. 
 """
-struct SpatiallyStratified{I<:Integer} <: BONSampler
-    number_of_nodes::I
+@kwdef struct SpatiallyStratified{I<:Integer} <: BONSampler
+    number_of_nodes::I = 30
 end
 
 function _sample(
@@ -71,5 +71,15 @@ function _sample(
     vcat([_sample(SimpleRandom(nodes_per_stratum[i]), polygons[i]) for i in eachindex(polygons) if nodes_per_stratum[i] > 0])
 end
 
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
 
+@testitem "We can use SpatiallyStratified with default constructor on a vector of Polygons" begin
+    polys = gadm("COL", 1)
+    ss = SpatiallyStratified()
+    bon = sample(ss, polys)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == ss.number_of_nodes
+end
 
