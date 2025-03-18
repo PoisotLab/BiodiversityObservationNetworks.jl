@@ -64,3 +64,16 @@ function _sample(
     return BiodiversityObservationNetwork(bon[inclusion_indicator])
 end 
 
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use SCPS with default constructor on a BON" begin
+    polygon = gadm("COL")
+    candidate_bon = sample(SimpleRandom(300), polygon)
+
+    scps = SpatiallyCorrelatedPoisson()
+    bon = sample(scps, candidate_bon)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == scps.number_of_nodes
+end
