@@ -29,6 +29,11 @@ function _sample(sampler::Grid, polygon::Polygon)
     BiodiversityObservationNetwork(vec([Node((i,j)) for i in xm:x_step:xM, j in ym:y_step:yM if GO.contains(polygon, (i,j))]))
 end 
 
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
 @testitem "We can use a Grid with default constructor on a Raster" begin
     gs = Grid()
     raster = Raster(BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50,30)))
