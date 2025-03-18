@@ -44,6 +44,25 @@ function BONs.cornerplot(
     f
 end
 
+function BONs.bonplot(
+    bon::BiodiversityObservationNetwork;
+    kw...
+)
+    f = Figure()
+    bonplot(f[1,1], bon; kw...)
+    return f
+end
+
+function BONs.bonplot(
+    bon::BiodiversityObservationNetwork,
+    geom;
+    kw...
+)
+    f = Figure()
+    bonplot(f[1,1], bon, geom; kw...)
+    return f
+end
+
 
 function BONs.bonplot(
     position::GridPosition, 
