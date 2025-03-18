@@ -70,3 +70,24 @@ end
 
 
 _sample(::SimpleRandom, ::T) where T = throw(ArgumentError("Can't use SimpleRandom on a $T"))
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use SimpleRandom with default arguments on a Raster" begin
+    raster = Raster(zeros(50, 100))
+    srs = SimpleRandom()
+    bon = sample(srs, raster)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == srs.number_of_nodes
+end
+
+
+@testitem "We can use SimpleRandom with default arguments on a Polygon" begin
+    poly = gadm("COL")
+    srs = SimpleRandom()
+    bon = sample(srs, poly)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == srs.number_of_nodes
+end
