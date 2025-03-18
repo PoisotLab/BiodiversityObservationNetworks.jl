@@ -8,7 +8,7 @@ function voronoi(bon::BiodiversityObservationNetwork, geom)
     bbox = (xmin, xmax, ymin, ymax) 
     
 
-    vor_polys = convert.(Polygon, [AGDAL.intersection(geom.geometry.geom, AGDAL.createpolygon(DT.get_polygon_coordinates(vor, i, bbox))) for i in DT.each_polygon_index(vor)])
+    vor_polys = Polygon.([AG.intersection(geom.geometry, AG.createpolygon(DT.get_polygon_coordinates(vor, i, bbox))) for i in DT.each_polygon_index(vor)])
 
     # This is O(n²) and I hate it
     # But necessary to make sure the Voronoi polygons are in the same order as the BON nodes

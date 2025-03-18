@@ -4,6 +4,50 @@
 A Polygon extends the GeoInterface API for both PolygonTrait and
 MultiPolygonTraits. 
 """
+
+abstract type Geometry end
+
+struct Polygon <: Geometry
+    geometry::AG.IGeometry{AG.wkbMultiPolygon}
+    function Polygon(poly::AG.IGeometry{AG.wkbMultiPolygon}) 
+        new(poly)
+    end 
+end
+
+# Constructors
+Polygon(multipolys::Vector{<:AG.IGeometry{AG.wkbMultiPolygon}}) = Polygon.(multipolys)
+Polygon(poly::AG.IGeometry{AG.wkbPolygon}) = Polygon(AG.forceto(poly, AG.wkbMultiPolygon))
+Polygon(polys::Vector{<:AG.IGeometry{AG.wkbPolygon}}) = Polygon.(polys)
+Polygon(feat::GJ.FeatureCollection) = Polygon(AG.fromJSON(GJ.write(feat.geometry[1])))
+Polygon(multipoly::GJ.MultiPolygon) = Polygon(AG.fromJSON(GJ.write(multipoly)))
+Polygon(res::Vector{<:GJ.MultiPolygon}) = Polygon.(AG.fromJSON.(GJ.write.(res)))
+
+
+
+# GeoInterface overloads
+GI.isgeometry(::Polygon)::Bool = true
+GI.geomtrait(::Polygon)::DataType = GI.MultiPolygonTrait
+GI.ngeom(::Type{GI.MultiPolygonTrait}, geom::Polygon)::Integer = GI.ngeom(geom.geometry)
+GI.getgeom(::Type{GI.MultiPolygonTrait}, geom::Polygon, i) = 
+GI.getgeom(geom.geometry, i)
+GI.crs(::Type{GI.MultiPolygonTrait}, geom::Polygon)= GI.crs(geom.geometry)
+GI.extent(::Type{GI.MultiPolygonTrait}, geom::Polygon)::GI.Extents.Extent = GI.extent(geom.geometry)
+
+# GeometryOps.jl overloads
+GO.contains(geom::Polygon, pt) = GO.contains(geom.geometry, pt) 
+
+# SDT Overloads
+SDT.boundingbox(poly::Polygon) = begin
+    (xm,xM), (ym, yM) = GI.extent(poly)
+    return (left=xm, right=xM, bottom=ym, top=yM)
+end 
+
+SDT.mask!(layers, poly::Polygon) = begin
+    geojson_poly = GJ.read(AG.toJSON(poly.geometry))
+    SDT.mask!(layers, geojson_poly)
+end
+
+#=
 struct Polygon{T, G}
     geometry::G
     function Polygon(::T, geom::G) where {T <: GI.AbstractTrait, G}
@@ -24,7 +68,7 @@ GO.contains(geom::Polygon, coord) = GO.contains(geom.geometry, coord)
 GO.area(geom::Polygon) = GO.area(geom.geometry)
 
 
-SDT.SimpleSDMLayers.mask!(layers, geom) = SDT.SimpleSDMLayers.mask!(layers, SDT.GeoJSON.read(AGDAL.toJSON(geom.geometry.geom)))
+SDT.SimpleSDMLayers.mask!(layers, geom) = SDT.SimpleSDMLayers.mask!(layers, SDT.GeoJSON.read(AG.toJSON(geom.geometry.geom)))
 SDT.boundingbox(geom::Polygon) = begin
     (xm,xM), (ym,yM)  = GI.extent(geom)
     return (left=xm, right=xM, bottom=ym, top=yM)
@@ -32,7 +76,7 @@ end
 
 Base.convert(::Type{Polygon}, foo) = _convert_to_bons_polygon(foo)
 
-const __POLYGONIZABLE_TYPES = Union{<:GJSON.FeatureCollection,<:GJSON.MultiPolygon,Vector{<:GJSON.MultiPolygon}, <:AGDAL.IGeometry{AGDAL.wkbPolygon}, <:GI.Wrappers.Polygon}
+const __POLYGONIZABLE_TYPES = Union{<:GJSON.FeatureCollection,<:GJSON.MultiPolygon,Vector{<:GJSON.MultiPolygon}, <:AG.IGeometry{AG.wkbPolygon}, <:GI.Wrappers.Polygon}
 
 is_polygonizable(::T) where T = T <: __POLYGONIZABLE_TYPES
 
@@ -63,10 +107,11 @@ end
 # =================================================================
 # ArchGDAL handlers
 # 
-function _convert_to_bons_polygon(geom::AGDAL.IGeometry{AGDAL.wkbPolygon})
+function _convert_to_bons_polygon(geom::AG.IGeometry{AG.wkbPolygon})
     Polygon(GI.trait(geom), geom)
 end
 
-function _convert_to_bons_polygon(geom::AGDAL.IGeometry{AGDAL.wkbMultiPolygon})
+function _convert_to_bons_polygon(geom::AG.IGeometry{AG.wkbMultiPolygon})
     Polygon(GI.trait(geom), geom)
 end
+=#
