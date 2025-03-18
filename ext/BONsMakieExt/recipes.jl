@@ -141,5 +141,7 @@ end
 Makie.poly!(ax, polygon::Polygon; kw...) = poly!(ax, polygon.geometry; kw...)
 Makie.poly!(ax, polygons::Vector{Polygon}; kw...) = map(p->poly!(ax,p; kw...), polygons)
 
-
+# Makie scatter overloads
+Makie.scatter(bon::BiodiversityObservationNetwork) = scatter(BONs.GI.coordinates(bon))
+Makie.scatter!(ax, bon::BiodiversityObservationNetwork; kw...) = scatter!(ax, BONs.GI.coordinates(bon); kw...)
 
