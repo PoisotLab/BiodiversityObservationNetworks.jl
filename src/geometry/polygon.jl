@@ -1,12 +1,12 @@
+
+abstract type Geometry end
+
 """
     Polygon
 
 A Polygon extends the GeoInterface API for both PolygonTrait and
 MultiPolygonTraits. 
 """
-
-abstract type Geometry end
-
 struct Polygon <: Geometry
     geometry::AG.IGeometry{AG.wkbMultiPolygon}
     function Polygon(poly::AG.IGeometry{AG.wkbMultiPolygon}) 
