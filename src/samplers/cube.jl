@@ -286,6 +286,23 @@ function unique_permutations(x::T, prefix = T()) where {T}
     end
 end
 
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use CubeSampling with default arguments on a RasterStack" begin
+    # TODO: look into if you can preload stuff to exist in the Test context window, so you don't have to reload polygons/rasterstacks/etc.
+    rasters = map(_ -> Raster(BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(30,20))), 1:3)
+    stack = RasterStack(rasters)
+    cs = CubeSampling()
+    bon = sample(cs, stack)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == cs.number_of_nodes
+end
+
+
+
 #=
 """
     CubeSampling
