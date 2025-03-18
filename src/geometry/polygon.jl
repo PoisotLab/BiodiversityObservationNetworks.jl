@@ -22,7 +22,10 @@ Polygon(feat::GJ.FeatureCollection) = Polygon(AG.fromJSON(GJ.write(feat.geometry
 Polygon(multipoly::GJ.MultiPolygon) = Polygon(AG.fromJSON(GJ.write(multipoly)))
 Polygon(res::Vector{<:GJ.MultiPolygon}) = Polygon.(AG.fromJSON.(GJ.write.(res)))
 
+Base.convert(Polygon, t::__POLYGONIZABLE_TYPES) = Polygon(t)
 
+const __POLYGONIZABLE_TYPES = Union{<:GJ.FeatureCollection,<:GJ.MultiPolygon,Vector{<:GJ.MultiPolygon}, <:AG.IGeometry{AG.wkbPolygon}, <:GI.Wrappers.Polygon}
+is_polygonizable(::T) where T = T <: __POLYGONIZABLE_TYPES
 
 # GeoInterface overloads
 GI.isgeometry(::Polygon)::Bool = true
@@ -77,7 +80,6 @@ end
 Base.convert(::Type{Polygon}, foo) = _convert_to_bons_polygon(foo)
 
 const __POLYGONIZABLE_TYPES = Union{<:GJSON.FeatureCollection,<:GJSON.MultiPolygon,Vector{<:GJSON.MultiPolygon}, <:AG.IGeometry{AG.wkbPolygon}, <:GI.Wrappers.Polygon}
-
 is_polygonizable(::T) where T = T <: __POLYGONIZABLE_TYPES
 
 
