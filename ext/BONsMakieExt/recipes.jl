@@ -119,17 +119,27 @@ function Makie.voronoiplot(
     ax = axistype(position)
     hidedecorations!(ax)
     map(v->poly!(ax, v, strokewidth=1), vor)
-    scatter!(ax, [n.coordinate for n in bon], color=:red)
+    if size(bon) < 50
+        scatter!(ax, [n.coordinate for n in bon], color=:red)
+    end
     poly!(ax, geom, color=(:white, 0), strokewidth=1)
 end 
 
-Makie.poly(poly::Polygon, x...; kwargs...) = begin 
-    Makie.poly(poly.geometry, x...; kwargs...)
-end
 
-Makie.poly!(ax, poly::Polygon, x...; kwargs...) = begin 
-    Makie.poly!(ax, poly.geometry, x...; kwargs...)
-end
+# Makie poly overloads
+Makie.poly(polygon::Polygon; kw...) = poly(polygon.geometry; kw...)
+Makie.poly(polygons::Vector{Polygon}; kw...) = begin
+    poly(first(polygons); kw...)
+    map(p->poly!(p; kw...), polygons[2:end])
+    current_figure()
+end 
+Makie.poly!(polygon::Polygon; kw...) = poly!(polygon.geometry; kw...)
+Makie.poly!(polygons::Vector{Polygon}; kw...) = begin
+    map(p->poly!(p; kw...), polygons)
+    current_figure()
+end 
+Makie.poly!(ax, polygon::Polygon; kw...) = poly!(ax, polygon.geometry; kw...)
+Makie.poly!(ax, polygons::Vector{Polygon}; kw...) = map(p->poly!(ax,p; kw...), polygons)
 
 
 
