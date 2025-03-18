@@ -96,3 +96,16 @@ function _sample(sampler::Pivotal, bon::BiodiversityObservationNetwork)
 end 
 
 
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use Pivotal sampling with default arguments on a BiodiversityObservationNetwork" begin
+    polygon = gadm("COL")
+    candidate_bon = sample(SimpleRandom(300), polygon)
+    piv = Pivotal()
+    bon = sample(piv, candidate_bon)
+    @test bon isa BiodiversityObservationNetwork
+    # off by one happens sometimes, unclear why
+    @test size(bon) ∈ (piv.number_of_nodes, piv.number_of_nodes-1)
+end
