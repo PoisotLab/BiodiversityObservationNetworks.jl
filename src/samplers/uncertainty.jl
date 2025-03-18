@@ -36,3 +36,16 @@ function _sample(sampler::UncertaintySampling, uncertainty::Raster)
     Es, Ns = SDT.eastings(uncertainty), SDT.northings(uncertainty)
     BiodiversityObservationNetwork([Node(Es[c[2]], Ns[c[1]]) for c in cart_idxs])
 end 
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use UncertaintySampling with default constructor on a Raster" begin
+    uncert = rand(50,30)
+    us = UncertaintySampling()
+    bon = sample(us, uncert)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == us.number_of_nodes
+end
+
