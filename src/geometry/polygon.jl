@@ -13,6 +13,7 @@ struct Polygon <: Geometry
         new(poly)
     end 
 end
+const __POLYGONIZABLE_TYPES = Union{<:GJ.FeatureCollection,<:GJ.MultiPolygon,Vector{<:GJ.MultiPolygon}, <:AG.IGeometry{AG.wkbPolygon}, <:GI.Wrappers.Polygon}
 
 # Constructors
 Polygon(multipolys::Vector{<:AG.IGeometry{AG.wkbMultiPolygon}}) = Polygon.(multipolys)
@@ -24,7 +25,6 @@ Polygon(res::Vector{<:GJ.MultiPolygon}) = Polygon.(AG.fromJSON.(GJ.write.(res)))
 
 Base.convert(Polygon, t::__POLYGONIZABLE_TYPES) = Polygon(t)
 
-const __POLYGONIZABLE_TYPES = Union{<:GJ.FeatureCollection,<:GJ.MultiPolygon,Vector{<:GJ.MultiPolygon}, <:AG.IGeometry{AG.wkbPolygon}, <:GI.Wrappers.Polygon}
 is_polygonizable(::T) where T = T <: __POLYGONIZABLE_TYPES
 
 # GeoInterface overloads
