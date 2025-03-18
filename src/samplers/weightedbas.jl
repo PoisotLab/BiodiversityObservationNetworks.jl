@@ -55,3 +55,19 @@ function _sample(sampler::WeightedBalancedAcceptance, raster::Raster)
     end
     return BiodiversityObservationNetwork(selected_points)
 end
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use the default Weighted BAS constructor on a raster" begin
+    raster = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(50,30))
+
+    wbas = WeightedBalancedAcceptance()
+    bon = sample(wbas, raster)
+    
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == wbas.number_of_nodes
+end
+
+
