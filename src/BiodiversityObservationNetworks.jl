@@ -19,8 +19,8 @@ module BiodiversityObservationNetworks
     import GeoInterface as GI
     import GeometryOps as GO
     import SpeciesDistributionToolkit as SDT
-    import SpeciesDistributionToolkit.GeoJSON as GJSON
-    import SpeciesDistributionToolkit.SimpleSDMLayers.ArchGDAL as AGDAL
+    import SpeciesDistributionToolkit.GeoJSON as GJ
+    import SpeciesDistributionToolkit.SimpleSDMLayers.ArchGDAL as AG
     import DelaunayTriangulation as DT
 
     export BiodiversityObservationNetwork
@@ -51,7 +51,7 @@ module BiodiversityObservationNetworks
     export is_polygonizable, is_rasterizable, is_bonifyable
 
     export cluster
-    export KMeans, KMedoids
+    export KMeans, FuzzyCMeans
 
     export features
     export jensenshannon
