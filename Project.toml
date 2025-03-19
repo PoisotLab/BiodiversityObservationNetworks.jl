@@ -5,6 +5,7 @@ version = "0.4.0"
 
 [deps]
 Clustering = "aaaa29a8-35af-508c-8bc3-b662a17a0fe5"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 DelaunayTriangulation = "927a84f5-c5f4-47a5-9785-b46e178433df"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
@@ -34,6 +35,7 @@ BONsMakieExt = "Makie"
 
 [compat]
 Clustering = "0.15.7"
+Dates = "1.11.0"
 DelaunayTriangulation = "1.6.3"
 Distances = "0.10.12"
 Distributions = "0.25"

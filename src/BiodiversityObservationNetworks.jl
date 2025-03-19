@@ -1,5 +1,6 @@
 module BiodiversityObservationNetworks
     using Clustering
+    using Dates
     using DelaunayTriangulation
     using Distances
     using Distributions
@@ -71,6 +72,8 @@ module BiodiversityObservationNetworks
     include(joinpath("geometry", "polygon.jl"))
     include(joinpath("geometry", "raster.jl"))
     include(joinpath("geometry", "stack.jl"))
+
+    include(joinpath("geometry", "timeseries.jl"))
 
     include("sample.jl")
     

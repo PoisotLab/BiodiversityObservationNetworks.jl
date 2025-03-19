@@ -4,7 +4,6 @@ const BONs = BiodiversityObservationNetworks
 # NOTES:
 # The easiest way to make this compatable with GeoMakie (if loaded) or 
 # else default back to normal Axis is to have it work on a ::Makie.GridPosition,
-# which 
 
 
 # TODO: pass any transform. Annoying because its a kwarg and could be of type

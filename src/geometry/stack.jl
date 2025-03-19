@@ -16,9 +16,12 @@ Base.getindex(ls::RasterStack, idxs::Vector{<:CartesianIndex}) = Matrix(hcat([ge
 Base.getindex(rs::RasterStack, bon::BiodiversityObservationNetwork) = hcat([[r[node] for r in rs.stack] for node in bon.nodes]...)
 Base.getindex(rs::RasterStack, node::Node) = [r.raster[node.coordinate...] for r in rs.stack]
 
+
 Base.length(layers::RasterStack) = length(layers.stack)
 Base.iterate(layers::RasterStack, i) = iterate(layers.stack, i)
 Base.iterate(layers::RasterStack) = iterate(layers.stack)
+Base.eachindex(layers::RasterStack) = Base.oneto(length(layers))
+
 
 _get_cartesian_idx(layers::RasterStack, node::Node) = _get_cartesian_idx(first(layers), node)
 _get_cartesian_idx(layers::RasterStack, bon::BiodiversityObservationNetwork) = _get_cartesian_idx(first(layers), bon)

@@ -16,7 +16,6 @@ function _sample(
 
 end
 
-
 function _sample(
     sampler::SpatiallyStratified, 
     domain::Vector{<:Polygon};

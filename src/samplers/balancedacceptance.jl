@@ -71,7 +71,7 @@ function _balanced_acceptance(sampler, geometry)
         if _check_candidate(Es, Ns, candidate, geometry)
             push!(selected_points, Node((Es[candidate[2]], Ns[candidate[1]])))
             ct += 1
-         end
+        end
     end
     return BiodiversityObservationNetwork(selected_points)
 end 

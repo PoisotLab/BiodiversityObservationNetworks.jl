@@ -8,8 +8,6 @@ Base.@kwdef struct UncertaintySampling{I<:Integer} <: BONSampler
 end 
 _valid_geometries(::UncertaintySampling) = (Raster)
 
-
-# this should check if element is bounded in (0,1)
 function _is_uncertainty_layer(raster::Raster) 
     Is = findall(raster)
     sum(raster[Is] .> 0) > 0 && length(findall(x->x<0, raster[Is])) == 0
