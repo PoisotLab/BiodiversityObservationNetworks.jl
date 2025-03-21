@@ -15,7 +15,7 @@ function _sample(
     datatype(raster) <: Integer || throw(ArgumentError("Raster containing spatial strata must be discrete (integer-valued)"))
 
 end
-
+ 
 function _sample(
     sampler::SpatiallyStratified, 
     domain::Vector{<:Polygon};

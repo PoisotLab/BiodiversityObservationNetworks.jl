@@ -24,6 +24,7 @@ module BiodiversityObservationNetworks
     import SpeciesDistributionToolkit.GeoJSON as GJ
     import SpeciesDistributionToolkit.SimpleSDMLayers.ArchGDAL as AG
     import DelaunayTriangulation as DT
+    import MultivariateStats as MVStats
 
     export BiodiversityObservationNetwork
     export Node
