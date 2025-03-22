@@ -63,6 +63,9 @@ module BiodiversityObservationNetworks
     export velocity
     export VelocityMetric, Loarie2009, ClosestAnalogue
 
+    export rarity
+    export RarityMetric, DistanceToMedian, MultivariateEnvironmentalSimilarity
+
     export spatialbalance
     export MoransI, VoronoiVariance
 
@@ -96,6 +99,8 @@ module BiodiversityObservationNetworks
     include(joinpath("utilities", "clustering.jl"))
     include(joinpath("utilities", "spatialbalance.jl"))
     include(joinpath("utilities", "velocity.jl"))
+    include(joinpath("utilities", "rarity.jl"))
+
 
 
     include("overloads.jl")

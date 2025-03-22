@@ -6,13 +6,13 @@ struct ClosestAnalogue <: VelocityMetric end
 function spatial_gradient(layer)
     offset = CartesianIndices((-1:1, -1:1))
     Δx, Δy = -(SDT.eastings(layer)[[2,1]]...), -(SDT.northings(layer)[[2,1]]...)
-    spatial_grad = deepcopy(layer)
+    spatial_grad = deepcopy(layer.raster)
 
     for x in eachindex(layer)
-        @inbounds l = layer.grid[x .+ offset]
-        @inbounds inc = layer.indices[x .+ offset]
+        @inbounds l = layer.raster.grid[x .+ offset]
+        @inbounds inc = layer.raster.indices[x .+ offset]
 
-        l[.!(inc)] .= layer.grid[x]
+        l[.!(inc)] .= layer.raster.grid[x]
         a,b,c,d,e,f,g,h,i = [l[j,i] for i in 1:3, j in 1:3]
 
         ∂x = ((c + 2f + i)-(a + 2d + g)) / 8Δx
@@ -63,6 +63,8 @@ function _nearest_feature_neighbor(baseline, future)
     cart_idx, baseline_features = features(baseline)
     _, future_features = features(future)
 
+    # features should be zscored so units are in SD, otherwise distance is relative to units for each feature
+
     closest_analogue = fill(CartesianIndex(0,0), size(baseline))
 
     kd = NearestNeighbors.KDTree(future_features)
@@ -81,7 +83,7 @@ function velocity(::ClosestAnalogue, baseline, future)
 
     Es, Ns = SDT.eastings(baseline), SDT.northings(baseline)
 
-    vel = deepcopy(baseline[1].raster)
+    vel = baseline isa RasterStack ? deepcopy(baseline[1].raster) : deepcopy(baseline.raster)
     for ci in findall(vel.indices)
         future_cart = closest_analogues[ci]
         base_coord = Es[ci[2]], Ns[ci[1]]

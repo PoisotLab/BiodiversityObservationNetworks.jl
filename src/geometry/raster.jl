@@ -20,7 +20,6 @@ Base.size(r::Raster, i::Integer) = size(r.raster, i)
 Base.findall(r::Raster{<:SDMLayer}) = findall(r.raster.indices)
 Base.findall(r::Raster{<:Matrix}) = findall(x->!ismissing(x) && !isnothing(x) && !isnan(x), r.raster)
 
-
 Base.convert(::Type{Raster}, sdmlayer::SDMLayer) = Raster(sdmlayer)
 Base.convert(::Type{Raster}, m::Matrix) = Raster(m)
 
@@ -30,8 +29,10 @@ Base.getindex(r::Raster, idx::Vector{<:CartesianIndex}) = map(i->getindex(r.rast
 Base.getindex(r::Raster, bmat::BitMatrix) = [getindex(r.raster, i) for i in findall(bmat)]
 Base.getindex(r::Raster, node::Node) = r.raster[node.coordinate...]
 Base.getindex(r::Raster, bon::BiodiversityObservationNetwork) = [r.raster[node.coordinate...] for node in bon.nodes]
-
 Base.eachindex(r::Raster) = eachindex(r.raster)
+
+
+features(r::Raster) = nonempty(r), Matrix(transpose(r.raster.grid[r.raster.indices]))
 
 _get_cartesian_idx(r::Raster, node::Node) = CartesianIndex(SDT.SimpleSDMLayers.__get_grid_coordinate_by_latlon(r.raster, node.coordinate...))
 _get_cartesian_idx(r::Raster, bon::BiodiversityObservationNetwork) = [_get_cartesian_idx(r, node) for node in bon]
