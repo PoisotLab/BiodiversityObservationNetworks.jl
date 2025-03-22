@@ -60,11 +60,13 @@ module BiodiversityObservationNetworks
     export jensenshannon
     export voronoi
     
+    export velocity
+    export VelocityMetric, Loarie2009, ClosestAnalogue
+
     export spatialbalance
     export MoransI, VoronoiVariance
 
     export gadm
-
     export cornerplot, bonplot
 
 
@@ -73,7 +75,6 @@ module BiodiversityObservationNetworks
     include(joinpath("geometry", "polygon.jl"))
     include(joinpath("geometry", "raster.jl"))
     include(joinpath("geometry", "stack.jl"))
-
     include(joinpath("geometry", "timeseries.jl"))
 
     include("sample.jl")
@@ -94,6 +95,7 @@ module BiodiversityObservationNetworks
     include(joinpath("utilities", "voronoi.jl"))
     include(joinpath("utilities", "clustering.jl"))
     include(joinpath("utilities", "spatialbalance.jl"))
+    include(joinpath("utilities", "velocity.jl"))
 
 
     include("overloads.jl")
