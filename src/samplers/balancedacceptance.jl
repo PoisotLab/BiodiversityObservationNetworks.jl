@@ -45,7 +45,7 @@ _get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon) = begin
 end 
 
 # TODO: this is redundant and a similar thing is in BalancedAcceptance, unify
-_check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[1]], Ns[candidate[2]]))
+_check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[2]], Ns[candidate[1]]))
 function _check_candidate(_, _, coord, raster::Raster)
     (coord[1] > size(raster, 1) || coord[2] > size(raster, 2)) && return false
     val = raster.raster[coord[1],coord[2]]

@@ -10,7 +10,7 @@ A `Node` extends the GeoInterface PointTrait type.
 struct Node{C <: __COORDINATE_TYPES}
     coordinate::C
 end
-Base.show(io::IO, node::Node) = print(io, "Node at $(node.coordinate)")
+Base.show(io::IO, node::Node) = print(io, "📍 Node at $(node.coordinate)")
 Base.getindex(node::Node, i) = getindex(node.coordinate, i)
 
 Node(x::T, y::T) where T<:Number = Node((x,y))
@@ -39,13 +39,19 @@ end
 Base.length(bon::BiodiversityObservationNetwork) = length(bon.nodes)
 Base.size(bon::BiodiversityObservationNetwork) = length(bon)
 Base.show(io::IO, bon::BiodiversityObservationNetwork) =
-    print(io, "BiodiversityObservationNetwork with $(length(bon)) nodes")
+    print(io, "🌐 BiodiversityObservationNetwork with $(length(bon)) nodes")
 Base.getindex(bon::BiodiversityObservationNetwork, i::Integer) = bon.nodes[i]
 Base.getindex(bon::BiodiversityObservationNetwork, i::Vector{<:Integer}) = bon.nodes[i]
 
 Base.iterate(bon::BiodiversityObservationNetwork, i) = iterate(bon.nodes, i)
 Base.iterate(bon::BiodiversityObservationNetwork) = iterate(bon.nodes)
 Base.vcat(bons::Vector{<:BiodiversityObservationNetwork}) = BiodiversityObservationNetwork(vcat([b.nodes for b in bons]...))
+
+
+Base.getindex(layer::SDT.SDMLayer, node::Node) = layer[node.coordinate...]
+Base.getindex(layer::SDT.SDMLayer, bon::BiodiversityObservationNetwork) = map(c->layer[c], bon)
+Base.getindex(layers::Vector{<:SDT.SDMLayer}, bon::BiodiversityObservationNetwork) = hcat([[l[c...] for l in layers] for c in GI.coordinates(bon)]...)
+
 
 
 GI.isgeometry(::BiodiversityObservationNetwork)::Bool = true

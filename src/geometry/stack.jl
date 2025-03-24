@@ -44,5 +44,5 @@ SDT.eastings(layers::RasterStack) = eastings(first(layers))
 SDT.northings(layers::RasterStack) = northings(first(layers))
 nonempty(r::RasterStack) = ∩(nonempty.(r)...)
 
-
+features(layers::Vector{<:SDT.SDMLayer}) = hcat([[l[x] for l in layers] for x in eachindex(first(layers))]...)
 features(layers::RasterStack) = findall(layers[1].raster.indices), Matrix(hcat([layer.raster.grid[layer.raster.indices] for layer in layers]...)')

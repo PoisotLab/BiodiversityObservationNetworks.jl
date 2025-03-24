@@ -73,15 +73,23 @@ function BONs.bonplot(
     Makie.AxisPlot(ax, plot)
 end
 
+BONs.bonplot(
+    position::GridPosition,
+    bon::BiodiversityObservationNetwork,
+    geom::RasterStack;
+    kw...
+) = BONs.bonplot(position, bon, first(geom); kw...)
+
 function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    geom::T;
+    geom::Raster,
     axistype = Makie.Axis
 ) where T
-    GEOM_TYPE = BONs._what_did_you_pass(geom)
-    isnothing(GEOM_TYPE) && throw(ArgumentError("$T cannot be coerced to a valid Geometry"))
-    BONs.bonplot(position, bon, Base.convert(GEOM_TYPE, geom); axistype=axistype)
+    ax = axistype(position)
+    heatmap!(ax, geom.raster)
+    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+    Makie.AxisPlot(ax, plot)
 end
 
 
@@ -92,7 +100,7 @@ function BONs.bonplot(
     axistype=Makie.Axis
 )
     ax = axistype(position)
-    poly!(ax, poly.geometry, strokewidth=2, color=(:grey, 0.1))
+    poly!(ax, poly.geometry, strokewidth=1, color=(:grey, 0.1))
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
@@ -126,6 +134,17 @@ function BONs.bonplot(
 end
 
 
+
+function Makie.voronoiplot(
+    bon::BiodiversityObservationNetwork, 
+    geom::Polygon;
+    axistype = Makie.Axis
+)
+    f = Figure()
+    voronoiplot(f[1,1], bon, geom)
+    return f
+end 
+
 function Makie.voronoiplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork, 
@@ -137,9 +156,7 @@ function Makie.voronoiplot(
     ax = axistype(position)
     hidedecorations!(ax)
     map(v->poly!(ax, v, strokewidth=1), vor)
-    if size(bon) < 50
-        scatter!(ax, [n.coordinate for n in bon], color=:red)
-    end
+    scatter!(ax, [n.coordinate for n in bon], color=:white, strokewidth=1, strokecolor=:black)
     poly!(ax, geom, color=(:white, 0), strokewidth=1)
 end 
 
