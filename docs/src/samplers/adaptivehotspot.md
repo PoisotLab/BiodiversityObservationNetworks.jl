@@ -24,7 +24,7 @@ Now we'll generate a synthetic uncertainty layer using
 
 
 ```@example 1
-uncertainty = rand(MidpointDisplacement(), (100, 100))
+uncertainty = SDT.SDMLayer(MidpointDisplacement(), (100, 100))
 ```
 
 Let's plot it

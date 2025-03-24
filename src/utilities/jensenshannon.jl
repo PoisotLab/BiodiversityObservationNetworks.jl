@@ -33,7 +33,7 @@ Divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence) is
 a method for measuring the distance between two probability distibutions.
 
 This method provides a comparison between the distribution of environmental
-variables in a [`RasterStack`](@ref) `layers` to the values of those variables at the
+variables in set of `SDMLayers`, `layers`, to the values of those variables at the
 sites within a [`BiodiversityObservationNetwork`](@ref) `bon`. 
 """
 function jensenshannon(

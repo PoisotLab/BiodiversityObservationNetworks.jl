@@ -88,7 +88,7 @@ end
 Returns the number of digits in a [`GeneralizedRandomTessellatedStratified`](@ref)
 address for a specific geometry. For [`Polygon`](@ref)s, this is computed based
 on the `grid_size` field of the `GeneralizedRandomTessellatedStratified` object.
-For `[Raster]`(@ref)s, this is computed based on the raster dimensions. 
+For SDMLayers, this is computed based on the raster dimensions. 
 """
 _get_address_length(sampler, ::Polygon) = Int(ceil(max(log(2, sampler.grid_size[1]), log(2, sampler.grid_size[2]))))
 _get_address_length(sampler, raster::SDMLayer) = Int(ceil(max(log(2, size(raster,1)), log(2, size(raster,2)))))

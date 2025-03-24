@@ -17,11 +17,11 @@ using GeoMakie
 import SpeciesDistributionToolkit as SDT
 ```
 
-Load a [`RasterStack`](@ref) of predictors 
+Load predictors
 
 ```@example 1
-france = SDT.gadm("FRA")
-layers = RasterStack(SDT.SDMLayer[SDT.mask!(SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...), france) for i in [1,12]])
+france = gadm("FRA")
+layers = SDT.mask!([SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...) for i in [1,12]], france)
 ```
 
 

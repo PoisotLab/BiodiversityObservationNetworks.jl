@@ -21,7 +21,7 @@ now sample a [`BiodiversityObservationNetwork`](@ref)
 
 ```@example 1
 num_nodes = 50
-corsica = SDT.gadm("FRA", "Corse")
+corsica = gadm("FRA", "Corse")
 bon = sample(SimpleRandom(num_nodes), corsica)
 ```
 
@@ -38,7 +38,7 @@ f
 First, load France and its administrative regions:
 
 ```@example 1
-france_states = SDT.gadm("FRA", 1)
+france_states = gadm("FRA", 1)
 ```
 
 Now sample a BON. For a vector of polygons, [`SimpleRandom`](@ref) will sample
@@ -62,7 +62,7 @@ f
 First, load mean annual temperature for France using SDT
 
 ```@example 1
-france = SDT.gadm("FRA")
+france = gadm("FRA")
 temp = SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=1, SDT.boundingbox(france)...)
 temp = SDT.mask!(temp, france)
 ```
@@ -81,14 +81,13 @@ bonplot(f[1,1], bon, temp, axistype=GeoAxis)
 f
 ```
 
-### Using a Raster Stack 
+### Using a set of rasters 
 
-Sampling with a [`RasterStack`](@ref) works nearly identically to using a
-[`Raster`](@ref). First let's load a raster stack with two layers.
+Sampling with a set of rasters works almost identically:
 
 ```@example 1
-france = SDT.gadm("FRA")
-layers = RasterStack(SDT.SDMLayer[SDT.mask!(SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...), france) for i in [1,12]])
+france = gadm("FRA")
+layers = SDT.mask!([SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...) for i in [1,12]], france)
 ```
 
 now sample a BON

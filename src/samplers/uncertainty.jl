@@ -17,7 +17,7 @@ end
     _sample(sampler::UncertaintySampling, geometry)
 
 Internal dispatch for sampling using
-[`UncertaintySampling`](@ref) on a [`Raster`](@ref) containing uncertainty values.
+[`UncertaintySampling`](@ref) on an `SDMLayer` containing uncertainty values.
 """
 function _sample(sampler::UncertaintySampling, uncertainty::SDMLayer) 
     _is_uncertainty_layer(uncertainty) || throw(ArgumentError("Supplied raster is not a valid uncertainty layer."))
