@@ -1,5 +1,6 @@
 const MAX_CORNERPLOT_DIMS_BEFORE_PCA = 20
 const BONs = BiodiversityObservationNetworks
+const SDT = BONs.SpeciesDistributionToolkit
 
 # NOTES:
 # The easiest way to make this compatable with GeoMakie (if loaded) or 
@@ -12,7 +13,7 @@ const BONs = BiodiversityObservationNetworks
 # but also of type MVStats.AbstractDimensionalityReductoin (e.g. PCA, PPCA)
 
 function BONs.cornerplot(
-    layers::RasterStack;
+    layers::Vector{<:SDT.SDMLayer};
     pca_layers = false,
     sz = (1600,1600)
 )
@@ -76,14 +77,14 @@ end
 BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    geom::RasterStack;
+    geom::Vector{<:SDT.SDMLayer};
     kw...
 ) = BONs.bonplot(position, bon, first(geom); kw...)
 
 function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    geom::Raster,
+    geom::SDT.SDMLayer,
     axistype = Makie.Axis
 ) where T
     ax = axistype(position)
@@ -124,11 +125,11 @@ end
 function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    raster::Raster;
+    raster::SDT.SDMLayer;
     axistype=Makie.Axis
 )
     ax = axistype(position)
-    heatmap!(ax, raster.raster)
+    heatmap!(ax, raster)
     plot = scatter!(ax, [node.coordinate for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
@@ -138,10 +139,10 @@ end
 function Makie.voronoiplot(
     bon::BiodiversityObservationNetwork, 
     geom::Polygon;
-    axistype = Makie.Axis
+    kw...
 )
     f = Figure()
-    voronoiplot(f[1,1], bon, geom)
+    voronoiplot(f[1,1], bon, geom; kw...)
     return f
 end 
 

@@ -6,10 +6,10 @@ Active-learning method.
 Base.@kwdef struct UncertaintySampling{I<:Integer} <: BONSampler
     number_of_nodes::I = 100
 end 
-_valid_geometries(::UncertaintySampling) = (Raster)
+_valid_geometries(::UncertaintySampling) = (SDMLayer)
 
-function _is_uncertainty_layer(raster::Raster) 
-    Is = findall(raster)
+function _is_uncertainty_layer(raster::SDMLayer) 
+    Is = findall(raster.indices)
     sum(raster[Is] .> 0) > 0 && length(findall(x->x<0, raster[Is])) == 0
 end
 
@@ -19,12 +19,12 @@ end
 Internal dispatch for sampling using
 [`UncertaintySampling`](@ref) on a [`Raster`](@ref) containing uncertainty values.
 """
-function _sample(sampler::UncertaintySampling, uncertainty::Raster) 
+function _sample(sampler::UncertaintySampling, uncertainty::SDMLayer) 
     _is_uncertainty_layer(uncertainty) || throw(ArgumentError("Supplied raster is not a valid uncertainty layer."))
 
     N = sampler.number_of_nodes
 
-    valid_idxs = findall(uncertainty)
+    valid_idxs = findall(uncertainty.indices)
     
     weights = StatsBase.Weights(uncertainty[valid_idxs])
         
@@ -40,7 +40,7 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use UncertaintySampling with default constructor on a Raster" begin
-    uncert = rand(50,30)
+    uncert = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(50,30))
     us = UncertaintySampling()
     bon = sample(us, uncert)
     @test bon isa BiodiversityObservationNetwork

@@ -9,10 +9,10 @@ Base.@kwdef mutable struct AdaptiveHotspot{I <: Integer} <: BONSampler
     number_of_nodes::I = 50
 end
 
-_valid_geometries(::AdaptiveHotspot) = (Raster)
+_valid_geometries(::AdaptiveHotspot) = (SDMLayer)
 
 
-function _sample(sampler::AdaptiveHotspot, uncertainty::Raster, bon::BiodiversityObservationNetwork)
+function _sample(sampler::AdaptiveHotspot, uncertainty::SDMLayer, bon::BiodiversityObservationNetwork)
     
 end
 
@@ -20,8 +20,8 @@ end
 # TODO: turn this pool call into separate dispatch for Raster's, and then have
 # the internal _adaptive_hotspot work on BONs, much faster because
 # pairwise distance matrix takes forever for full rasters.
-function _sample(sampler::AdaptiveHotspot, uncertainty::Raster)
-    pool = nonempty(uncertainty)
+function _sample(sampler::AdaptiveHotspot, uncertainty::SDMLayer)
+    pool = findall(uncertainty.indices)
     d = zeros(Float64, Int((sampler.number_of_nodes * (sampler.number_of_nodes - 1)) / 2))
     imax = last(findmax([uncertainty[i] for i in pool]))
  

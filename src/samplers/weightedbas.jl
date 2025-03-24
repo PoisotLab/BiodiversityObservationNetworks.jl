@@ -17,16 +17,16 @@ WeightedBalancedAcceptance(n::Integer; grid_size=(250, 250)) = WeightedBalancedA
 
 __valid_geometries(::WeightedBalancedAcceptance) = (Raster)
 
-function _zscore(raster::Raster) 
-    z_raster = copy(raster.raster)
-    valid_idx = raster.raster.indices
+function _zscore(raster::SDMLayer) 
+    z_raster = copy(raster)
+    valid_idx = raster.indices
     Z = StatsBase.fit(ZScoreTransform, z_raster.grid[valid_idx])
 
     z_raster.grid[valid_idx] .= StatsBase.transform(Z, z_raster.grid[valid_idx])
-    return Raster(z_raster)
+    return z_raster
 end 
 
-function _sample(sampler::WeightedBalancedAcceptance, raster::Raster)
+function _sample(sampler::WeightedBalancedAcceptance, raster::SDMLayer)
     α = sampler.inclusion_scaling
     N = sampler.number_of_nodes
     inclusion_probability(x) = exp(α*x)/(1+exp(α*x))

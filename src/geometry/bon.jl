@@ -65,3 +65,10 @@ function GI.extent(bon::BiodiversityObservationNetwork)
     (bot, top), (left, right) = extrema(first.(coords)), extrema(last.(coords))
     GI.Extent(X=(left, right), Y=(bot, top))
 end
+
+features(layers::Vector{<:SDT.SDMLayer}) = findall(first(layers).indices), hcat([[l[x] for l in layers] for x in eachindex(first(layers))]...)
+
+GI.extent(layer::SDMLayer) = begin
+    bbox = SDT.boundingbox(layer)
+    GI.Extent(X=(bbox[:left], bbox[:right]), Y=(bbox[:bottom], bbox[:top]))
+end

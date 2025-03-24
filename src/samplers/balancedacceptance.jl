@@ -19,16 +19,16 @@ BalancedAcceptance(n::Integer; grid_size=(250, 250)) = BalancedAcceptance(n, gri
 
 _valid_geometries(::BalancedAcceptance) = (Polygon, Raster, Vector{Polygon}, RasterStack)
 
-function _sample(sampler::BalancedAcceptance, geometry::T) where T<:Union{Polygon,Raster,Vector{<:Polygon}}
+function _sample(sampler::BalancedAcceptance, geometry::T) where T<:Union{Polygon,SDMLayer,Vector{<:Polygon}}
     _balanced_acceptance(sampler, geometry)
 end 
 
-function _sample(sampler::BalancedAcceptance, layers::RasterStack)
+function _sample(sampler::BalancedAcceptance, layers::Vector{<:SDMLayer})
     _balanced_acceptance(sampler, first(layers))
 end 
 
-_get_easting_and_northing(::BalancedAcceptance, raster::Raster) = SDT.eastings(raster), SDT.northings(raster)
-_get_easting_and_northing(sampler::BalancedAcceptance, layers::RasterStack) = _get_easting_and_northing(sampler, first(layers))
+_get_easting_and_northing(::BalancedAcceptance, raster::SDMLayer) = SDT.eastings(raster), SDT.northings(raster)
+_get_easting_and_northing(sampler::BalancedAcceptance, layers::Vector{<:SDMLayer}) = _get_easting_and_northing(sampler, first(layers))
 _get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon) = begin 
     x, y = GI.extent(polygon)
     grid_size = sampler.grid_size
@@ -46,9 +46,9 @@ end
 
 # TODO: this is redundant and a similar thing is in BalancedAcceptance, unify
 _check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[2]], Ns[candidate[1]]))
-function _check_candidate(_, _, coord, raster::Raster)
+function _check_candidate(_, _, coord, raster::SDMLayer)
     (coord[1] > size(raster, 1) || coord[2] > size(raster, 2)) && return false
-    val = raster.raster[coord[1],coord[2]]
+    val = raster[coord[1],coord[2]]
     !isnothing(val) && !ismissing(val) && !isnan(val)
 end
 
@@ -89,7 +89,7 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use BalancedAcceptance with default arguments on a Raster" begin
-    raster = Raster(zeros(50, 100))
+    raster = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50, 100))
     bas = BalancedAcceptance()
     bon = sample(bas, raster)
     @test bon isa BiodiversityObservationNetwork

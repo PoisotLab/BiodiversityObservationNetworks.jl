@@ -48,8 +48,8 @@ end
 
 # Sample w/o replacement from non-empty CIs, then return the long/lat associated
 # with it 
-function _sample(sampler::SimpleRandom, raster::Raster)
-    cart_idxs = nonempty(raster)
+function _sample(sampler::SimpleRandom, raster::SDMLayer)
+    cart_idxs = findall(raster.indices)
     
     node_cidxs = Distributions.sample(cart_idxs, sampler.number_of_nodes, replace=false)
 
@@ -58,7 +58,7 @@ function _sample(sampler::SimpleRandom, raster::Raster)
     BiodiversityObservationNetwork([Node((E[I[2]], N[I[1]])) for I in node_cidxs])
 end 
 
-_sample(sampler::SimpleRandom, rasters::RasterStack) = _sample(sampler, first(rasters))
+_sample(sampler::SimpleRandom, rasters::Vector{<:SDMLayer}) = _sample(sampler, first(rasters))
 
 function _sample(sampler::SimpleRandom, domain::Vector{<:Polygon})
     @info "You passed a Vector of Polygons."
@@ -76,7 +76,7 @@ _sample(::SimpleRandom, ::T) where T = throw(ArgumentError("Can't use SimpleRand
 # ---------------------------------------------------------------
 
 @testitem "We can use SimpleRandom with default arguments on a Raster" begin
-    raster = Raster(zeros(50, 100))
+    raster = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50, 100))
     srs = SimpleRandom()
     bon = sample(srs, raster)
     @test bon isa BiodiversityObservationNetwork

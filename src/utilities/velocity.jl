@@ -1,18 +1,20 @@
 abstract type VelocityMetric end 
 
+# -----------------------------------------------------------------------------
+# Begin Loarie2009 
+
 struct Loarie2009 <: VelocityMetric end 
-struct ClosestAnalogue <: VelocityMetric end 
 
 function spatial_gradient(layer)
     offset = CartesianIndices((-1:1, -1:1))
     Δx, Δy = -(SDT.eastings(layer)[[2,1]]...), -(SDT.northings(layer)[[2,1]]...)
-    spatial_grad = deepcopy(layer.raster)
+    spatial_grad = deepcopy(layer)
 
     for x in eachindex(layer)
-        @inbounds l = layer.raster.grid[x .+ offset]
-        @inbounds inc = layer.raster.indices[x .+ offset]
+        @inbounds l = layer.grid[x .+ offset]
+        @inbounds inc = layer.indices[x .+ offset]
 
-        l[.!(inc)] .= layer.raster.grid[x]
+        l[.!(inc)] .= layer.grid[x]
         a,b,c,d,e,f,g,h,i = [l[j,i] for i in 1:3, j in 1:3]
 
         ∂x = ((c + 2f + i)-(a + 2d + g)) / 8Δx
@@ -40,9 +42,7 @@ function temporal_gradient(years, timeseries)
     return temporal_grad
 end 
 
-"""
-    this follows Loarie et al. 2009 
-"""
+
 velocity(::Type{Loarie2009}, args...) = velocity(Loarie2009(), args...)
 function velocity(::Loarie2009, years, timeseries; threshold=0.95)
     sg = spatial_gradient(timeseries[1])
@@ -57,7 +57,14 @@ function velocity(::Loarie2009, years, timeseries; threshold=0.95)
     return vel
 end
 
+# End Loarie2009 
+# -----------------------------------------------------------------------------
 
+
+# -----------------------------------------------------------------------------
+# Begin ClosestAnalogue
+
+struct ClosestAnalogue <: VelocityMetric end 
 
 function _nearest_feature_neighbor(baseline, future)
     cart_idx, baseline_features = features(baseline)
@@ -65,7 +72,7 @@ function _nearest_feature_neighbor(baseline, future)
 
     # features should be zscored so units are in SD, otherwise distance is relative to units for each feature
 
-    closest_analogue = fill(CartesianIndex(0,0), size(baseline))
+    closest_analogue = fill(CartesianIndex(0,0), size(first(baseline)))
 
     kd = NearestNeighbors.KDTree(future_features)
     for (i,bi) in enumerate(eachcol(baseline_features))
@@ -78,12 +85,13 @@ end
 _euclidian_dist(x,y) = sqrt(sum((x .- y).^2))
 
 velocity(::Type{ClosestAnalogue}, args...) = velocity(ClosestAnalogue(), args...)
+velocity(::ClosestAnalogue, baseline::SDMLayer, future::SDMLayer) = velocity(ClosestAnalogue(), [baseline], [future])
+ 
 function velocity(::ClosestAnalogue, baseline, future)
     closest_analogues = _nearest_feature_neighbor(baseline, future)
-
-    Es, Ns = SDT.eastings(baseline), SDT.northings(baseline)
-
-    vel = baseline isa RasterStack ? deepcopy(baseline[1].raster) : deepcopy(baseline.raster)
+    Es = SDT.eastings(first(baseline))
+    Ns = SDT.northings(first(baseline))
+    vel = deepcopy(baseline[1]) 
     for ci in findall(vel.indices)
         future_cart = closest_analogues[ci]
         base_coord = Es[ci[2]], Ns[ci[1]]
@@ -92,3 +100,6 @@ function velocity(::ClosestAnalogue, baseline, future)
     end
     return vel
 end 
+
+# End Loarie2009 
+# -----------------------------------------------------------------------------

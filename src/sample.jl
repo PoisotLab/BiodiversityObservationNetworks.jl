@@ -10,7 +10,7 @@ struct MultistageSampler <: BONSampler
     samplers::Vector{<:BONSampler} 
 end
 
-const __BON_DOMAINS = Union{Raster, RasterStack, Polygon, Vector{<:Polygon}, BiodiversityObservationNetwork}
+const __BON_DOMAINS = Union{Vector{<:SDMLayer}, SDMLayer, Polygon, Vector{<:Polygon}, BiodiversityObservationNetwork}
 
 
 Base.getindex(samplers::MultistageSampler, i::Integer) = samplers.samplers[i]
@@ -35,7 +35,7 @@ end
 
 function _what_did_you_pass(geom)
     is_polygonizable(geom) && return Polygon
-    is_rasterizable(geom) && return Raster
+    #is_rasterizable(geom) && return Raster
     is_bonifyable(geom) && return BiodiversityObservationNetwork
     return nothing
 end

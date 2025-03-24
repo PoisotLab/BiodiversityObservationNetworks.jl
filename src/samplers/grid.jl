@@ -15,9 +15,10 @@ Base.@kwdef struct Grid{F<:Real} <: BONSampler
     # there should probably be padding here. 
 end 
 
-_valid_geometries(::Grid) = (Polygon, Raster, RasterStack)
+_valid_geometries(::Grid) = (Polygon, SDMLayer, Vector{<:SDMLayer})
 
-function _sample(sampler::Grid, raster::Raster)
+_sample(sampler::Grid, layers::Vector{<:SDMLayer}) = _sample(sampler, first(layers))
+function _sample(sampler::Grid, raster::SDMLayer)
     (xm, xM), (ym, yM) = GI.extent(raster)
     x_step, y_step = sampler.longitude_spacing, sampler.latitude_spacing
     BiodiversityObservationNetwork(vec([Node((i,j)) for i in xm:x_step:xM, j in ym:y_step:yM]))
@@ -36,7 +37,7 @@ end
 
 @testitem "We can use a Grid with default constructor on a Raster" begin
     gs = Grid()
-    raster = Raster(BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50,30)))
+    raster = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50,30))
     bon = sample(gs, raster)
     @test bon isa BiodiversityObservationNetwork
 end

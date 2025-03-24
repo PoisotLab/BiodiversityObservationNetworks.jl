@@ -9,7 +9,7 @@ end
 
 function _sample(
     sampler::SpatiallyStratified, 
-    raster::Raster;
+    raster::SDMLayer;
     kwargs...
 )
     datatype(raster) <: Integer || throw(ArgumentError("Raster containing spatial strata must be discrete (integer-valued)"))

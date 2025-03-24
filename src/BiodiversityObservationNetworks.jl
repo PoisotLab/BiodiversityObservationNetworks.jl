@@ -14,6 +14,7 @@ module BiodiversityObservationNetworks
     using NearestNeighbors
     using SpecialFunctions
     using SpeciesDistributionToolkit
+    using Statistics
     using StatsBase 
     using TestItems
     using Random
@@ -76,8 +77,6 @@ module BiodiversityObservationNetworks
 
     include(joinpath("geometry", "bon.jl"))
     include(joinpath("geometry", "polygon.jl"))
-    include(joinpath("geometry", "raster.jl"))
-    include(joinpath("geometry", "stack.jl"))
     include(joinpath("geometry", "timeseries.jl"))
 
     include("sample.jl")

@@ -33,7 +33,7 @@ end
 GeneralizedRandomTessellatedStratified(n::Integer; grid_size=(250,250)) = GeneralizedRandomTessellatedStratified(n, grid_size)
 
 
-_valid_geometries(::GeneralizedRandomTessellatedStratified) = (Polygon, Raster, Vector{Polygon}, RasterStack)
+_valid_geometries(::GeneralizedRandomTessellatedStratified) = (Polygon, SDMLayer, Vector{Polygon}, Vector{<:SDMLayer})
 
 """
     _sample(sampler::GeneralizedRandomTessellatedStratified, geometry)
@@ -41,8 +41,8 @@ _valid_geometries(::GeneralizedRandomTessellatedStratified) = (Polygon, Raster, 
 Internal dispatch for sampling using
 [`GeneralizedRandomTessellatedStratified`](@ref) on a geometry.
 """
-_sample(sampler::GeneralizedRandomTessellatedStratified, geometry::T) where T<:Union{Polygon,Raster,Vector{<:Polygon}} = _grts(sampler, geometry)
-_sample(sampler::GeneralizedRandomTessellatedStratified, layers::RasterStack) = _grts(sampler, first(layers))
+_sample(sampler::GeneralizedRandomTessellatedStratified, geometry::T) where T<:Union{Polygon,SDMLayer,Vector{<:Polygon}} = _grts(sampler, geometry)
+_sample(sampler::GeneralizedRandomTessellatedStratified, layers::Vector{<:SDMLayer}) = _grts(sampler, first(layers))
 
 
 """
@@ -91,7 +91,7 @@ on the `grid_size` field of the `GeneralizedRandomTessellatedStratified` object.
 For `[Raster]`(@ref)s, this is computed based on the raster dimensions. 
 """
 _get_address_length(sampler, ::Polygon) = Int(ceil(max(log(2, sampler.grid_size[1]), log(2, sampler.grid_size[2]))))
-_get_address_length(sampler, raster::Raster) = Int(ceil(max(log(2, size(raster,1)), log(2, size(raster,2)))))
+_get_address_length(sampler, raster::SDMLayer) = Int(ceil(max(log(2, size(raster,1)), log(2, size(raster,2)))))
 
 """
     _get_easting_and_northing
@@ -104,8 +104,8 @@ It should dispatch on a set of samplers,
 with the assumption that the sampler always has a field called grid_size (this
 also only matters for polygons)
 """
-_get_easting_and_northing(::GeneralizedRandomTessellatedStratified, raster::Raster) = SDT.eastings(raster), SDT.northings(raster)
-_get_easting_and_northing(sampler::GeneralizedRandomTessellatedStratified, layers::RasterStack) = _get_easting_and_northing(sampler, first(layers))
+_get_easting_and_northing(::GeneralizedRandomTessellatedStratified, raster::SDMLayer) = SDT.eastings(raster), SDT.northings(raster)
+_get_easting_and_northing(sampler::GeneralizedRandomTessellatedStratified, layers::Vector{<:SDMLayer}) = _get_easting_and_northing(sampler, first(layers))
 _get_easting_and_northing(sampler::GeneralizedRandomTessellatedStratified, polygon::Polygon) = begin
     #=
     x, y = GI.extent(polygon)
@@ -146,13 +146,13 @@ function _get_addresses(sampler, geometry)
     return addresses
 end
 
-_get_cartesian_index_bounds(sampler, raster::Raster) = size(raster)
+_get_cartesian_index_bounds(sampler, raster::SDMLayer) = size(raster)
 _get_cartesian_index_bounds(sampler, ::Polygon) = sampler.grid_size
 
 _check_validity(geometry::Polygon, coord) = GO.contains(geometry, coord)
 
-_check_validity(geometry::Raster, coord) = begin 
-    val = geometry.raster[coord[1], coord[2]]
+_check_validity(geometry::SDMLayer, coord) = begin 
+    val = geometry[coord[1], coord[2]]
     !isnothing(val) && !ismissing(val) && !isnan(val)
 end 
 function _pick_nodes(sampler, geometry, addresses)
@@ -194,7 +194,7 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use GRTS with default arguments on a Raster" begin
-    raster = Raster(zeros(50, 100))
+    raster = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50, 100))
     grts = GeneralizedRandomTessellatedStratified()
     bon = sample(grts, raster)
     @test bon isa BiodiversityObservationNetwork
@@ -209,80 +209,3 @@ end
     @test bon isa BiodiversityObservationNetwork
     @test size(bon) == grts.number_of_nodes
 end
-
-
-#=
-"""
-    GeneralizedRandomTessellatedStratified
-
-@Olsen
-"""
-@kwdef struct GeneralizedRandomTessellatedStratified <: BONSampler
-    numsites = 50
-    dims = (100, 100)
-end
-
-maxsites(grts::GeneralizedRandomTessellatedStratified) = prod(grts.dims)
-
-function check_arguments(grts::GeneralizedRandomTessellatedStratified)
-    check(TooManySites, grts)
-    check(TooFewSites, grts)
-    return
-end
-
-function _quadrant_fill!(mat)
-    x, y = size(mat)
-    a, b = x ÷ 2, y ÷ 2
-    quad_ids = shuffle([1, 2, 3, 4])
-    mat[begin:a, begin:b] .= quad_ids[1]
-    mat[(a + 1):end, begin:b] .= quad_ids[2]
-    mat[begin:a, (b + 1):end] .= quad_ids[3]
-    mat[(a + 1):end, (b + 1):end] .= quad_ids[4]
-    return mat
-end
-
-function _quadrant_split!(mat, grid_size)
-    x, y = size(mat)
-
-    num_x_grids, num_y_grids = x ÷ grid_size, y ÷ grid_size
-
-    for i in 0:(num_x_grids - 1), j in 0:(num_y_grids - 1)
-        a, b = i * grid_size, j * grid_size
-        bounds = (a + 1, b + 1), (a + grid_size, b + grid_size)
-        mat[bounds[1][1]:bounds[2][1], bounds[1][2]:bounds[2][2]] .=
-            _quadrant_fill!(mat[bounds[1][1]:bounds[2][1], bounds[1][2]:bounds[2][2]])
-    end
-
-    return mat
-end
-
-"""
-_generate!(coords::Vector{CartesianIndex}, grts::GeneralizedRandomTessellatedStratified)
-"""
-function _generate!(
-    coords::Vector{CartesianIndex},
-    grts::GeneralizedRandomTessellatedStratified,
-)
-    x, y = grts.dims # smallest multiple of 4 on each side
-    num_address_grids = Int(ceil(max(log(2, x), log(2, y))))
-
-    grid_sizes = reverse([2^i for i in 1:num_address_grids])
-
-    address_grids =
-        [zeros(Int, 2^num_address_grids, 2^num_address_grids) for _ in grid_sizes]
-
-    map(
-        i -> _quadrant_split!(address_grids[i], grid_sizes[i]),
-        eachindex(address_grids),
-    )
-
-    code_numbers = sum([10^(i - 1) .* ag for (i, ag) in enumerate(address_grids)])
-    sort_idx = sortperm([code_numbers[cidx] for cidx in eachindex(code_numbers)])
-
-    return filter(
-        idx -> idx[1] <= grts.dims[1] && idx[2] <= grts.dims[2],
-        CartesianIndices(code_numbers)[sort_idx],
-    )[1:(grts.numsites)]
-end
-
-=#
