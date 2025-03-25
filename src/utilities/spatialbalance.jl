@@ -5,6 +5,50 @@ abstract type SpatialBalanceMetric end
 """
 struct MoransI <: SpatialBalanceMetric end 
 
+function _morans_weight_matrix(N, n, kdtree, coords)
+    W = spzeros(N,N)
+    k = Int(floor(N / n))
+    resid = (N/n) - k
+    for i in 1:N
+        nn, _ = NearestNeighbors.knn(kdtree, coords[:,i], k+2, true)
+        for j in nn[2:end-1]
+            W[i,j] = 1
+        end 
+        W[i,nn[end]] = resid
+    end
+    return W
+end 
+
+function _inclusion_indicator(raster, bon)
+    selected_cart_idx = [CartesianIndex(SDT.SimpleSDMLayers.__get_grid_coordinate_by_crs(raster, node.coordinate...)) for node in bon]
+    mat = zeros(Bool, size(raster))
+    mat[selected_cart_idx] .= 1
+    indic = raster.indices .& mat
+    return [indic[idx] for idx in findall(raster.indices)]
+end
+
+function spatialbalance(::MoransI, raster::SDMLayer, bon::BiodiversityObservationNetwork)
+    a = _inclusion_indicator(raster, bon) 
+
+    Es, Ns = SDT.eastings(raster), SDT.northings(raster)
+    coords = hcat([[j,i] for i in Ns, j in Es][raster.indices]...)
+    
+    kdtree = NearestNeighbors.KDTree(coords)
+
+    N, n = size(coords,2), size(bon)
+
+    W = _morans_weight_matrix(N, n, kdtree, coords)
+    
+    _1 = ones(N)
+
+    b1 = N*W'*W 
+    b2 = W'*_1 *_1'*W
+    B = b1 - b2
+    ψ = n/N
+
+    return (a'*W*a - ψ*(_1'*W*a)) / sqrt( ψ*(1-ψ)*a'*B*a )
+end 
+
 """
     VoronoiVariance
 

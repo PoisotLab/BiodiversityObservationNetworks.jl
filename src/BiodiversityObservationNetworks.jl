@@ -12,6 +12,7 @@ module BiodiversityObservationNetworks
     using LinearAlgebra
     using MultivariateStats
     using NearestNeighbors
+    using SparseArrays
     using SpecialFunctions
     using SpeciesDistributionToolkit
     using Statistics
