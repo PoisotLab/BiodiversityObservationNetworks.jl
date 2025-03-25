@@ -37,6 +37,9 @@ function _inclusion_indicator(raster, bon)
     return [indic[idx] for idx in findall(raster.indices)]
 end
 
+"""
+    spatialbalance(::MoransI, raster::SDMLayer, bon::BiodiversityObservationNetwork)
+"""
 function spatialbalance(::MoransI, raster::SDMLayer, bon::BiodiversityObservationNetwork)
     a = _inclusion_indicator(raster, bon) 
 
@@ -99,6 +102,9 @@ struct VoronoiVariance <: SpatialBalanceMetric end
 
 spatialbalance(::VoronoiVariance, bon::BiodiversityObservationNetwork, geom) = spatialbalance(VoronoiVariance, bon, geom)
 
+"""
+    spatialbalance(::Type{VoronoiVariance}, bon::BiodiversityObservationNetwork, geom)
+"""
 function spatialbalance(
     ::Type{VoronoiVariance}, 
     bon::BiodiversityObservationNetwork,
