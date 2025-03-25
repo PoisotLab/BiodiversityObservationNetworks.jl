@@ -2,6 +2,16 @@ abstract type SpatialBalanceMetric end
 
 """
     MoransI
+
+`MoransI` is a measure of spatial balance proposed by [Tille2018MeaSpa](@cite).
+
+Conceptually, the idea is to use [Moran's I](https://en.wikipedia.org/wiki/Moran%27s_I), a measure of spatial autocorrelation, on an indicator variable ``\\delta_i``, which is ``1`` if unit ``i`` is included in the sample, and 0 otherwise. 
+
+If ``\\delta`` has a negative value, this means included samples have negative autocorrelation and therefore are more spread out than if generated at random. 
+
+In principle, Moran's I should exist on the interval ``[-1,1]``, but the original definition uses a renormalization that doesn't always guarantee this, so [Tille2018MeaSpa](@cite) introduce a slight variation, called ``I_C`` so this always holds.
+
+Note that the performance of this algorithm scales as ``O(N^3)``, where ``N`` is the number of all possible candidate locations, and therefore for large rasters this method is unlikely to be performant. A faster approximation could be made by taking a smaller random sample of the candidate points. 
 """
 struct MoransI <: SpatialBalanceMetric end 
 
