@@ -10,4 +10,4 @@ sampling, spatial spread, prioritization based on coverage gaps, [active
 learning](https://en.wikipedia.org/wiki/Active_learning_(machine_learning)) for model improvevment, and more.
 
 The documentation for the package can be found
-[here](https://poisotlab.github.io/BiodiversityObservationNetworks.jl/). 
+[here](https://poisotlab.github.io/BiodiversityObservationNetworks.jl/dev). 
