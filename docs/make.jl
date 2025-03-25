@@ -5,7 +5,7 @@ using DocumenterCitations
 using DocumenterVitepress
 using BiodiversityObservationNetworks
 
-bib = CitationBibliography(joinpath(@__DIR__, "BONs.bib"))
+bib = CitationBibliography(joinpath(@__DIR__, "BONs.bib"), style=:authoryear)
 
 makedocs(
     sitename = "BiodiversityObservationNetworks.jl",
