@@ -62,10 +62,10 @@ export default defineConfig({
                     collapsed: true,
                     items: [
                         { text: "Simple Random Sampling", link: "/reference/samplers/simplerandom" },
-                        { text: "Balanced Acceptance Sampling", link: "/reference/samplers/simplerandom" },
-                        { text: "Generalized Random Tessellated Stratified Sampling", link: "/reference/samplers/simplerandom" },
-                        { text: "Cube Sampling", link: "/reference/samplers/simplerandom" },
-                        { text: "Adaptive Hotspot Detection", link: "/reference/samplers/simplerandom" },
+                        { text: "Balanced Acceptance Sampling", link: "/reference/samplers/balancedacceptance" },
+                        { text: "Generalized Random Tessellated Stratified Sampling", link: "/reference/samplers/grts" },
+                        { text: "Cube Sampling", link: "/reference/samplers/cube" },
+                        { text: "Adaptive Hotspot Detection", link: "/reference/samplers/grts" },
                     ]
                 },
                 {
