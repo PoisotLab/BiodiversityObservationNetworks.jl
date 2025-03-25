@@ -32,12 +32,13 @@ end
 
 function _sample(sampler::SimpleRandom, polygon::Polygon)
     x, y = GI.extent(polygon)
+    _londist, _latdist = Uniform(x...), Uniform(y...)
     N = sampler.number_of_nodes
 
     selected_points = Node[]
     ct = 0
     while ct < N
-        candidate = (rand(Uniform(x...)), rand(Uniform(y...)))
+        candidate = (rand(_londist), rand(_latdist))
          if GeometryOps.contains(polygon, candidate)
             push!(selected_points, Node(candidate))
             ct += 1
