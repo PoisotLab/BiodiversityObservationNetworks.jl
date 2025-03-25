@@ -32,7 +32,7 @@ end
 """
     MultivariateEnvironmentalSimilarity
 
-Multivariate-Environmental Similarity Score (MESS) is a metric introduced by [Elith2010ArtModelling](@cite) to quantify environmental similarity, meaning _lower_ values indicate _more rare_ environments. It is conceptually similar to how BioClim scores work, but enables negative values. 
+Multivariate-Environmental Similarity Score (MESS) is a metric introduced by []
 """
 struct MultivariateEnvironmentalSimilarity <: RarityMetric end 
 function _mess_score(xᵢⱼ, fᵢⱼ, mⱼ, Mⱼ)
