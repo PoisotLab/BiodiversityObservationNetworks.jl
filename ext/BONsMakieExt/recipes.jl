@@ -1,10 +1,10 @@
 const MAX_CORNERPLOT_DIMS_BEFORE_PCA = 20
 const BONs = BiodiversityObservationNetworks
+const SDT = BONs.SpeciesDistributionToolkit
 
 # NOTES:
 # The easiest way to make this compatable with GeoMakie (if loaded) or 
 # else default back to normal Axis is to have it work on a ::Makie.GridPosition,
-# which 
 
 
 # TODO: pass any transform. Annoying because its a kwarg and could be of type
@@ -13,7 +13,7 @@ const BONs = BiodiversityObservationNetworks
 # but also of type MVStats.AbstractDimensionalityReductoin (e.g. PCA, PPCA)
 
 function BONs.cornerplot(
-    layers::RasterStack;
+    layers::Vector{<:SDT.SDMLayer};
     pca_layers = false,
     sz = (1600,1600)
 )
@@ -44,6 +44,25 @@ function BONs.cornerplot(
     f
 end
 
+function BONs.bonplot(
+    bon::BiodiversityObservationNetwork;
+    kw...
+)
+    f = Figure()
+    bonplot(f[1,1], bon; kw...)
+    return f
+end
+
+function BONs.bonplot(
+    bon::BiodiversityObservationNetwork,
+    geom;
+    kw...
+)
+    f = Figure()
+    bonplot(f[1,1], bon, geom; kw...)
+    return f
+end
+
 
 function BONs.bonplot(
     position::GridPosition, 
@@ -55,15 +74,23 @@ function BONs.bonplot(
     Makie.AxisPlot(ax, plot)
 end
 
+BONs.bonplot(
+    position::GridPosition,
+    bon::BiodiversityObservationNetwork,
+    geom::Vector{<:SDT.SDMLayer};
+    kw...
+) = BONs.bonplot(position, bon, first(geom); kw...)
+
 function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    geom::T;
+    geom::SDT.SDMLayer,
     axistype = Makie.Axis
 ) where T
-    GEOM_TYPE = BONs._what_did_you_pass(geom)
-    isnothing(GEOM_TYPE) && throw(ArgumentError("$T cannot be coerced to a valid Geometry"))
-    BONs.bonplot(position, bon, Base.convert(GEOM_TYPE, geom); axistype=axistype)
+    ax = axistype(position)
+    heatmap!(ax, geom.raster)
+    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+    Makie.AxisPlot(ax, plot)
 end
 
 
@@ -74,7 +101,7 @@ function BONs.bonplot(
     axistype=Makie.Axis
 )
     ax = axistype(position)
-    poly!(ax, poly.geometry, strokewidth=2, color=(:grey, 0.1))
+    poly!(ax, poly.geometry, strokewidth=1, color=(:grey, 0.1))
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
@@ -98,29 +125,59 @@ end
 function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    raster::Raster;
+    raster::SDT.SDMLayer;
     axistype=Makie.Axis
 )
     ax = axistype(position)
-    heatmap!(ax, raster.raster)
-    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+    heatmap!(ax, raster)
+    plot = scatter!(ax, [node.coordinate for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
 
 
-function Makie.voronoiplot(bon::BiodiversityObservationNetwork, geom)
-    vor = voronoi(bon, geom)
-    
-    
+
+function Makie.voronoiplot(
+    bon::BiodiversityObservationNetwork, 
+    geom::Polygon;
+    kw...
+)
+    f = Figure()
+    voronoiplot(f[1,1], bon, geom; kw...)
+    return f
 end 
 
-Makie.poly(poly::Polygon, x...; kwargs...) = begin 
-    Makie.poly(poly.geometry, x...; kwargs...)
-end
+function Makie.voronoiplot(
+    position::GridPosition,
+    bon::BiodiversityObservationNetwork, 
+    geom::Polygon;
+    axistype = Makie.Axis
+)
+    vor = voronoi(bon, geom)
+    
+    ax = axistype(position)
+    hidedecorations!(ax)
+    map(v->poly!(ax, v, strokewidth=1), vor)
+    scatter!(ax, [n.coordinate for n in bon], color=:white, strokewidth=1, strokecolor=:black)
+    poly!(ax, geom, color=(:white, 0), strokewidth=1)
+end 
 
-Makie.poly!(ax, poly::Polygon, x...; kwargs...) = begin 
-    Makie.poly!(ax, poly.geometry, x...; kwargs...)
-end
 
+# Makie poly overloads
+Makie.poly(polygon::Polygon; kw...) = poly(polygon.geometry; kw...)
+Makie.poly(polygons::Vector{Polygon}; kw...) = begin
+    poly(first(polygons); kw...)
+    map(p->poly!(p; kw...), polygons[2:end])
+    current_figure()
+end 
+Makie.poly!(polygon::Polygon; kw...) = poly!(polygon.geometry; kw...)
+Makie.poly!(polygons::Vector{Polygon}; kw...) = begin
+    map(p->poly!(p; kw...), polygons)
+    current_figure()
+end 
+Makie.poly!(ax, polygon::Polygon; kw...) = poly!(ax, polygon.geometry; kw...)
+Makie.poly!(ax, polygons::Vector{Polygon}; kw...) = map(p->poly!(ax,p; kw...), polygons)
 
+# Makie scatter overloads
+Makie.scatter(bon::BiodiversityObservationNetwork) = scatter(BONs.GI.coordinates(bon))
+Makie.scatter!(ax, bon::BiodiversityObservationNetwork; kw...) = scatter!(ax, BONs.GI.coordinates(bon); kw...)
 

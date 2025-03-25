@@ -21,7 +21,7 @@ now sample a [`BiodiversityObservationNetwork`](@ref)
 
 ```@example 1
 num_nodes = 50
-corsica = SDT.gadm("FRA", "Corse")
+corsica = gadm("FRA", "Corse")
 bon = sample(BalancedAcceptance(num_nodes), corsica)
 ```
 

@@ -7,6 +7,7 @@
 """
     CubeSampling
 
+[Deville2004EffBal](@cite)
 """
 Base.@kwdef struct CubeSampling{I<:Integer} <: BONSampler
     number_of_nodes::I = 50
@@ -16,7 +17,7 @@ _valid_geometries(::CubeSampling) = (BiodiversityObservationNetwork, RasterStack
 
 
 # for multistage
-function _sample(sampler::CubeSampling, layers::RasterStack, bon::BiodiversityObservationNetwork)
+function _sample(sampler::CubeSampling, layers::Vector{<:SDMLayer}, bon::BiodiversityObservationNetwork)
     cart_idx = _get_cartesian_idx(layers, bon)
     feat = layers[cart_idx]
     N = sampler.number_of_nodes
@@ -27,11 +28,11 @@ function _sample(sampler::CubeSampling, layers::RasterStack, bon::BiodiversityOb
 
 end
 
-function _sample(sampler::CubeSampling, layers::RasterStack)
+function _sample(sampler::CubeSampling, layers::Vector{<:SDMLayer})
     cart_idx, feat = features(layers)
     N = sampler.number_of_nodes
     π_optimal, candidate_pool = _cube(N, cart_idx, feat)
-    Es, Ns = eastings(layers), northings(layers)
+    Es, Ns = eastings(first(layers)), northings(first(layers))
     selected = candidate_pool[findall(isequal(1), π_optimal)]
     return BiodiversityObservationNetwork([Node(Es[idx[2]], Ns[idx[1]]) for idx in selected])
 end
@@ -284,6 +285,21 @@ function unique_permutations(x::T, prefix = T()) where {T}
         return t
     end
 end
+
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use CubeSampling with default arguments on a RasterStack" begin
+    stack = map(_ -> BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(30,20)), 1:3)
+    cs = CubeSampling()
+    bon = sample(cs, stack)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == cs.number_of_nodes
+end
+
+
 
 #=
 """

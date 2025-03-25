@@ -5,8 +5,8 @@
 [`BiodiversityObservationNetwork`](@ref)s where each location in the spatial
 extent has the same probability of inclusion. 
 """
-struct SimpleRandom{I<:Integer} <: BONSampler
-    number_of_nodes::I
+@kwdef struct SimpleRandom{I<:Integer} <: BONSampler
+    number_of_nodes::I = 50
 end
 _valid_geometries(::SimpleRandom) = (Polygon, Raster, Vector{Polygon}, RasterStack, BiodiversityObservationNetwork)
 
@@ -32,12 +32,13 @@ end
 
 function _sample(sampler::SimpleRandom, polygon::Polygon)
     x, y = GI.extent(polygon)
+    _londist, _latdist = Uniform(x...), Uniform(y...)
     N = sampler.number_of_nodes
 
     selected_points = Node[]
     ct = 0
     while ct < N
-        candidate = (rand(Uniform(x...)), rand(Uniform(y...)))
+        candidate = (rand(_londist), rand(_latdist))
          if GeometryOps.contains(polygon, candidate)
             push!(selected_points, Node(candidate))
             ct += 1
@@ -48,8 +49,8 @@ end
 
 # Sample w/o replacement from non-empty CIs, then return the long/lat associated
 # with it 
-function _sample(sampler::SimpleRandom, raster::Raster)
-    cart_idxs = nonempty(raster)
+function _sample(sampler::SimpleRandom, raster::SDMLayer)
+    cart_idxs = findall(raster.indices)
     
     node_cidxs = Distributions.sample(cart_idxs, sampler.number_of_nodes, replace=false)
 
@@ -58,7 +59,7 @@ function _sample(sampler::SimpleRandom, raster::Raster)
     BiodiversityObservationNetwork([Node((E[I[2]], N[I[1]])) for I in node_cidxs])
 end 
 
-_sample(sampler::SimpleRandom, rasters::RasterStack) = _sample(sampler, first(rasters))
+_sample(sampler::SimpleRandom, rasters::Vector{<:SDMLayer}) = _sample(sampler, first(rasters))
 
 function _sample(sampler::SimpleRandom, domain::Vector{<:Polygon})
     @info "You passed a Vector of Polygons."
@@ -70,3 +71,24 @@ end
 
 
 _sample(::SimpleRandom, ::T) where T = throw(ArgumentError("Can't use SimpleRandom on a $T"))
+
+# ---------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------
+
+@testitem "We can use SimpleRandom with default arguments on a Raster" begin
+    raster = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50, 100))
+    srs = SimpleRandom()
+    bon = sample(srs, raster)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == srs.number_of_nodes
+end
+
+
+@testitem "We can use SimpleRandom with default arguments on a Polygon" begin
+    poly = gadm("COL")
+    srs = SimpleRandom()
+    bon = sample(srs, poly)
+    @test bon isa BiodiversityObservationNetwork
+    @test size(bon) == srs.number_of_nodes
+end
