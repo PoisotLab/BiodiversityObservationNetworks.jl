@@ -1,5 +1,5 @@
+```@raw html
 ---
-# https://vitepress.dev/reference/default-theme-home-page
 layout: home
 
 hero:
@@ -19,3 +19,4 @@ hero:
       text: Reach out!
       link: https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/issues
 ---
+```
