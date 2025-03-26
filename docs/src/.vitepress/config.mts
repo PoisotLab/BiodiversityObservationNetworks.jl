@@ -33,15 +33,9 @@ export default defineConfig({
         },
         logo: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
         nav: [
-            { text: 'Index', link: '/index' },
-            {
-                text: 'Manual',
-                items: [
-                    { text: "Tutorials", link: "/tutorials" },
-                    { text: "How-to", link: "/howto" },
-                    { text: "Reference", link: "/reference" }
-                ]
-            },
+            { text: "Tutorials", link: "/tutorials" },
+            { text: "How-to", link: "/howto" },
+            { text: "Reference", link: "/reference" }
         ],
         sidebar: {
             "/tutorials/": [
@@ -59,7 +53,7 @@ export default defineConfig({
             "/reference/": [
                 {
                     text: "Samplers",
-                    collapsed: true,
+                    collapsed: false,
                     items: [
                         { text: "Simple Random Sampling", link: "/reference/samplers/simplerandom" },
                         { text: "Balanced Acceptance Sampling", link: "/reference/samplers/balancedacceptance" },
@@ -70,7 +64,7 @@ export default defineConfig({
                 },
                 {
                     text: "Utilities",
-                    collapsed: true,
+                    collapsed: false,
                     items: []
                 }
             ]

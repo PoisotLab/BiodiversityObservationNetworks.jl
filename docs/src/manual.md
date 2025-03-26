@@ -7,7 +7,21 @@ The purpose of this package is to provide a high-level, extensible, modular inte
 
 # Installation
 
-Julia can be installed [here](https://julialang.org/downloads/), and is best installed using `juliaup` to manage different versions. On Unix based systems, `juliaup` can be installed with `curl -fsSL https://install.julialang.org | sh`, and with `winget install julia -s msstore` on Windows systems.
+## Installing `julia`
+
+Julia can be installed [here](https://julialang.org/downloads/), and is best installed using `juliaup` to manage different versions. On Unix based systems, `juliaup` can be installed with 
+
+```bash
+curl -fsSL https://install.julialang.org | sh
+```
+
+and on Windows systems with
+
+```pwsh
+winget install julia -s msstore
+```
+
+## Installing `BiodiversityObservationNetworks.jl`
 
 `BiodiversityObservationNetworks.jl` is published in the Julia general repository, and can be installed with:
 
