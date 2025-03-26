@@ -17,6 +17,7 @@ makedocs(
     ),
     pages = [
         "Overview" => "index.md",
+        "Manual" => "manual.md",
         "Tutorials" => [],
         "How To" => [],
         "Samplers" => [
