@@ -66,7 +66,7 @@ module BiodiversityObservationNetworks
     export VelocityMetric, Loarie2009, ClosestAnalogue
 
     export rarity
-    export RarityMetric, DistanceToMedian, DistanceToAnalogNode, MultivariateEnvironmentalSimilarity
+    export RarityMetric, DistanceToMedian, DistanceToAnalogNode, MultivariateEnvironmentalSimilarity, WithinRange
 
     export spatialbalance
     export MoransI, VoronoiVariance

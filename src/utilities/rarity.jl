@@ -74,7 +74,7 @@ function rarity(
 
     Xbon = StatsBase.transform(z, layers[bon])
 
-    rarity = deepcopy(first(layers))
+    rar = deepcopy(first(layers))
 
     for (i, ci) in enumerate(eachindex(first(layers)))
         Xi = X[:,i]
@@ -83,7 +83,34 @@ function rarity(
             dist = sqrt(sum((Xb .- Xi).^2))
             min_dist = dist < min_dist ? dist : min_dist
         end 
-        rarity[ci] = min_dist
+        rar[ci] = min_dist
     end
-    return rarity
+    return rar
+end 
+
+
+struct WithinRange <: RarityMetric end
+
+function _point_within_extremes(point, extremes)
+    for (j, xᵢ) in enumerate(point)
+        extremes[j][1] <= xᵢ <= extremes[j][2] || return false
+    end
+    return true
+end     
+
+function rarity(
+    ::WithinRange, 
+    layers::Vector{<:SDMLayer}, 
+    bon::BiodiversityObservationNetwork
+)
+    Xbon = layers[bon]
+    Xextrema = map(extrema, eachrow(Xbon))
+
+    cart_idx, X = features(layers)
+    rar = similar(first(layers))
+    
+    for (i, idx) in enumerate(cart_idx)
+        rar.grid[idx] = _point_within_extremes(X[:,i], Xextrema)
+    end
+    return rar
 end 
