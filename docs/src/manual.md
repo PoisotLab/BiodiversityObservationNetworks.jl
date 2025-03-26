@@ -32,7 +32,7 @@ Pkg.add("BiodiversityObservationNetworks") # [!code highlight]
 
 ## Package Structure
 
-![Overview of the package](structure.drawio.svg)
+![Overview of the package](./assets/structure.drawio.svg)
 
 
 ## Manual
