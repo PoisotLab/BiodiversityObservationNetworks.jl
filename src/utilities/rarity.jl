@@ -1,3 +1,8 @@
+"""
+    RarityMetric
+
+Abstract type encompassing all methods for computing environmental rarity.
+"""
 abstract type RarityMetric end 
 
 function _pca(X)
@@ -11,6 +16,13 @@ function _zscore(X)
 end
 
 
+"""
+    DistanceToMedian 
+
+A [`RarityMetric`](@ref) that operates on a set of
+[`SimpleSDMLayers.SDMLayer`]()
+
+"""
 struct DistanceToMedian <: RarityMetric end 
 function rarity(
     ::DistanceToMedian, 
