@@ -17,7 +17,7 @@ curl -fsSL https://install.julialang.org | sh
 
 and on Windows systems with
 
-```pwsh
+```sh
 winget install julia -s msstore
 ```
 

@@ -30,7 +30,7 @@ makedocs(
         "Utilities" => [
             joinpath("reference", "utilities", "spatialbalance.md"),
         ],
-        "API Reference" => "api.md",
+        "API Reference" => joinpath("reference", "api.md"),
         "Bibliography" => "bibliography.md"
     ],
     warnonly = true,
