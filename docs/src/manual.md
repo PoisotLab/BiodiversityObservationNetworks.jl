@@ -5,9 +5,9 @@ The purpose of this package is to provide a high-level, extensible, modular inte
 !!! warning "This package is in development"
     The `BiodiversityObservationNetworks.jl` package is currently under development. At this point (`v0.4` onwards) the API is not expected to change a lot, but it may change in order to facilitate the integration of new features.
 
-# Installation
+## Installation
 
-## Installing `julia`
+### Installing `julia`
 
 Julia can be installed [here](https://julialang.org/downloads/), and is best installed using `juliaup` to manage different versions. On Unix based systems, `juliaup` can be installed with 
 
@@ -21,7 +21,7 @@ and on Windows systems with
 winget install julia -s msstore
 ```
 
-## Installing `BiodiversityObservationNetworks.jl`
+### Installing `BiodiversityObservationNetworks.jl`
 
 `BiodiversityObservationNetworks.jl` is published in the Julia general repository, and can be installed with:
 
@@ -30,7 +30,12 @@ import Pkg
 Pkg.add("BiodiversityObservationNetworks") # [!code highlight]
 ```
 
-# Manual
+## Package Structure
+
+![Overview of the package](structure.drawio.svg)
+
+
+## Manual
 
 The manual follows the [Diataxis](https://diataxis.fr/) schema, where resources fall into four categories:
 
