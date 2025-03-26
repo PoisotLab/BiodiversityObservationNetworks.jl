@@ -33,21 +33,34 @@ export default defineConfig({
         },
         logo: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
         nav: [
-            { text: "Tutorials", link: "/tutorials" },
-            { text: "How-to", link: "/howto" },
-            { text: "Reference", link: "/reference" }
+            {   
+                text: "Tutorials", 
+                link: "/tutorials", 
+            },
+            { 
+                text: "How-to", 
+                link: "/howto",
+            },
+            { 
+                text: "Reference", 
+                items: [
+                    { text: "Samplers", link: "/reference/samplers" },
+                    { text: "Utilities", link: "/reference/utilities" },
+                    { text: "API Reference", link: "/reference/api" },
+                ]
+            }
         ],
         sidebar: {
             "/tutorials/": [
                 {
                     text: "Tutorials",
-                    items: []
+                    items: [],
                 }
             ],
             "/howto/": [
                 {
                     text: "How-to",
-                    items: []
+                    items: [],
                 }
             ],
             "/reference/": [
@@ -66,6 +79,10 @@ export default defineConfig({
                     text: "Utilities",
                     collapsed: false,
                     items: []
+                },
+                {
+                    text: "Full API",
+                    link: "/reference/api"
                 }
             ]
         },
