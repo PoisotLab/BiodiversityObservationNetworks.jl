@@ -61,6 +61,9 @@ function _sample(
             end 
         end 
     end    
+    
+
+
     return BiodiversityObservationNetwork(bon[inclusion_indicator])
 end 
 
