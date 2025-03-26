@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "BiodiversityObservationNetworks.jl"
-  tagline: An ecosystem of Julia packages for species distribution modeling and biodiversity research
+  name: "Biodiversity Observation Networks.jl"
+  tagline: A Julia package for spatial design of biodiversity monitoring programs
   image:
     src: /logo.png
     alt: BiodiversityObservationNetworks
@@ -16,7 +16,7 @@ hero:
       text: View on Github
       link: https://github.com/PoisotLab/BiodiversityObservationNetworks.jl
     - theme: alt
-      text: Reach out!
+      text: Provide Feedback
       link: https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/issues
 ---
 ```
