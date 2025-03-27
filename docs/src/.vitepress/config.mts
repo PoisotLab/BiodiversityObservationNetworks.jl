@@ -35,7 +35,6 @@ export default defineConfig({
         nav: [
             {   
                 text: "Tutorials", 
-                link: "/tutorials", 
                 items: [
                     { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
                     { text: "Building Multistage Samplers", link: "/tutorials/multistage.md"},
