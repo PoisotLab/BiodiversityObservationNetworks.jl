@@ -38,7 +38,7 @@ export default defineConfig({
                 items: [
                     { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
                     { text: "Building Multistage Samplers", link: "/tutorials/multistage.md"},
-                    { text: "Measuring Spatial Balance", link: "/tutorials/gettingstarted.md"},
+                    { text: "Measuring Spatial Balance", link: "/tutorials/spatialbalance.md"},
                     { text: "Measuring Environmental Representativeness", link: "/tutorials/spatialbalance.md"},
                     { text: "Designing a National BON", link: "/tutorials/canbon.md"},
                 ],
