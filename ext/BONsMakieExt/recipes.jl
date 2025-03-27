@@ -159,7 +159,12 @@ end
 
 
 # Makie poly overloads
-Makie.poly(polygon::Polygon; kw...) = poly(polygon.geometry; kw...)
+Makie.poly(polygon::Polygon; axistype=Makie.Axis) = begin
+    f = Figure()
+    ax = axistype(f[1,1])
+    poly!(ax, polygon)
+    f 
+end
 Makie.poly(polygons::Vector{Polygon}; kw...) = begin
     poly(first(polygons); kw...)
     map(p->poly!(p; kw...), polygons[2:end])

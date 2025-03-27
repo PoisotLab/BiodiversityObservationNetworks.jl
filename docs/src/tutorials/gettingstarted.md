@@ -64,4 +64,35 @@ Much better! However, we are still missing some crucial things here. For example
 
 ## Geometries in BiodiversityObservationNetworks.jl
 
-SDMLayer, Polygon, Vectors of each, BONs themselves... the possibilities are increbidle.
+For most practical use-cases, we aren't interested in developing a [`BiodiversityObservationNetwork`](@ref) for all of Earth, but instead for a small region delineated by a polygon, or represented using raster data, which may contain useful covariate information that we want to incorporate into our BON design.  
+
+In this case, we want our sampling algorithm `algo` to work on some `geometry` which specifies the spatial domain from which sites should be selected. In this case, we still use `sample`, and pass the spatial domain `geometry` as the second argument, i.e.
+
+```julia 
+sample(algo, geometry)
+```
+
+For example, lets consider drawing a spatially balanced sample using [`BalancedAcceptance`](@ref) for the nation of Colombia. We can start by downloading a Polygon representing the border of Colombia with the following
+
+```@example 1
+col = gadm("Colombia")
+```
+
+and we can plot it to confirm it's what we expect
+
+```@example 1
+poly(col, axistype=GeoAxis)
+```
+
+Now we can generate a [`BiodiversityObservationNetwork`](@ref) using [`BalancedAcceptance`](@ref) in the same way as before, but while passing `col` as a second argument to [`sample`](@ref)
+
+```@example 1
+bon = sample(BalancedAcceptance(), col)
+```
+
+and similarly we can pass `col` as a second argument to [`bonplot`](@ref) to use it in the visualization
+
+```@example 1
+bonplot(bon, col, axistype=GeoAxis)
+```
+
