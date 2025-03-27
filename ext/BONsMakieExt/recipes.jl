@@ -44,6 +44,11 @@ function BONs.cornerplot(
     f
 end
 
+"""
+    bonplot
+
+The highest-level bonplot method. Takes only a [`BiodiversityObservationNetwork`](@ref) `bon`, and forwards on the keyword arguments to the next method, which operates on a `GridPosition` as its first argument.
+"""
 function BONs.bonplot(
     bon::BiodiversityObservationNetwork;
     kw...
@@ -84,11 +89,11 @@ BONs.bonplot(
 function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    geom::SDT.SDMLayer,
+    geom::SDT.SDMLayer;
     axistype = Makie.Axis
 )
     ax = axistype(position)
-    heatmap!(ax, geom.raster)
+    heatmap!(ax, geom)
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end

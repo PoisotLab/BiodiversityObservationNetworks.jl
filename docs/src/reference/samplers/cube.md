@@ -20,7 +20,7 @@ import SpeciesDistributionToolkit as SDT
 Load predictors
 
 ```@example 1
-corsica = gadm("Corse")
+corsica = openstreetmap("Corse")
 layers = SDT.mask!([SDT.SDMLayer(SDT.RasterData(SDT.CHELSA2, SDT.BioClim); layer=i, SDT.boundingbox(corsica)...) for i in [1,12]], corsica)
 ```
 
@@ -34,6 +34,6 @@ and plot
 
 ```@example 1
 f = Figure(size=(500, 500))
-bonplot(f[1,1], bon, france, axistype=GeoAxis)
+bonplot(f[1,1], bon, corsica, axistype=GeoAxis)
 f
 ```
