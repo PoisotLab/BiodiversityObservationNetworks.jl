@@ -72,8 +72,9 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use SCPS with default constructor on a BON" begin
-    polygon = openstreetmap("COL")
-    candidate_bon = sample(SimpleRandom(300), polygon)
+    #polygon = openstreetmap("Colombia")
+    layer = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(150, 150))
+    candidate_bon = sample(SimpleRandom(300), layer)
 
     scps = SpatiallyCorrelatedPoisson()
     bon = sample(scps, candidate_bon)
