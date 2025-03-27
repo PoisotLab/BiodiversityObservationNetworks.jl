@@ -75,7 +75,7 @@ sample(algo, geometry)
 For example, lets consider drawing a spatially balanced sample using [`BalancedAcceptance`](@ref) for the nation of Colombia. We can start by downloading a Polygon representing the border of Colombia with the following
 
 ```@example 1
-col = gadm("Colombia")
+col = openstreetmap("Colombia")
 ```
 
 and we can plot it to confirm it's what we expect
