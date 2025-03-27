@@ -4,7 +4,7 @@
 Active-learning method. 
 """
 Base.@kwdef struct UncertaintySampling{I<:Integer} <: BONSampler
-    number_of_nodes::I = 100
+    number_of_nodes::I = _DEFAULT_NUM_NODES
 end 
 _valid_geometries(::UncertaintySampling) = (SDMLayer)
 

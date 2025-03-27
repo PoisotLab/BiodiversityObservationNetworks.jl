@@ -4,7 +4,7 @@
 `SpatiallyStratified` is a [`BONSampler`](@ref) for choosing sites across a set of different spatial stratum. 
 """
 @kwdef struct SpatiallyStratified{I<:Integer} <: BONSampler
-    number_of_nodes::I = 30
+    number_of_nodes::I = _DEFAULT_NUM_NODES
 end
 
 function _sample(

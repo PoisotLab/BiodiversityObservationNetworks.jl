@@ -12,7 +12,7 @@ First proposed in [Robertson2013BasBal](@cite).
   cover the extent. Balanced Acceptance sampling uses discrete Cartesian indices
 """
 Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
-    number_of_nodes::I = 100
+    number_of_nodes::I = _DEFAULT_NUM_NODES
     grid_size::Tuple{I,I} = (250, 250)
 end 
 BalancedAcceptance(n::Integer; grid_size=(250, 250)) = BalancedAcceptance(n, grid_size)
