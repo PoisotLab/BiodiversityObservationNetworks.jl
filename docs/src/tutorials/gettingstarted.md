@@ -46,7 +46,7 @@ Both of these methods for adjusting the number of nodes is supported for all sam
 
 Let's sample and visualize a [`BiodiversityObservationNetwork`](@ref) with more points
 
-```
+```@example 1
 bon = sample(srs)
 bonplot(bon, axistype=GeoAxis)
 ```
