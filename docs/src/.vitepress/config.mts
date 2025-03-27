@@ -36,6 +36,13 @@ export default defineConfig({
             {   
                 text: "Tutorials", 
                 link: "/tutorials", 
+                items: [
+                    { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
+                    { text: "Building Multistage Samplers", link: "/tutorials/multistage.md"},
+                    { text: "Measuring Spatial Balance", link: "/tutorials/gettingstarted.md"},
+                    { text: "Measuring Environmental Representativeness", link: "/tutorials/spatialbalance.md"},
+                    { text: "Designing a National BON", link: "/tutorials/canbon.md"},
+                ],
             },
             { 
                 text: "How-to", 
@@ -54,7 +61,13 @@ export default defineConfig({
             "/tutorials/": [
                 {
                     text: "Tutorials",
-                    items: [],
+                    items: [
+                        { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
+                        { text: "Building Multistage Samplers", link: "/tutorials/multistage.md"},
+                        { text: "Measuring Spatial Balance", link: "/tutorials/gettingstarted.md"},
+                        { text: "Measuring Environmental Representativeness", link: "/tutorials/spatialbalance.md"},
+                        { text: "Designing a National BON", link: "/tutorials/canbon.md"},
+                    ],
                 }
             ],
             "/howto/": [
@@ -78,7 +91,12 @@ export default defineConfig({
                 {
                     text: "Utilities",
                     collapsed: false,
-                    items: []
+                    items: [
+                        { text: "Spatial Balance", link: "/reference/utilities/spatialbalance.md"},
+                        { text: "Environmental Distance", link: "/reference/utilities/envdistance.md"},
+                        { text: "Climate Rarity", link: "/reference/utilities/rarity.md"},
+                        { text: "Climate Velocity", link: "/reference/utilities/velocity.md"},
+                    ]
                 },
                 {
                     text: "Full API",
