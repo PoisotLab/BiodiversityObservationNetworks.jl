@@ -98,7 +98,7 @@ end
 
 
 @testitem "We can use BalancedAcceptance with default arguments on a Polygon" begin
-    polygon = gadm("COL")
+    polygon = openstreetmap("COL")
     bas = BalancedAcceptance()
     bon = sample(bas, polygon)
     @test bon isa BiodiversityObservationNetwork

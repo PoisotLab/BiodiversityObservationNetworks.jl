@@ -20,8 +20,8 @@ import SpeciesDistributionToolkit as SDT
 Load predictors
 
 ```@example 1
-france = gadm("FRA")
-layers = SDT.mask!([SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...) for i in [1,12]], france)
+corsica = gadm("Corse")
+layers = SDT.mask!([SDT.SDMLayer(SDT.RasterData(SDT.CHELSA2, SDT.BioClim); layer=i, SDT.boundingbox(corsica)...) for i in [1,12]], corsica)
 ```
 
 

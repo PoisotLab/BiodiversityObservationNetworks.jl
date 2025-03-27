@@ -21,7 +21,7 @@ now sample a [`BiodiversityObservationNetwork`](@ref)
 
 ```@example 1
 num_nodes = 50
-corsica = gadm("FRA", "Corse")
+corsica = openstreetmap("Corse")
 bon = sample(GeneralizedRandomTessellatedStratified(num_nodes), corsica)
 ```
 

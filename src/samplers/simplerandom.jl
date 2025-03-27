@@ -86,7 +86,7 @@ end
 
 
 @testitem "We can use SimpleRandom with default arguments on a Polygon" begin
-    poly = gadm("COL")
+    poly = openstreetmap("COL")
     srs = SimpleRandom()
     bon = sample(srs, poly)
     @test bon isa BiodiversityObservationNetwork

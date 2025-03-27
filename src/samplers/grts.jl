@@ -203,7 +203,7 @@ end
 
 
 @testitem "We can use GRTS with default arguments on a Polygon" begin
-    poly = gadm("COL")
+    poly = openstreetmap("COL")
     grts = GeneralizedRandomTessellatedStratified()
     bon = sample(grts, poly)
     @test bon isa BiodiversityObservationNetwork

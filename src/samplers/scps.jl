@@ -72,7 +72,7 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use SCPS with default constructor on a BON" begin
-    polygon = gadm("COL")
+    polygon = openstreetmap("COL")
     candidate_bon = sample(SimpleRandom(300), polygon)
 
     scps = SpatiallyCorrelatedPoisson()

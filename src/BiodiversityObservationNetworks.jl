@@ -71,7 +71,7 @@ module BiodiversityObservationNetworks
     export spatialbalance
     export MoransI, VoronoiVariance
 
-    export gadm
+    export gadm, openstreetmap
     export cornerplot, bonplot
 
 

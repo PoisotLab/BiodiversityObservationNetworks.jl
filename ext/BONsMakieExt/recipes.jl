@@ -86,7 +86,7 @@ function BONs.bonplot(
     bon::BiodiversityObservationNetwork,
     geom::SDT.SDMLayer,
     axistype = Makie.Axis
-) where T
+)
     ax = axistype(position)
     heatmap!(ax, geom.raster)
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
@@ -121,18 +121,6 @@ function BONs.bonplot(
     Makie.AxisPlot(ax, plot)
 end
 
-
-function BONs.bonplot(
-    position::GridPosition,
-    bon::BiodiversityObservationNetwork,
-    raster::SDT.SDMLayer;
-    axistype=Makie.Axis
-)
-    ax = axistype(position)
-    heatmap!(ax, raster)
-    plot = scatter!(ax, [node.coordinate for node in bon], color=(:red))
-    Makie.AxisPlot(ax, plot)
-end
 
 
 
