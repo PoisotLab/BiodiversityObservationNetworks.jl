@@ -31,6 +31,12 @@ export default defineConfig({
             next: false,
             prev: false
         },
+        search: {
+            provider: 'local',
+            options: {
+                detailedView: true
+            }
+        },
         logo: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
         nav: [
             {   

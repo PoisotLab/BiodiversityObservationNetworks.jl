@@ -30,5 +30,38 @@ Now that these packages are loaded, we can use the [`bonplot`](@ref) method to v
 bonplot(bon, axistype = GeoAxis)
 ```
 
+We can adjust the number of points to generate by passing an integer directly to [`SimpleRandom`](@ref), i.e.
 
-## 
+```@example 1
+srs = SimpleRandom(150)
+```
+
+Alternatively, we can use the the `number_of_nodes` keyword argument
+
+```@example 1
+srs = SimpleRandom(number_of_nodes=150)
+```
+
+Both of these methods for adjusting the number of nodes is supported for all sampling algorithms.
+
+Let's sample and visualize a [`BiodiversityObservationNetwork`](@ref) with more points
+
+```
+bon = sample(srs)
+bonplot(bon, axistype=GeoAxis)
+```
+
+One thing you may notice about the [`BiodiversityObservationNetwork`](@ref) generated using [`SimpleRandom`](@ref) is that many of the points are clumped together. Many of the sampling algorithms in BiodiversityObservationNetworks aim to produce points that are _spatially balanced_, meaning they are well spread out across space, with little clumping. 
+
+One such sampler is [`BalancedAcceptance`](@ref). Let's similarly make a [`BiodiversityObservationNetwork`](@ref) with 300 nodes that are spatially balanced.
+
+```@example 1
+bon = sample(BalancedAcceptance(150))
+bonplot(bon, axistype=GeoAxis)
+```
+
+Much better! However, we are still missing some crucial things here. For example, what if we only want to select sites on land? This brings us to applying sampling algorithms to different _geometries_.
+
+## Geometries in BiodiversityObservationNetworks.jl
+
+SDMLayer, Polygon, Vectors of each, BONs themselves... the possibilities are increbidle.
