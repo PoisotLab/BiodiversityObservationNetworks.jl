@@ -108,7 +108,7 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use SpatiallyStratified with default constructor on a vector of Polygons" begin
-    polys = gadm("COL", 1)
+    polys = openstreetmap.(["France", "Germany", "Belgium"])
     ss = SpatiallyStratified()
     bon = sample(ss, polys)
     @test bon isa BiodiversityObservationNetwork
