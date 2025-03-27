@@ -2,6 +2,7 @@ const MAX_CORNERPLOT_DIMS_BEFORE_PCA = 20
 const BONs = BiodiversityObservationNetworks
 const SDT = BONs.SpeciesDistributionToolkit
 
+
 # NOTES:
 # The easiest way to make this compatable with GeoMakie (if loaded) or 
 # else default back to normal Axis is to have it work on a ::Makie.GridPosition,
@@ -76,6 +77,8 @@ function BONs.bonplot(
 )
     ax = axistype(position)
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+
+
     Makie.AxisPlot(ax, plot)
 end
 
