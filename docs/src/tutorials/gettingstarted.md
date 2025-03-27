@@ -6,7 +6,7 @@ In this tutorial, we will cover the basics of how to use BiodiversityObservation
 using BiodiversityObservationNetworks
 ```
 
-## "Hello World" in BiodiversityObservationNetworks.jl
+## _Hello World_ in BiodiversityObservationNetworks.jl
 
 The primary use of BiodiversityObservationNetworks is for generating [`BiodiversityObservationNetwork`](@ref) using a variety of point-selection algorithms. Generating networks, regardless of the specific algorithm chosen, is done using the [`sample`](@ref) method. The simplest point-selection algorithm is [`SimpleRandom`](@ref), where each location in space (what is meant be location? More on this in the next section) has an equal probability of inclusion.
 
@@ -72,6 +72,9 @@ In this case, we want our sampling algorithm `algo` to work on some `geometry` w
 sample(algo, geometry)
 ```
 
+
+### A Polygon as a Geometry
+
 For example, lets consider drawing a spatially balanced sample using [`BalancedAcceptance`](@ref) for the nation of Colombia. We can start by downloading a Polygon representing the border of Colombia with the following
 
 ```@example 1
@@ -94,5 +97,43 @@ and similarly we can pass `col` as a second argument to [`bonplot`](@ref) to use
 
 ```@example 1
 bonplot(bon, col, axistype=GeoAxis)
+```
+
+Wahoo 🥳. We've done it. 
+
+### A Raster as a Geometry
+
+Okay, but what if you've got raster data that describes useful environmental covariates? Or a mask of where we can sample? We can use that too.
+
+### Can we feed a BON to itself?
+
+Ethically I'm not 100% sure. But it is technically possible. That's both true about sampling BONs from BONs, and the moral of Jurassic Park (1994). 
+
+Let's download France.
+
+```@example 1
+fra = openstreetmap("France")
+```
+
+and now lets choose a buncha random places in France
+
+```@example 1
+candidate_bon = sample(SimpleRandom(1000), fra)
+```
+
+and take a look
+
+```@example 1
+bonplot(candidate_bon, fra)
+```
+
+Wow. We do making groundbreaking work here.
+
+Next up, let's choose a set of spatially balanced coordinates from this set of candidates. 
+We'll do this using a different sampling algorithm, called the Pivotal method [TODO cite], [`Pivotal`](@ref). Is this because [`BalancedAcceptance`] doesn't work on point-like geometries? Yes
+
+```@example 1
+num_points_to_pick = 100
+sample(Pivotal(num_points_to_pick), candidate_bon)
 ```
 
