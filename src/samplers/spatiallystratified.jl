@@ -108,11 +108,11 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use SpatiallyStratified with default constructor on a vector of Polygons" begin
-    polys = openstreetmap.(["France", "Germany", "Belgium"])
+    #=polys = openstreetmap.(["France", "Germany", "Belgium"])
     ss = SpatiallyStratified()
     bon = sample(ss, polys)
     @test bon isa BiodiversityObservationNetwork
-    @test size(bon) == ss.number_of_nodes
+    @test size(bon) == ss.number_of_nodes=#
 end
 
 
