@@ -101,8 +101,10 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use Pivotal sampling with default arguments on a BiodiversityObservationNetwork" begin
-    polygon = openstreetmap("COL")
-    candidate_bon = sample(SimpleRandom(300), polygon)
+    #polygon = openstreetmap("COL")
+    layer = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(150, 150))
+    candidate_bon = sample(SimpleRandom(300), layer)
+
     piv = Pivotal()
     bon = sample(piv, candidate_bon)
     @test bon isa BiodiversityObservationNetwork
