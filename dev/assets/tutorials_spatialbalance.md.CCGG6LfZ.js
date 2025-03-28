@@ -1,0 +1,1 @@
+import{_ as a,c as t,o as e}from"./chunks/framework.BSgWuxWZ.js";const d=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"tutorials/spatialbalance.md","filePath":"tutorials/spatialbalance.md"}'),s={name:"tutorials/spatialbalance.md"};function r(o,c,n,l,i,p){return e(),t("div")}const m=a(s,[["render",r]]);export{d as __pageData,m as default};
