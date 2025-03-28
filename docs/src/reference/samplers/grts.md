@@ -1,7 +1,7 @@
-# CubeSampling
+# Generalized Random Tessellated Stratified Sampling
 
 ```@docs; canonical=false
-CubeSampling
+GeneralizedRandomTessellatedStratified
 ```
 
 ## Example 
@@ -17,23 +17,18 @@ using GeoMakie
 import SpeciesDistributionToolkit as SDT
 ```
 
-Load predictors
-
-```@example 1
-france = gadm("FRA")
-layers = SDT.mask!([SDT.SDMLayer(SDT.RasterData(SDT.WorldClim2, SDT.BioClim); layer=i, SDT.boundingbox(france)...) for i in [1,12]], france)
-```
-
+now sample a [`BiodiversityObservationNetwork`](@ref)
 
 ```@example 1
 num_nodes = 50
-bon = sample(CubeSampling(num_nodes), layers)
+corsica = openstreetmap("Corse")
+bon = sample(GeneralizedRandomTessellatedStratified(num_nodes), corsica)
 ```
 
 and plot
 
 ```@example 1
 f = Figure(size=(500, 500))
-bonplot(f[1,1], bon, france, axistype=GeoAxis)
+bonplot(f[1,1], bon, corsica, axistype=GeoAxis)
 f
 ```

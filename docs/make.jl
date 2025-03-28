@@ -5,7 +5,7 @@ using DocumenterCitations
 using DocumenterVitepress
 using BiodiversityObservationNetworks
 
-bib = CitationBibliography(joinpath(@__DIR__, "BONs.bib"))
+bib = CitationBibliography(joinpath(@__DIR__, "BONs.bib"), style=:authoryear)
 
 makedocs(
     sitename = "BiodiversityObservationNetworks.jl",
@@ -17,17 +17,20 @@ makedocs(
     ),
     pages = [
         "Overview" => "index.md",
+        "Manual" => "manual.md",
         "Tutorials" => [],
         "How To" => [],
         "Samplers" => [
-            joinpath("samplers", "simplerandom.md"),
-            joinpath("samplers", "balancedacceptance.md"),
-            joinpath("samplers", "grts.md"),
-            joinpath("samplers", "cube.md"),
-            joinpath("samplers", "adaptivehotspot.md"),
+            joinpath("reference","samplers", "simplerandom.md"),
+            joinpath("reference", "samplers", "balancedacceptance.md"),
+            joinpath("reference", "samplers", "grts.md"),
+            joinpath("reference","samplers", "cube.md"),
+            joinpath("reference", "samplers", "adaptivehotspot.md"),
         ],
-        "Utilities" => [],
-        "API Reference" => "api.md",
+        "Utilities" => [
+            joinpath("reference", "utilities", "spatialbalance.md"),
+        ],
+        "API Reference" => joinpath("reference", "api.md"),
         "Bibliography" => "bibliography.md"
     ],
     warnonly = true,

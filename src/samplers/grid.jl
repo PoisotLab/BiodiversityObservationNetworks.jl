@@ -45,7 +45,7 @@ end
 
 @testitem "We can use a Grid with default constructor on a Polygon" begin
     gs = Grid()
-    poly = gadm("COL")
+    poly = openstreetmap("COL")
     bon = sample(gs, poly)
     @test bon isa BiodiversityObservationNetwork
 end

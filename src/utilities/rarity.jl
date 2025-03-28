@@ -1,3 +1,8 @@
+"""
+    RarityMetric
+
+Abstract type encompassing all methods for computing environmental rarity.
+"""
 abstract type RarityMetric end 
 
 function _pca(X)
@@ -11,6 +16,13 @@ function _zscore(X)
 end
 
 
+"""
+    DistanceToMedian 
+
+A [`RarityMetric`](@ref) that operates on a set of
+[`SimpleSDMLayers.SDMLayer`]()
+
+"""
 struct DistanceToMedian <: RarityMetric end 
 function rarity(
     ::DistanceToMedian, 
@@ -29,6 +41,11 @@ function rarity(
     return rare
 end
 
+"""
+    MultivariateEnvironmentalSimilarity
+
+Multivariate-Environmental Similarity Score (MESS) is a metric introduced by []
+"""
 struct MultivariateEnvironmentalSimilarity <: RarityMetric end 
 function _mess_score(xᵢⱼ, fᵢⱼ, mⱼ, Mⱼ)
     fᵢⱼ == 0 && return (xᵢⱼ - mⱼ)/(Mⱼ - mⱼ)
