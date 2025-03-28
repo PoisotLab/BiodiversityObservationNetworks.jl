@@ -112,7 +112,7 @@ Ethically I'm not 100% sure. But it is technically possible. That's both true ab
 Let's download France.
 
 ```@example 1
-fra = openstreetmap("France")
+fra = gadm("France")
 ```
 
 and now lets choose a buncha random places in France
@@ -127,10 +127,9 @@ and take a look
 bonplot(candidate_bon, fra)
 ```
 
-Wow. We do making groundbreaking work here.
+Wow. We're doing groundbreaking work here.
 
-Next up, let's choose a set of spatially balanced coordinates from this set of candidates. 
-We'll do this using a different sampling algorithm, called the Pivotal method [TODO cite], [`Pivotal`](@ref). Is this because [`BalancedAcceptance`] doesn't work on point-like geometries? Yes
+Next up, let's choose a set of spatially balanced coordinates from this set of candidates. We'll do this using a different sampling algorithm, called the Pivotal method [TODO cite], [`Pivotal`](@ref). Is this because [`BalancedAcceptance`] doesn't work on point-like geometries? Yes
 
 ```@example 1
 num_points_to_pick = 100
