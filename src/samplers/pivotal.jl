@@ -8,7 +8,7 @@ Base.@kwdef struct Pivotal{I<:Integer} <: BONSampler
     number_of_nodes::I = _DEFAULT_NUM_NODES
     maximum_iterations::I = 10^6
 end 
-
+Pivotal(n::Integer) = Pivotal(number_of_nodes=n)
 _valid_geometries(::Pivotal) = (BiodiversityObservationNetwork)
 
 

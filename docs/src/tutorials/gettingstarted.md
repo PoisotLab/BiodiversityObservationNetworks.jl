@@ -109,22 +109,22 @@ Okay, but what if you've got raster data that describes useful environmental cov
 
 Ethically I'm not 100% sure. But it is technically possible. That's both true about sampling BONs from BONs, and the moral of Jurassic Park (1994). 
 
-Let's download France.
+Let's download Switzerland.
 
 ```@example 1
-fra = gadm("France")
+swi = openstreetmap("Switzerland")
 ```
 
-and now lets choose a buncha random places in France
+and now lets choose a buncha random places in there
 
 ```@example 1
-candidate_bon = sample(SimpleRandom(1000), fra)
+candidate_bon = sample(SimpleRandom(500), swi)
 ```
 
 and take a look
 
 ```@example 1
-bonplot(candidate_bon, fra)
+bonplot(candidate_bon, swi)
 ```
 
 Wow. We're doing groundbreaking work here.
@@ -132,7 +132,7 @@ Wow. We're doing groundbreaking work here.
 Next up, let's choose a set of spatially balanced coordinates from this set of candidates. We'll do this using a different sampling algorithm, called the Pivotal method [TODO cite], [`Pivotal`](@ref). Is this because [`BalancedAcceptance`] doesn't work on point-like geometries? Yes
 
 ```@example 1
-num_points_to_pick = 100
+num_points_to_pick = 30
 sample(Pivotal(num_points_to_pick), candidate_bon)
 ```
 
