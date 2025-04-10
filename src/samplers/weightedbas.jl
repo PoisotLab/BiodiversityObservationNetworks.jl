@@ -13,7 +13,7 @@ Base.@kwdef struct WeightedBalancedAcceptance{I<:Integer, F<:Real} <: BONSampler
     grid_size::Tuple{I,I} = (250, 250)
     inclusion_scaling::F = 1.
 end 
-WeightedBalancedAcceptance(n::Integer; grid_size=(250, 250)) = WeightedBalancedAcceptance(n, grid_size)
+WeightedBalancedAcceptance(n::Integer; kw...) = WeightedBalancedAcceptance(; number_of_nodes=n, kw...)
 
 __valid_geometries(::WeightedBalancedAcceptance) = (Raster)
 
