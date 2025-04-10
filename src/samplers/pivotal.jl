@@ -5,10 +5,10 @@ The Local Pivotal Method [Grafstrom2012SpaBal](@cite) is used for generating
 spatially balanced samples. 
 """
 Base.@kwdef struct Pivotal{I<:Integer} <: BONSampler
-    number_of_nodes::I = 100
+    number_of_nodes::I = _DEFAULT_NUM_NODES
     maximum_iterations::I = 10^6
 end 
-
+Pivotal(n::Integer) = Pivotal(number_of_nodes=n)
 _valid_geometries(::Pivotal) = (BiodiversityObservationNetwork)
 
 
@@ -101,8 +101,10 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use Pivotal sampling with default arguments on a BiodiversityObservationNetwork" begin
-    polygon = gadm("COL")
-    candidate_bon = sample(SimpleRandom(300), polygon)
+    #polygon = openstreetmap("COL")
+    layer = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(150, 150))
+    candidate_bon = sample(SimpleRandom(300), layer)
+
     piv = Pivotal()
     bon = sample(piv, candidate_bon)
     @test bon isa BiodiversityObservationNetwork

@@ -2,6 +2,7 @@ const MAX_CORNERPLOT_DIMS_BEFORE_PCA = 20
 const BONs = BiodiversityObservationNetworks
 const SDT = BONs.SpeciesDistributionToolkit
 
+
 # NOTES:
 # The easiest way to make this compatable with GeoMakie (if loaded) or 
 # else default back to normal Axis is to have it work on a ::Makie.GridPosition,
@@ -44,6 +45,11 @@ function BONs.cornerplot(
     f
 end
 
+"""
+    bonplot
+
+The highest-level bonplot method. Takes only a [`BiodiversityObservationNetwork`](@ref) `bon`, and forwards on the keyword arguments to the next method, which operates on a `GridPosition` as its first argument.
+"""
 function BONs.bonplot(
     bon::BiodiversityObservationNetwork;
     kw...
@@ -71,6 +77,8 @@ function BONs.bonplot(
 )
     ax = axistype(position)
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+
+
     Makie.AxisPlot(ax, plot)
 end
 
@@ -84,11 +92,11 @@ BONs.bonplot(
 function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
-    geom::SDT.SDMLayer,
-    axistype = Makie.Axis
-) where T
+    geom::SDT.SDMLayer;
+    axistype = Makie.Axis,
+)
     ax = axistype(position)
-    heatmap!(ax, geom.raster)
+    heatmap!(ax, geom)
     plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
     Makie.AxisPlot(ax, plot)
 end
@@ -98,11 +106,12 @@ function BONs.bonplot(
     position::GridPosition,
     bon::BiodiversityObservationNetwork,
     poly::Polygon;
-    axistype=Makie.Axis
+    axistype=Makie.Axis,
+    kw...
 )
     ax = axistype(position)
-    poly!(ax, poly.geometry, strokewidth=1, color=(:grey, 0.1))
-    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon], color=(:red))
+    poly!(ax, poly.geometry, strokewidth=1, color=(:grey, 0.1); kw...)
+    plot = scatter!(ax, [node[1] for node in bon], [node[2] for node in bon])
     Makie.AxisPlot(ax, plot)
 end
 
@@ -121,18 +130,6 @@ function BONs.bonplot(
     Makie.AxisPlot(ax, plot)
 end
 
-
-function BONs.bonplot(
-    position::GridPosition,
-    bon::BiodiversityObservationNetwork,
-    raster::SDT.SDMLayer;
-    axistype=Makie.Axis
-)
-    ax = axistype(position)
-    heatmap!(ax, raster)
-    plot = scatter!(ax, [node.coordinate for node in bon], color=(:red))
-    Makie.AxisPlot(ax, plot)
-end
 
 
 
@@ -163,7 +160,12 @@ end
 
 
 # Makie poly overloads
-Makie.poly(polygon::Polygon; kw...) = poly(polygon.geometry; kw...)
+Makie.poly(polygon::Polygon; axistype=Makie.Axis) = begin
+    f = Figure()
+    ax = axistype(f[1,1])
+    poly!(ax, polygon)
+    f 
+end
 Makie.poly(polygons::Vector{Polygon}; kw...) = begin
     poly(first(polygons); kw...)
     map(p->poly!(p; kw...), polygons[2:end])

@@ -1,13 +1,22 @@
-# BiodiversityObservationNetworks.jl
+```@raw html
+---
+layout: home
 
-The purpose of this package is to provide a high-level, extensible, modular
-interface to the selection of sampling point for biodiversity processes in
-space. It is based around a collection of types representing point selection
-algorithms, used to select the most informative sampling points based on raster
-data. 
-
-!!! warning "This package is in development"
-    The `BiodiversityObservationNetworks.jl` package is currently under development. The API is not expected to change a lot, but it may change in order to facilitate the integration of new features.
-
-
-Diataxis, etc.
+hero:
+  name: "Biodiversity Observation Networks.jl"
+  tagline: A Julia package for spatial design of biodiversity monitoring programs
+  image:
+    src: /logo.png
+    alt: BiodiversityObservationNetworks
+  actions:
+    - theme: brand
+      text: Read the manual
+      link: /manual
+    - theme: alt
+      text: View on Github
+      link: https://github.com/PoisotLab/BiodiversityObservationNetworks.jl
+    - theme: alt
+      text: Provide Feedback
+      link: https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/issues
+---
+```

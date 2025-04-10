@@ -10,7 +10,7 @@
 [Deville2004EffBal](@cite)
 """
 Base.@kwdef struct CubeSampling{I<:Integer} <: BONSampler
-    number_of_nodes::I = 50
+    number_of_nodes::I = _DEFAULT_NUM_NODES
 end 
 
 _valid_geometries(::CubeSampling) = (BiodiversityObservationNetwork, RasterStack, Raster)

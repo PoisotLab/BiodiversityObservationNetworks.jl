@@ -20,7 +20,7 @@ Spatially Correlated Poisson Sampling [Grafstrom2012SpaCor](@cite)
 
 """
 Base.@kwdef struct SpatiallyCorrelatedPoisson{I<:Integer} <: BONSampler
-    number_of_nodes::I = 100
+    number_of_nodes::I = _DEFAULT_NUM_NODES
 end 
 
 _valid_geometries(::SpatiallyCorrelatedPoisson) = (BiodiversityObservationNetwork)
@@ -61,6 +61,9 @@ function _sample(
             end 
         end 
     end    
+    
+
+
     return BiodiversityObservationNetwork(bon[inclusion_indicator])
 end 
 
@@ -69,8 +72,9 @@ end
 # ---------------------------------------------------------------
 
 @testitem "We can use SCPS with default constructor on a BON" begin
-    polygon = gadm("COL")
-    candidate_bon = sample(SimpleRandom(300), polygon)
+    #polygon = openstreetmap("Colombia")
+    layer = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(150, 150))
+    candidate_bon = sample(SimpleRandom(300), layer)
 
     scps = SpatiallyCorrelatedPoisson()
     bon = sample(scps, candidate_bon)

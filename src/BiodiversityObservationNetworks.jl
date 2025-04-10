@@ -28,6 +28,8 @@ module BiodiversityObservationNetworks
     import DelaunayTriangulation as DT
     import MultivariateStats as MVStats
 
+    _DEFAULT_NUM_NODES = 50
+
     export BiodiversityObservationNetwork
     export Node
     export Polygon
@@ -71,7 +73,7 @@ module BiodiversityObservationNetworks
     export spatialbalance
     export MoransI, VoronoiVariance
 
-    export gadm
+    export gadm, openstreetmap
     export cornerplot, bonplot
 
 

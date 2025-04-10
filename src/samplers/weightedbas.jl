@@ -9,7 +9,7 @@ adjusted by a raster. (For some sampers this would be reall dumb, e.g. Grid. But
 for spatially balanced, it makes sense )
 """
 Base.@kwdef struct WeightedBalancedAcceptance{I<:Integer, F<:Real} <: BONSampler
-    number_of_nodes::I = 100
+    number_of_nodes::I = _DEFAULT_NUM_NODES
     grid_size::Tuple{I,I} = (250, 250)
     inclusion_scaling::F = 1.
 end 

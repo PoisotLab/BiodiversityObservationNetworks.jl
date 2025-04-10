@@ -13,6 +13,8 @@ end
 const __BON_DOMAINS = Union{Vector{<:SDMLayer}, SDMLayer, Polygon, Vector{<:Polygon}, BiodiversityObservationNetwork}
 
 
+_default_geometry() = SDMLayer(zeros(180, 360))
+
 Base.getindex(samplers::MultistageSampler, i::Integer) = samplers.samplers[i]
 Base.firstindex(samplers::MultistageSampler) = firstindex(samplers.samplers)
 Base.eachindex(samplers::MultistageSampler) = eachindex(samplers.samplers)
@@ -68,3 +70,10 @@ Attempt to use `BONSampler` to sample from a valid `geom`
 function sample(sampler::BONSampler, geom::__BON_DOMAINS, bon::BiodiversityObservationNetwork)
     _sample(sampler, geom, bon)
 end
+
+"""
+    sample
+
+Attempt to use `BONSampler` to sample from the default geometry
+"""
+sample(sampler::BONSampler) = sample(sampler, _default_geometry())

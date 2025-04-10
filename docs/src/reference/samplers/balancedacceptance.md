@@ -1,7 +1,7 @@
-# Generalized Random Tessellated Stratified Sampling
+# Balanced Acceptance Sampling 
 
 ```@docs; canonical=false
-GeneralizedRandomTessellatedStratified
+BalancedAcceptance
 ```
 
 ## Example 
@@ -21,8 +21,8 @@ now sample a [`BiodiversityObservationNetwork`](@ref)
 
 ```@example 1
 num_nodes = 50
-corsica = gadm("FRA", "Corse")
-bon = sample(GeneralizedRandomTessellatedStratified(num_nodes), corsica)
+corsica = openstreetmap("Corse")
+bon = sample(BalancedAcceptance(num_nodes), corsica)
 ```
 
 and plot

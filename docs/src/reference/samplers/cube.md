@@ -1,7 +1,7 @@
-# Balanced Acceptance Sampling 
+# CubeSampling
 
 ```@docs; canonical=false
-BalancedAcceptance
+CubeSampling
 ```
 
 ## Example 
@@ -17,12 +17,17 @@ using GeoMakie
 import SpeciesDistributionToolkit as SDT
 ```
 
-now sample a [`BiodiversityObservationNetwork`](@ref)
+Load predictors
+
+```@example 1
+corsica = openstreetmap("Corse")
+layers = SDT.mask!([SDT.SDMLayer(SDT.RasterData(SDT.CHELSA2, SDT.BioClim); layer=i, SDT.boundingbox(corsica)...) for i in [1,12]], corsica)
+```
+
 
 ```@example 1
 num_nodes = 50
-corsica = gadm("FRA", "Corse")
-bon = sample(BalancedAcceptance(num_nodes), corsica)
+bon = sample(CubeSampling(num_nodes), layers)
 ```
 
 and plot

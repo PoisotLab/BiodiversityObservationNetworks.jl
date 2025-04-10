@@ -27,7 +27,7 @@ values are chosen.
 
 """
 Base.@kwdef struct GeneralizedRandomTessellatedStratified{I<:Integer} <: BONSampler
-    number_of_nodes::I = 100
+    number_of_nodes::I = _DEFAULT_NUM_NODES
     grid_size::Tuple{I,I} = (250, 250)
 end 
 GeneralizedRandomTessellatedStratified(n::Integer; grid_size=(250,250)) = GeneralizedRandomTessellatedStratified(n, grid_size)
@@ -203,7 +203,7 @@ end
 
 
 @testitem "We can use GRTS with default arguments on a Polygon" begin
-    poly = gadm("COL")
+    poly = openstreetmap("COL")
     grts = GeneralizedRandomTessellatedStratified()
     bon = sample(grts, poly)
     @test bon isa BiodiversityObservationNetwork
