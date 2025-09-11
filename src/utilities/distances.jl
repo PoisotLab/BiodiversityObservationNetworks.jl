@@ -3,7 +3,7 @@
 
 Standardizes the values of a matrix of predictors across the entire population
 `Xfull`, and a set of predictors associated with the sampled sites, `Xsampled`
-by scaling each dimension of the predictors to [0,1].
+by scaling each predictor to [0,1].
 
 `Xsampled` is standardized based on the minimum and maximum values of each
 predictor across the population, so both matrices a return on the same scale.
@@ -30,7 +30,7 @@ end
 
 The [Jensen-Shannon
 Divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence) is
-a method for measuring the distance between two probability distibutions.
+a method for measuring the distance between two probability distributions.
 
 This method provides a comparison between the distribution of environmental
 variables in set of `SDMLayers`, `layers`, to the values of those variables at the
@@ -40,7 +40,7 @@ function jensenshannon(
     layers::RasterStack, 
     bon::BiodiversityObservationNetwork
 )
-    cart_idx, Xfull = features(layers)
+    cart_idx, Xfull = getfeatures(layers)
     Xsampled = layers[bon]
     
     Xf, Xs = _standardize(Xfull, Xsampled)
@@ -51,5 +51,5 @@ function jensenshannon(
 
     M = 0.5(Xhat + Xf)
 
-    return 0.5StatsBase.kldivergence(Xf, M) + 0.5StatsBase.kldivergence(Xf, M)
+    return 0.5*SB.kldivergence(Xf, M) + 0.5*SB.kldivergence(Xf, M)
 end 

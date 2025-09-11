@@ -1,11 +1,9 @@
 module BiodiversityObservationNetworks
-    using Clustering
-    using Dates
     using DelaunayTriangulation
     using Distances
     using Distributions
+    using Extents
     using GeometryOps
-    using GeoInterface
     using HaltonSequences
     using HiGHS
     using JuMP
@@ -15,96 +13,64 @@ module BiodiversityObservationNetworks
     using SparseArrays
     using SpecialFunctions
     using SpeciesDistributionToolkit
-    using Statistics
-    using StatsBase 
+    using StatsBase
     using TestItems
-    using Random
 
-    import GeoInterface as GI
-    import GeometryOps as GO
-    import SpeciesDistributionToolkit as SDT
-    import SpeciesDistributionToolkit.GeoJSON as GJ
-    import SpeciesDistributionToolkit.SimpleSDMLayers.ArchGDAL as AG
-    import DelaunayTriangulation as DT
-    import MultivariateStats as MVStats
+    const DT = DelaunayTriangulation
+    const SB = StatsBase
+    const GO = GeometryOps
+
+    abstract type BONSampler end
+    allows_custom_inclusion(::BONSampler) = false
 
     _DEFAULT_NUM_NODES = 50
 
-    export BiodiversityObservationNetwork
-    export Node
-    export Polygon
-    export Raster
-    export RasterStack
-
-    export BONSampler
-    export MultistageSampler
-    export SimpleRandom
-    export Grid
-    export CubeSampling
-    export SpatiallyStratified
-    export BalancedAcceptance
-    export WeightedBalancedAcceptance
-    export GeneralizedRandomTessellatedStratified
-    export AdaptiveHotspot
-    export UncertaintySampling
-    export SpatiallyCorrelatedPoisson
-
-    export PivotalMethod, KPivotal, KDTreePivotal, ClassicPivotal
-    export Pivotal
-
     export sample
-    export datatype
-    export nonempty
-    export is_polygonizable, is_rasterizable, is_bonifyable
+    export RasterDomain, PolygonDomain, RasterStack
+    export extent, contains
 
-    export cluster
-    export KMeans, FuzzyCMeans
-
-    export features
-    export jensenshannon
     export voronoi
-    
-    export velocity
-    export VelocityMetric, Loarie2009, ClosestAnalogue
-
-    export rarity
-    export RarityMetric, DistanceToMedian, DistanceToAnalogNode, MultivariateEnvironmentalSimilarity, WithinRange
 
     export spatialbalance
-    export MoransI, VoronoiVariance
+    export VoronoiVariance, MoransI
 
-    export gadm, openstreetmap
-    export cornerplot, bonplot
+    export rarity
+    export DistanceToAnalogNode, WithinRange, MultivariateEnvironmentalSimilarity, DistanceToMedian
 
+    export jensenshannon
 
+    export BiodiversityObservationNetwork
 
-    include(joinpath("geometry", "bon.jl"))
-    include(joinpath("geometry", "polygon.jl"))
-    include(joinpath("geometry", "timeseries.jl"))
+    export BONSampler
+    export AdaptiveHotspot, BalancedAcceptance, CubeSampling, GeneralizedRandomTesselated, Gridded, Pivotal, SimpleRandom, SpatiallyCorrelatedPoisson, UncertaintySampling, SpatiallyStratified
 
-    include("sample.jl")
-    
-    include(joinpath("samplers", "simplerandom.jl"))
-    include(joinpath("samplers", "grid.jl"))
-    include(joinpath("samplers", "cube.jl"))
-    include(joinpath("samplers", "spatiallystratified.jl"))
-    include(joinpath("samplers", "balancedacceptance.jl"))
-    include(joinpath("samplers", "weightedbas.jl"))
-    include(joinpath("samplers", "grts.jl"))
-    include(joinpath("samplers", "pivotal.jl"))
-    include(joinpath("samplers", "scps.jl"))
+    include(joinpath("domains", "raster.jl"))
+    include(joinpath("domains", "stack.jl"))
+    include(joinpath("domains", "bon.jl"))
+    include(joinpath("domains", "polygon.jl"))
+    include(joinpath("domains", "conversion.jl"))
 
-    include(joinpath("samplers", "adaptivehotspot.jl"))
-    include(joinpath("samplers", "uncertainty.jl"))
+    include(joinpath("mask.jl"))
+    include(joinpath("inclusion.jl"))
 
+    include(joinpath("utilities", "nearestneighbors.jl"))
     include(joinpath("utilities", "voronoi.jl"))
-    include(joinpath("utilities", "clustering.jl"))
     include(joinpath("utilities", "spatialbalance.jl"))
-    include(joinpath("utilities", "velocity.jl"))
+    include(joinpath("utilities", "tilting.jl"))
+    include(joinpath("utilities", "distances.jl"))
+    include(joinpath("utilities", "clustering.jl"))
     include(joinpath("utilities", "rarity.jl"))
 
 
+    include(joinpath("sample.jl"))
+    include(joinpath("samplers", "simplerandom.jl"))
+    include(joinpath("samplers", "spatiallycorrelatedpoisson.jl"))
+    include(joinpath("samplers", "cubesampling.jl"))
+    include(joinpath("samplers", "balancedacceptance.jl"))
+    include(joinpath("samplers", "grts.jl"))
+    include(joinpath("samplers", "pivotal.jl"))
+    include(joinpath("samplers", "adaptivehotspot.jl"))
+    include(joinpath("samplers", "stratified.jl"))
 
-    include("overloads.jl")
-    include("plotting.jl")
+
 end     

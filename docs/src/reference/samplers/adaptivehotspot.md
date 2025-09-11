@@ -39,11 +39,3 @@ and now we sample a BON
 bon = sample(AdaptiveHotspot(), uncertainty)
 ```
 
-and plot it
-
-```@example 1
-f = Figure()
-bonplot(f[1,1], bon, uncertainty)
-f
-```
-

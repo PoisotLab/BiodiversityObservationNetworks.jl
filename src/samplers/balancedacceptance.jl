@@ -1,106 +1,93 @@
 """
     BalancedAcceptance
 
-`BalancedAcceptance` is a type of [`BONSampler`](@ref) for generating
-[`BiodiversityObservationNetwork`](@ref)s with spatial spreading.
+`BalancedAcceptance` implements Balanced Acceptance Sampling (BAS), which uses
+Halton sequences to provide spatially well-spread samples. When inclusion probabilities are supplied, a 3D Halton sequence is used: the first
+two dimensions spread locations spatially and the third acts as a random
+threshold for acceptance against the inclusion surface.
 
-First proposed in [Robertson2013BasBal](@cite). 
-
-*Arguments*:
-- `number_of_nodes`: the number of sites to select
-- `grid_size`: if being used on a polygon, the dimensions of the grid used to
-  cover the extent. Balanced Acceptance sampling uses discrete Cartesian indices
+If inclusion probabilities are not provided, a 2D Halton sequence is used to generate a spatially balanced sample of size `num_nodes` while respecting raster masks.
 """
-Base.@kwdef struct BalancedAcceptance{I<:Integer} <: BONSampler
-    number_of_nodes::I = _DEFAULT_NUM_NODES
-    grid_size::Tuple{I,I} = (250, 250)
-end 
-BalancedAcceptance(n::Integer; grid_size=(250, 250)) = BalancedAcceptance(n, grid_size)
-
-_valid_geometries(::BalancedAcceptance) = (Polygon, Raster, Vector{Polygon}, RasterStack)
-
-function _sample(sampler::BalancedAcceptance, geometry::T) where T<:Union{Polygon,SDMLayer,Vector{<:Polygon}}
-    _balanced_acceptance(sampler, geometry)
+@kwdef struct BalancedAcceptance <: BONSampler
+    num_nodes = _DEFAULT_NUM_NODES
 end 
 
-function _sample(sampler::BalancedAcceptance, layers::Vector{<:SDMLayer})
-    _balanced_acceptance(sampler, first(layers))
-end 
+_get_halton_value(base, offset, element) = haltonvalue(offset + element, base)
+_halton(bases, seeds, step, dims) = [_get_halton_value(bases[i], seeds[i], step) for i in 1:dims] 
 
-_get_easting_and_northing(::BalancedAcceptance, raster::SDMLayer) = SDT.eastings(raster), SDT.northings(raster)
-_get_easting_and_northing(sampler::BalancedAcceptance, layers::Vector{<:SDMLayer}) = _get_easting_and_northing(sampler, first(layers))
-_get_easting_and_northing(sampler::BalancedAcceptance, polygon::Polygon) = begin 
-    x, y = GI.extent(polygon)
-    grid_size = sampler.grid_size
 
-    # these are flipped to match the behavior of Rasters
-    easting_ticks, northing_ticks = grid_size[2], grid_size[1]
+"""
+    _rescale_node(domain, x::Real, y::Real)
 
-    Δx = (x[2]-x[1])/easting_ticks
-    Δy = (y[2]-y[1])/northing_ticks
+Map unit-cube Halton coordinates `(x, y)` to integer raster indices in `domain`.
+"""
+function _rescale_node(domain, x::Real, y::Real) 
+    x_scaled, y_scaled = Int.(ceil.(size(domain) .* [x, y]))
+    return x_scaled, y_scaled
+end    
 
-    Es = [x[1] + i*Δx for i in 1:easting_ticks]
-    Ns = [y[1] + i*Δy for i in 1:northing_ticks]
-    return Es, Ns
-end 
 
-# TODO: this is redundant and a similar thing is in BalancedAcceptance, unify
-_check_candidate(Es, Ns, candidate, polygon::Polygon) = GeometryOps.contains(polygon, (Es[candidate[2]], Ns[candidate[1]]))
-function _check_candidate(_, _, coord, raster::SDMLayer)
-    (coord[1] > size(raster, 1) || coord[2] > size(raster, 2)) && return false
-    val = raster[coord[1],coord[2]]
-    !isnothing(val) && !ismissing(val) && !isnan(val)
-end
+"""
+    _sample(sampler::BalancedAcceptance, domain; inclusion=nothing)
 
-function _balanced_acceptance(sampler, geometry) 
-    num_nodes = sampler.number_of_nodes
-
-    Es, Ns = _get_easting_and_northing(sampler, geometry)
-    num_eastings, num_northings = length(Es), length(Ns)
-
-    seed = rand(Int.(1e0:1e7), 2)
-    selected_points = Node[]
-    ct = 0
-    candct = 0
-    while ct < num_nodes
-        i, j = haltonvalue(seed[1] + candct, 2), haltonvalue(seed[2] + candct, 3)
-        candct += 1
-
-        # northings are the first dim, eastings are the second
-        candidate = CartesianIndex(convert.(Int, [ceil(num_northings * i), ceil(num_eastings * j)])...)
-        if _check_candidate(Es, Ns, candidate, geometry)
-            push!(selected_points, Node((Es[candidate[2]], Ns[candidate[1]])))
-            ct += 1
-        end
+Generate a spatially balanced sample using BAS. With `inclusion`, perform 3D BAS
+to respect per-cell probabilities; otherwise perform 2D BAS over the mask.
+"""
+function _sample(
+    sampler::BalancedAcceptance,
+    domain;
+    inclusion = nothing
+)   
+    if !isnothing(inclusion)
+        return _3d_bas(sampler, domain, inclusion)
+    else
+        return _2d_bas(sampler, domain)
     end
-    return BiodiversityObservationNetwork(selected_points)
-end 
-
-function _sample(sampler::BalancedAcceptance, domain::Vector{<:Polygon})
-    @info "You passed a Vector of Polygons."
-    @info "Note by default BalancedAcceptance applies to each Polygon separately"
-    @info "To use BalancedAcceptance on the whole extent, merge the polygons."
-
-    vcat([_sample(sampler, p) for p in domain])
-end 
-
-# ---------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------
-
-@testitem "We can use BalancedAcceptance with default arguments on a Raster" begin
-    raster = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(zeros(50, 100))
-    bas = BalancedAcceptance()
-    bon = sample(bas, raster)
-    @test bon isa BiodiversityObservationNetwork
-    @test size(bon) == bas.number_of_nodes
 end
 
 
-@testitem "We can use BalancedAcceptance with default arguments on a Polygon" begin
-    polygon = openstreetmap("COL")
-    bas = BalancedAcceptance()
-    bon = sample(bas, polygon)
-    @test bon isa BiodiversityObservationNetwork
-    @test size(bon) == bas.number_of_nodes
-end
+"""
+    _3d_bas(sampler, domain, inclusion)
+
+3D BAS using Halton bases `[2,3,5]`. A candidate `(i,j,z)` is accepted if the
+cell is unmasked and `z < inclusion[i,j]`.
+"""
+function _3d_bas(sampler, domain, inclusion)
+    seeds = rand(Int.(1e0:1e7), 3)
+    bases = [2, 3, 5]
+    attempt = 0
+    nodes = []
+    while length(nodes) < sampler.num_nodes
+        i, j, z  = _halton(bases, seeds, attempt, 3)
+        i, j = _rescale_node(domain, i,j)
+
+        if !ismasked(domain, i,j) && z < inclusion[i,j] 
+            push!(nodes, (i,j))
+        end 
+        attempt += 1
+    end 
+    return BiodiversityObservationNetwork(nodes, domain)
+end 
+
+"""
+    _2d_bas(sampler, domain)
+
+2D BAS using Halton bases `[2,3]` to generate spatially spread candidate cells,
+accepting those that fall on unmasked locations until `num_nodes` are selected.
+"""
+function _2d_bas(sampler, domain)
+    seeds = rand(Int.(1e0:1e7), 2)
+    bases = [2, 3]
+    attempt = 0
+    nodes = []
+    while length(nodes) < sampler.num_nodes
+        i, j = _halton(bases, seeds, attempt, 2)
+        i, j = _rescale_node(domain, i,j)
+        
+        if !ismasked(domain, i,j)
+            push!(nodes, CartesianIndex(i,j))
+        end 
+        attempt += 1
+    end
+    return BiodiversityObservationNetwork(nodes, domain)
+end 
