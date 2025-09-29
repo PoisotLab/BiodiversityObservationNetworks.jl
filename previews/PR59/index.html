@@ -1,0 +1,713 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Julia package">
+      
+      
+        <meta name="author" content="Michael D. Catchen">
+      
+      
+      
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.18">
+    
+    
+      
+        <title>BiodiversityObservationNetworks.jl</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.66ac8b77.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/Documenter.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#biodiversityobservationnetworksjl" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="BiodiversityObservationNetworks.jl" class="md-header__button md-logo" aria-label="BiodiversityObservationNetworks.jl" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            BiodiversityObservationNetworks.jl
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="BiodiversityObservationNetworks.jl" class="md-nav__button md-logo" aria-label="BiodiversityObservationNetworks.jl" data-md-component="logo">
+      
+  <img src="assets/logo.png" alt="logo">
+
+    </a>
+    BiodiversityObservationNetworks.jl
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-level types
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seeder-and-refiner-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Seeder and refiner functions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seeder-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Seeder algorithms
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refiner-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refiner algorithms
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helper-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helper functions
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Vignettes
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Vignettes
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="assets/overview.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="assets/entropize.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Entropize
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="assets/uniqueness.md" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Uniqueness.jl
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#high-level-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      High-level types
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seeder-and-refiner-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Seeder and refiner functions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#seeder-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Seeder algorithms
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refiner-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      Refiner algorithms
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helper-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Helper functions
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<p><a id='BiodiversityObservationNetworks.jl'></a></p>
+<p><a id='BiodiversityObservationNetworks.jl-1'></a></p>
+<h1 id="biodiversityobservationnetworksjl">BiodiversityObservationNetworks.jl</h1>
+<p>The purpose of this package is to provide a high-level, extensible, modular interface to the selection of sampling point for biodiversity processes in space. It is based around a collection of types representing point selection algorithms, used to select the most informative sampling points based on raster data. Specifically, the algorithms work from a layer indicating <em>entropy</em> at each location.</p>
+<div class="admonition warning">
+<p class="admonition-title">This package is in development</p>
+<p>The <code>BiodiversityObservationNetworks.jl</code> package is currently under development. The API is not expected to change a lot, but it may change in order to facilitate the integration of new features.</p>
+</div>
+<p><a id='High-level-types'></a></p>
+<p><a id='High-level-types-1'></a></p>
+<h2 id="high-level-types">High-level types</h2>
+<p><a id='BiodiversityObservationNetworks.BONSampler' href='#BiodiversityObservationNetworks.BONSampler'>#</a>
+<strong><code>BiodiversityObservationNetworks.BONSampler</code></strong> &mdash; <em>Type</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">BONSampler</span>
+</code></pre></div>
+<p>A union of the abstract types <code>BONSeeder</code> and <code>BONRefiner</code>. Both types return a tuple with the coordinates as a vector of <code>CartesianIndex</code>, and the weight matrix as a <code>Matrix</code> of <code>AbstractFloat</code>, in that order.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/types.jl#L17-L23' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.BONSeeder' href='#BiodiversityObservationNetworks.BONSeeder'>#</a>
+<strong><code>BiodiversityObservationNetworks.BONSeeder</code></strong> &mdash; <em>Type</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">BONSeeder</span><span class="w"> </span><span class="k">end</span>
+</code></pre></div>
+<p>A <code>BONSeeder</code> is an algorithm for proposing sampling locations using a raster of weights, represented as a matrix, in each cell.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/types.jl#L1-L6' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.BONRefiner' href='#BiodiversityObservationNetworks.BONRefiner'>#</a>
+<strong><code>BiodiversityObservationNetworks.BONRefiner</code></strong> &mdash; <em>Type</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="k">abstract</span><span class="w"> </span><span class="k">type</span> <span class="kt">BONRefiner</span><span class="w"> </span><span class="k">end</span>
+</code></pre></div>
+<p>A <code>BONRefiner</code> is an algorithm for proposing sampling locations by <em>refining</em> a set of candidate points to a smaller set of 'best' points.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/types.jl#L9-L14' class='documenter-source'>source</a><br></p>
+<p><a id='Seeder-and-refiner-functions'></a></p>
+<p><a id='Seeder-and-refiner-functions-1'></a></p>
+<h2 id="seeder-and-refiner-functions">Seeder and refiner functions</h2>
+<p><a id='BiodiversityObservationNetworks.seed' href='#BiodiversityObservationNetworks.seed'>#</a>
+<strong><code>BiodiversityObservationNetworks.seed</code></strong> &mdash; <em>Function</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">seed</span><span class="p">(</span><span class="n">sampler</span><span class="o">::</span><span class="kt">ST</span><span class="p">,</span><span class="w"> </span><span class="n">uncertainty</span><span class="o">::</span><span class="kt">Matrix</span><span class="p">{</span><span class="kt">T</span><span class="p">})</span>
+</code></pre></div>
+<p>Produces a set of candidate sampling locations in a vector <code>coords</code> of length numpoints from a raster <code>uncertainty</code> using <code>sampler</code>, where <code>sampler</code> is a <a href="./#BiodiversityObservationNetworks.BONSeeder"><code>BONSeeder</code></a>.   </p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/seed.jl#L41-L46' class='documenter-source'>source</a><br></p>
+<div class="highlight"><pre><span></span><code>seed!(coords::Vector{CartesianIndex}, sampler::ST)
+</code></pre></div>
+<p>The curried version of <code>seed!</code>, which returns a function that acts on the input uncertainty layer passed to the curried function (<code>u</code> below).</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/seed.jl#L55-L60' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.seed!' href='#BiodiversityObservationNetworks.seed!'>#</a>
+<strong><code>BiodiversityObservationNetworks.seed!</code></strong> &mdash; <em>Function</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">seed!</span><span class="p">(</span><span class="n">coords</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">CartesianIndex</span><span class="p">},</span><span class="w"> </span><span class="n">sampler</span><span class="o">::</span><span class="kt">ST</span><span class="p">,</span><span class="w"> </span><span class="n">uncertainty</span><span class="o">::</span><span class="kt">Matrix</span><span class="p">{</span><span class="kt">T</span><span class="p">})</span>
+</code></pre></div>
+<p>Puts a set of candidate sampling locations in the preallocated vector <code>coords</code> from a raster <code>uncertainty</code> using <code>sampler</code>, where <code>sampler</code> is a <a href="./#BiodiversityObservationNetworks.BONSeeder"><code>BONSeeder</code></a>.</p>
+<ul>
+<li>Seeder's work on rasters, refiners work on set of coordinates.</li>
+</ul>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/seed.jl#L1-L8' class='documenter-source'>source</a><br></p>
+<div class="highlight"><pre><span></span><code>seed!(coords::Vector{CartesianIndex}, sampler::ST)
+</code></pre></div>
+<p>The curried version of <code>seed!</code>, which returns a function that acts on the input uncertainty layer passed to the curried function (<code>u</code> below).</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/seed.jl#L24-L29' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.refine' href='#BiodiversityObservationNetworks.refine'>#</a>
+<strong><code>BiodiversityObservationNetworks.refine</code></strong> &mdash; <em>Function</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">refine</span><span class="p">(</span><span class="n">pool</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">CartesianIndex</span><span class="p">},</span><span class="w"> </span><span class="n">sampler</span><span class="o">::</span><span class="kt">ST</span><span class="p">,</span><span class="w"> </span><span class="n">uncertainty</span><span class="o">::</span><span class="kt">Matrix</span><span class="p">{</span><span class="kt">T</span><span class="p">})</span>
+</code></pre></div>
+<p>Refines a set of candidate sampling locations and returns a vector <code>coords</code> of length numpoints from a vector  of coordinates <code>pool</code> using <code>sampler</code>, where <code>sampler</code> is a <a href="./#BiodiversityObservationNetworks.BONRefiner"><code>BONRefiner</code></a>.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/refine.jl#L47-L52' class='documenter-source'>source</a><br></p>
+<div class="highlight"><pre><span></span><code>refine(sampler::BONRefiner)
+</code></pre></div>
+<p>Returns a curried function of <code>refine</code> with <em>two</em> methods: both are using the output of <code>seed</code>, one in its packed form, the other in its splatted form.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/refine.jl#L62-L67' class='documenter-source'>source</a><br></p>
+<div class="highlight"><pre><span></span><code>refine(pack, sampler::BONRefiner)
+</code></pre></div>
+<p>Calls <code>refine</code> on the appropriatedly splatted version of <code>pack</code>.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/refine.jl#L75-L79' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.refine!' href='#BiodiversityObservationNetworks.refine!'>#</a>
+<strong><code>BiodiversityObservationNetworks.refine!</code></strong> &mdash; <em>Function</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">refine!</span><span class="p">(</span><span class="n">cooords</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">CartesianIndex</span><span class="p">},</span><span class="w"> </span><span class="n">pool</span><span class="o">::</span><span class="kt">Vector</span><span class="p">{</span><span class="kt">CartesianIndex</span><span class="p">},</span><span class="w"> </span><span class="n">sampler</span><span class="o">::</span><span class="kt">ST</span><span class="p">,</span><span class="w"> </span><span class="n">uncertainty</span><span class="o">::</span><span class="kt">Matrix</span><span class="p">{</span><span class="kt">T</span><span class="p">})</span>
+</code></pre></div>
+<p>Refines a set of candidate sampling locations in the preallocated vector <code>coords</code> from a vector  of coordinates <code>pool</code> using <code>sampler</code>, where <code>sampler</code> is a <a href="./#BiodiversityObservationNetworks.BONRefiner"><code>BONRefiner</code></a>.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/refine.jl#L1-L6' class='documenter-source'>source</a><br></p>
+<div class="highlight"><pre><span></span><code>refine!(cooords::Vector{CartesianIndex}, pool::Vector{CartesianIndex}, sampler::ST, uncertainty::Matrix{T})
+</code></pre></div>
+<p>The curried version of <code>refine!</code>, which returns a function that acts on the input coordinate pool passed to the curried function (<code>p</code> below).</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/refine.jl#L30-L35' class='documenter-source'>source</a><br></p>
+<p><a id='Seeder-algorithms'></a></p>
+<p><a id='Seeder-algorithms-1'></a></p>
+<h2 id="seeder-algorithms">Seeder algorithms</h2>
+<p><a id='BiodiversityObservationNetworks.BalancedAcceptance' href='#BiodiversityObservationNetworks.BalancedAcceptance'>#</a>
+<strong><code>BiodiversityObservationNetworks.BalancedAcceptance</code></strong> &mdash; <em>Type</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">BalancedAcceptance</span>
+</code></pre></div>
+<p>A <code>BONSeeder</code> that uses Balanced-Acceptance Sampling (Van-dem-Bates et al. 2017 https://doi.org/10.1111/2041-210X.13003)</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/balancedacceptance.jl#L1-L6' class='documenter-source'>source</a><br></p>
+<p><a id='Refiner-algorithms'></a></p>
+<p><a id='Refiner-algorithms-1'></a></p>
+<h2 id="refiner-algorithms">Refiner algorithms</h2>
+<p><a id='BiodiversityObservationNetworks.AdaptiveSpatial' href='#BiodiversityObservationNetworks.AdaptiveSpatial'>#</a>
+<strong><code>BiodiversityObservationNetworks.AdaptiveSpatial</code></strong> &mdash; <em>Type</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">AdaptiveSpatial</span>
+</code></pre></div>
+<p>...</p>
+<p><strong>numpoints</strong>, an Integer (def. 50), specifying the number of points to use.</p>
+<p><strong>α</strong>, an AbstractFloat (def. 1.0), specifying ...</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/adaptivespatial.jl#L1-L9' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.Uniqueness' href='#BiodiversityObservationNetworks.Uniqueness'>#</a>
+<strong><code>BiodiversityObservationNetworks.Uniqueness</code></strong> &mdash; <em>Type</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Uniqueness</span>
+</code></pre></div>
+<p>A <code>BONRefiner</code>.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/uniqueness.jl#L1-L5' class='documenter-source'>source</a><br></p>
+<p><a id='Helper-functions'></a></p>
+<p><a id='Helper-functions-1'></a></p>
+<h2 id="helper-functions">Helper functions</h2>
+<p><a id='BiodiversityObservationNetworks.squish' href='#BiodiversityObservationNetworks.squish'>#</a>
+<strong><code>BiodiversityObservationNetworks.squish</code></strong> &mdash; <em>Function</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">squish</span><span class="p">(</span><span class="n">layers</span><span class="p">,</span><span class="w"> </span><span class="n">W</span><span class="p">,</span><span class="w"> </span><span class="n">α</span><span class="p">)</span>
+</code></pre></div>
+<p>Takes a set of <code>n</code> layers and squishes them down to a single layer.</p>
+<div class="highlight"><pre><span></span><code>    numcolumns = size(W,2)
+    for i in 1:numcolumns
+        W[:,i] ./= sum(W[:,i])
+    end
+</code></pre></div>
+<p>For a coordinate in the raster (i,j), denote the vector of values across all locations at that coordinate v⃗ᵢⱼ. The value at that coordinate in squished layer, s⃗ᵢⱼ, is computed in two steps.</p>
+<p><strong>(1):</strong> First we apply a weights matrix, <code>W``, with</code>n<code>rows and</code>m<code>columns (</code>m<code>&lt;</code>n<code>), to reduce the initial</code>n<code>layers down to a set of</code>m` layers, each of which corresponds  to a particular target of optimization. For example, we may want to propose sampling  locations that are optimized to best sample  abalance multiple criteria, like (a) the  current distribution of a species and (b) if that distribution is changing over time.</p>
+<p>Each entry in the weights matrix <code>W</code> corresponds to the 'importance' of the layer in the corresponding row to the successful measurement of the target of the corresponding column. As such, each column of <code>W</code> must sum to 1.0. using Optim</p>
+<p>For each location, the value of the condensed layer <code>tᵢ</code>, corresponding to target <code>i</code>, at  coordinate (i,j) is given by the dot product of v⃗ᵢⱼ and the <code>i</code>-th column of <code>W</code>.</p>
+<p><strong>(2):</strong> Apply a weighted average across each target layer. To produce the final output layer, we apply a weighted average to each target layer, where the weights are provided in the vector α⃗ of length <code>m</code>.</p>
+<p>The final value of the squished layer at (i,j) is given by s⃗ᵢⱼ = ∑ₓ αₓ*tᵢⱼ(x), where tᵢⱼ(x) is the value of the x-th target layer at (i,j).</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/utils.jl#L27-L63' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.entropize!' href='#BiodiversityObservationNetworks.entropize!'>#</a>
+<strong><code>BiodiversityObservationNetworks.entropize!</code></strong> &mdash; <em>Function</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">entropize!</span><span class="p">(</span><span class="n">U</span><span class="o">::</span><span class="kt">Matrix</span><span class="p">{</span><span class="kt">AbstractFloat</span><span class="p">},</span><span class="w"> </span><span class="n">A</span><span class="o">::</span><span class="kt">Matrix</span><span class="p">{</span><span class="kt">Number</span><span class="p">})</span>
+</code></pre></div>
+<p>This function turns a matrix <code>A</code> (storing measurement values) into pixel-wise entropy values, stored in a matrix <code>U</code> (that is previously allocated).</p>
+<p>Pixel-wise entropy is determined by measuring the empirical probability of randomly picking a value in the matrix that is either lower or higher than the pixel value. The entropy of both these probabilities are calculated using the -p×log(2,p) formula. The entropy of the pixel is the <em>sum</em> of the two entropies, so that it is close to 1 for values close to the median, and close to 0 for values close to the extreme of the distribution.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/entropize.jl#L1-L13' class='documenter-source'>source</a><br></p>
+<p><a id='BiodiversityObservationNetworks.entropize' href='#BiodiversityObservationNetworks.entropize'>#</a>
+<strong><code>BiodiversityObservationNetworks.entropize</code></strong> &mdash; <em>Function</em>.</p>
+<div class="highlight"><pre><span></span><code><span class="n">entropize</span><span class="p">(</span><span class="n">A</span><span class="o">::</span><span class="kt">Matrix</span><span class="p">{</span><span class="kt">Number</span><span class="p">})</span>
+</code></pre></div>
+<p>Allocation version of <code>entropize!</code>.</p>
+<p><a target='_blank' href='https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/4b8c0fb48f27134b98655e3774b947dc792c8879/src/entropize.jl#L30-L34' class='documenter-source'>source</a><br></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.3220b9d7.min.js"></script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+      
+        <script src="assets/mathjaxhelper.js"></script>
+      
+    
+  </body>
+</html>
