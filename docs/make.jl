@@ -39,6 +39,6 @@ makedocs(
 
 
 deploydocs(;
-    repo = "github.com/PoisotLab/BiodiversityObservationNetworks.jl.git",
+    repo = "https://github.com/PoisotLab/BiodiversityObservationNetworks.jl.git",
     push_preview = true,
 )
