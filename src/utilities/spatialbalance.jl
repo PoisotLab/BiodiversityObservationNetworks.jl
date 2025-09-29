@@ -1,6 +1,18 @@
 abstract type SpatialBalanceMetric end 
 
 """
+    spatialbalance
+"""
+spatialbalance(::Type{T}, bon, domain) where T = spatialbalance(T(), bon, domain)
+
+
+spatialbalance(
+    metric::SpatialBalanceMetric,
+    bon::BiodiversityObservationNetwork,
+    domain
+) = spatialbalance(metric, bon, to_domain(domain))
+
+"""
     MoransI
 
 `MoransI` is a measure of spatial balance proposed by [Tille2018MeaSpa](@cite).
@@ -29,23 +41,33 @@ function _morans_weight_matrix(N, n, kdtree, coords)
     return W
 end 
 
-function _inclusion_indicator(raster, bon)
-    selected_cart_idx = [CartesianIndex(SDT.SimpleSDMLayers.__get_grid_coordinate_by_crs(raster, node.coordinate...)) for node in bon]
+function _get_inclusion_indicator(raster::RasterDomain{<:SDMLayer}, bon)
+    selected_cart_idx = [CartesianIndex(SpeciesDistributionToolkit.SimpleSDMLayers.__get_grid_coordinate_by_crs(raster.data, node...)) for node in bon]
+
     mat = zeros(Bool, size(raster))
     mat[selected_cart_idx] .= 1
-    indic = raster.indices .& mat
-    return [indic[idx] for idx in findall(raster.indices)]
+    indic = raster.pool .& mat
+    return [indic[idx] for idx in getpool(raster)]
 end
+
+function _get_inclusion_indicator(raster::RasterDomain{<:Matrix}, bon)
+    [p in bon.nodes for p in getpool(raster)]
+end
+
 
 """
     spatialbalance(::MoransI, raster::SDMLayer, bon::BiodiversityObservationNetwork)
 """
-function spatialbalance(::MoransI, raster::SDMLayer, bon::BiodiversityObservationNetwork)
-    a = _inclusion_indicator(raster, bon) 
+function spatialbalance(
+    ::MoransI, 
+    bon::BiodiversityObservationNetwork,
+    raster::RasterDomain
+)
 
-    Es, Ns = SDT.eastings(raster), SDT.northings(raster)
-    coords = hcat([[j,i] for i in Ns, j in Es][raster.indices]...)
-    
+    inclusion_indicator = _get_inclusion_indicator(raster, bon) 
+    a = inclusion_indicator
+
+    coords = getcoordinates(raster)
     kdtree = NearestNeighbors.KDTree(coords)
 
     N, n = size(coords,2), size(bon)
@@ -61,6 +83,13 @@ function spatialbalance(::MoransI, raster::SDMLayer, bon::BiodiversityObservatio
 
     return (a'*W*a - ψ*(_1'*W*a)) / sqrt( ψ*(1-ψ)*a'*B*a )
 end 
+
+
+spatialbalance(
+    mi::MoransI, 
+    bon::BiodiversityObservationNetwork,
+    rs::RasterStack
+) = spatialbalance(mi, bon, first(rs.rasters))
 
 """
     VoronoiVariance
@@ -99,19 +128,19 @@ to measure spatial balance, where *smaller values indicate better spatial balanc
 """
 struct VoronoiVariance <: SpatialBalanceMetric end 
 
-
-spatialbalance(::VoronoiVariance, bon::BiodiversityObservationNetwork, geom) = spatialbalance(VoronoiVariance, bon, geom)
+spatialbalance(::VoronoiVariance, bon::BiodiversityObservationNetwork, geom) = spatialbalance(VoronoiVariance, bon, to_polygon(geom))
 
 """
     spatialbalance(::Type{VoronoiVariance}, bon::BiodiversityObservationNetwork, geom)
 """
 function spatialbalance(
-    ::Type{VoronoiVariance}, 
+    ::VoronoiVariance, 
     bon::BiodiversityObservationNetwork,
-    geom
+    geom::PolygonDomain
 )
+
     vor = voronoi(bon, geom)
 
-    total_inclusion_prob = 50 .* GO.area.(vor) ./ GO.area(geom)
+    total_inclusion_prob = length(bon) * GO.area.(vor) ./ GO.area(geom.data)
     return sum((total_inclusion_prob .- 1).^2)
 end

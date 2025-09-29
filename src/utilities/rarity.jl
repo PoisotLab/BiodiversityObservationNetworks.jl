@@ -5,9 +5,17 @@ Abstract type encompassing all methods for computing environmental rarity.
 """
 abstract type RarityMetric end 
 
-function _pca(X)
-    pca = MVStats.fit(MVStats.PCA, X')
-    return MVStats.transform(pca, X')
+
+rarity(rm::RarityMetric, bon::BiodiversityObservationNetwork, domain; kwargs...) = rarity(rm, bon, to_domain(domain); kwargs...)
+
+rarity(rm::RarityMetric, domain; kwargs...) = rarity(rm, to_domain(domain); kwargs...)
+
+
+function _fit_pca(X)
+    return MultivariateStats.fit(MultivariateStats.PCA, X)
+end 
+function _transform_pca(pca, X)
+    return MultivariateStats.transform(pca, X)
 end 
 
 function _zscore(X)
@@ -19,24 +27,29 @@ end
 """
     DistanceToMedian 
 
-A [`RarityMetric`](@ref) that operates on a set of
-[`SimpleSDMLayers.SDMLayer`]()
-
+Rarity score defined as Euclidean distance in feature space to the per-feature
+median across the raster stack. Optionally, features can be PCA-transformed
+prior to z-scoring.
 """
 struct DistanceToMedian <: RarityMetric end 
 function rarity(
     ::DistanceToMedian, 
-    layers::Vector{<:SDMLayer};
+    layers::RasterStack;
     pca = false
 )
-    X = hcat([l.grid[l.indices] for l in layers]...)
-    X = pca ? _pca(X)' : X
-    z, X = _zscore(X')
+    X = getfeatures(layers)
+    if pca 
+        X = _transform_pca(_fit_pca(X), X)
+    end
+    z, X = _zscore(X)
     X̄ = map(StatsBase.median, eachrow(X))
     dist = map(xᵢ -> sqrt(sum((xᵢ .- X̄).^2)), eachcol(X))
 
+
+    pool = getpool(layers)
+
     rare = deepcopy(first(layers))
-    rare.grid[rare.indices] .= dist
+    rare.data.grid[pool] .= dist
 
     return rare
 end
@@ -44,7 +57,9 @@ end
 """
     MultivariateEnvironmentalSimilarity
 
-Multivariate-Environmental Similarity Score (MESS) is a metric introduced by []
+Multivariate Environmental Similarity Surface (MESS). For each cell, compute the
+minimum over features of a per-feature similarity score derived from the ECDF of
+the training distribution, following the standard MESS definition.
 """
 struct MultivariateEnvironmentalSimilarity <: RarityMetric end 
 function _mess_score(xᵢⱼ, fᵢⱼ, mⱼ, Mⱼ)
@@ -56,16 +71,18 @@ end
 
 function rarity(
     ::MultivariateEnvironmentalSimilarity,
-    layers::Vector{<:SDMLayer}
+    layers::RasterStack
 )
-    X = hcat([l.grid[l.indices] for l in layers]...)
-    ecdfs = vec(mapslices(StatsBase.ecdf, X; dims = 1))
+    X = getfeatures(layers)
+    ecdfs = vec(mapslices(StatsBase.ecdf, X; dims = 2))
 
-    mins, maxs = minimum.(layers), maximum.(layers)
+    mins, maxs = minimum.(layers.rasters), maximum.(layers.rasters)
     mess = deepcopy(first(layers))
 
-    for (i, cart_idx) in enumerate(findall(mess.indices))
-        xᵢ = X[i,:]
+    pool = getpool(layers)
+
+    for (i, cart_idx) in enumerate(pool)
+        xᵢ = X[:,i]
         min_Sᵢ = Inf
         for (j, xᵢⱼ) in enumerate(xᵢ) # iterate over each feature
             mⱼ, Mⱼ = mins[j], maxs[j]
@@ -79,21 +96,36 @@ end
 
 
 struct DistanceToAnalogNode <: RarityMetric end
+
+"""
+    rarity(::DistanceToAnalogNode, bon, layers; pca=false)
+
+For each cell, compute the distance in z-scored feature space to the nearest
+selected BON node in `layers`. Optionally apply a shared PCA transform first.
+"""
 function rarity(
     ::DistanceToAnalogNode, 
-    layers::Vector{<:SDMLayer}, 
-    bon::BiodiversityObservationNetwork;
+    bon::BiodiversityObservationNetwork,
+    layers::RasterStack;
     pca = false
 )
-    X = hcat([l.grid[l.indices] for l in layers]...)
-    X = pca ? _pca(X)' : X
-    z, X = _zscore(X')
 
-    Xbon = StatsBase.transform(z, layers[bon])
+    X = getfeatures(layers)
+    Xbon = layers[bon]
+    if pca
+        pca_fit = _fit_pca(X)
+        X = _transform_pca(pca_fit, X)
+        Xbon = _transform_pca(pca_fit, Xbon)
+    end
+
+    z, X = _zscore(X)
+    Xbon = StatsBase.transform(z, Xbon)
+
 
     rar = deepcopy(first(layers))
+    pool = getpool(layers)
 
-    for (i, ci) in enumerate(eachindex(first(layers)))
+    for (i, ci) in enumerate(pool)
         Xi = X[:,i]
         min_dist = Inf
         for Xb in eachcol(Xbon)
@@ -115,19 +147,27 @@ function _point_within_extremes(point, extremes)
     return true
 end     
 
+"""
+    rarity(::WithinRange, bon, layers)
+
+Boolean rarity surface indicating whether each cell lies within the hyper-
+rectangle spanned by the per-feature minima and maxima of the BON nodes.
+"""
 function rarity(
     ::WithinRange, 
-    layers::Vector{<:SDMLayer}, 
-    bon::BiodiversityObservationNetwork
+    bon::BiodiversityObservationNetwork,
+    layers::RasterStack, 
 )
     Xbon = layers[bon]
     Xextrema = map(extrema, eachrow(Xbon))
 
-    cart_idx, X = features(layers)
-    rar = similar(first(layers))
+    X = getfeatures(layers)
+    pool = getpool(layers)
+
+    rar = deepcopy(first(layers))
     
-    for (i, idx) in enumerate(cart_idx)
-        rar.grid[idx] = _point_within_extremes(X[:,i], Xextrema)
+    for (i, idx) in enumerate(pool)
+        rar[idx] = _point_within_extremes(X[:,i], Xextrema)
     end
     return rar
 end 

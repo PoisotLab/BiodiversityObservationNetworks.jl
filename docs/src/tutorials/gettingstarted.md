@@ -16,18 +16,11 @@ bon = sample(SimpleRandom())
 
 By default, [`SimpleRandom`](@ref) (and every other sampler), chooses 50 points. Without any other arguments, [`sample`](@ref) chooses points from a raster than covers the entire globe, with each pixel representing a 1˚ by 1˚ region.
 
-When a version of the [Makie](https://docs.makie.org/v0.22/) package for data visualization is loaded, we can use built-in functions to visualize the network. Let's use [`GeoMakie`](https://geo.makie.org/v0.7.9/ ), which specifically enables plotting of geographic plots within Makie, with the `CairoMakie` backend. (Learn mroe about Makie backends [here](https://docs.makie.org/stable/explanations/backends/backends#What-is-a-backend))
+When a version of the [Makie](https://docs.makie.org/v0.22/) package for data visualization is loaded, we can use built-in functions to visualize the network. We'll use the `CairoMakie` backend. (Learn mroe about Makie backends [here](https://docs.makie.org/stable/explanations/backends/backends#What-is-a-backend))
 
 
 ```@example 1
-using CairoMakie, GeoMakie
-```
-
-Now that these packages are loaded, we can use the [`bonplot`](@ref) method to visualize the generated [`BiodiversityObservationNetwork`](@ref). We pass `GeoAxis` to the keyword argument `axistype` to ensure [`bonplot`](@ref) uses `GeoMakie`.
-
-
-```@example 1
-bonplot(bon, axistype = GeoAxis)
+using CairoMakie
 ```
 
 We can adjust the number of points to generate by passing an integer directly to [`SimpleRandom`](@ref), i.e.
@@ -36,20 +29,15 @@ We can adjust the number of points to generate by passing an integer directly to
 srs = SimpleRandom(150)
 ```
 
-Alternatively, we can use the the `number_of_nodes` keyword argument
+Alternatively, we can use the the `num_nodes` keyword argument
 
 ```@example 1
-srs = SimpleRandom(number_of_nodes=150)
+srs = SimpleRandom(num_nodes=150)
 ```
 
 Both of these methods for adjusting the number of nodes is supported for all sampling algorithms.
 
 Let's sample and visualize a [`BiodiversityObservationNetwork`](@ref) with more points
-
-```@example 1
-bon = sample(srs)
-bonplot(bon, axistype=GeoAxis)
-```
 
 One thing you may notice about the [`BiodiversityObservationNetwork`](@ref) generated using [`SimpleRandom`](@ref) is that many of the points are clumped together. Many of the sampling algorithms in BiodiversityObservationNetworks aim to produce points that are _spatially balanced_, meaning they are well spread out across space, with little clumping. 
 
@@ -57,7 +45,6 @@ One such sampler is [`BalancedAcceptance`](@ref). Let's similarly make a [`Biodi
 
 ```@example 1
 bon = sample(BalancedAcceptance(150))
-bonplot(bon, axistype=GeoAxis)
 ```
 
 Much better! However, we are still missing some crucial things here. For example, what if we only want to select sites on land? This brings us to applying sampling algorithms to different _geometries_.
@@ -75,28 +62,32 @@ sample(algo, geometry)
 
 ### A Polygon as a Geometry
 
-For example, lets consider drawing a spatially balanced sample using [`BalancedAcceptance`](@ref) for the nation of Colombia. We can start by downloading a Polygon representing the border of Colombia with the following
+For example, maybe we only want to draw points on land. consider drawing a spatially balanced sample using [`BalancedAcceptance`](@ref) for the nation of Colombia. We can start by downloading a Polygon representing the land
+
+
+```@ansi 1
+using SimpleSDMPolygons
+```
+
+Then, we can download a polygon from the NaturalEarth database that represents the land on Earth .
 
 ```@example 1
-col = openstreetmap("Colombia")
+land = getpolygon(PolygonData(NaturalEarth, Land))
 ```
 
 and we can plot it to confirm it's what we expect
 
 ```@example 1
-poly(col, axistype=GeoAxis)
+f = Figure()
+ga = Axis(f[1,1])
+lines!(ga, land)
+f
 ```
 
 Now we can generate a [`BiodiversityObservationNetwork`](@ref) using [`BalancedAcceptance`](@ref) in the same way as before, but while passing `col` as a second argument to [`sample`](@ref)
 
 ```@example 1
-bon = sample(BalancedAcceptance(), col)
-```
-
-and similarly we can pass `col` as a second argument to [`bonplot`](@ref) to use it in the visualization
-
-```@example 1
-bonplot(bon, col, axistype=GeoAxis)
+bon = sample(BalancedAcceptance(), land)
 ```
 
 Wahoo 🥳. We've done it. 
@@ -105,6 +96,11 @@ Wahoo 🥳. We've done it.
 
 Okay, but what if you've got raster data that describes useful environmental covariates? Or a mask of where we can sample? We can use that too.
 
+Let's start by downloading a raster to use as a source. 
+
+
+
+
 ### Can we feed a BON to itself?
 
 Ethically I'm not 100% sure. But it is technically possible. That's both true about sampling BONs from BONs, and the moral of Jurassic Park (1994). 
@@ -112,7 +108,7 @@ Ethically I'm not 100% sure. But it is technically possible. That's both true ab
 Let's download Switzerland.
 
 ```@example 1
-swi = openstreetmap("Switzerland")
+swi = getpolygon(PolygonData(OpenStreetMap, Places), place="Switzerland")
 ```
 
 and now lets choose a buncha random places in there
@@ -121,15 +117,9 @@ and now lets choose a buncha random places in there
 candidate_bon = sample(SimpleRandom(500), swi)
 ```
 
-and take a look
-
-```@example 1
-bonplot(candidate_bon, swi)
-```
-
 Wow. We're doing groundbreaking work here.
 
-Next up, let's choose a set of spatially balanced coordinates from this set of candidates. We'll do this using a different sampling algorithm, called the Pivotal method [TODO cite], [`Pivotal`](@ref). Is this because [`BalancedAcceptance`] doesn't work on point-like geometries? Yes
+Next up, let's choose a set of spatially balanced coordinates from this set of candidates. We'll do this using a different sampling algorithm, called the Pivotal method [Grafstrom2012SpaBal](@cite), [`Pivotal`](@ref). Is this because [`BalancedAcceptance`](@ref) doesn't work on point-like geometries? Yes
 
 ```@example 1
 num_points_to_pick = 30

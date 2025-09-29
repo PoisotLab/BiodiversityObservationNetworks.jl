@@ -1,3 +1,4 @@
+"""
 abstract type ClusteringAlgorithm end
 function cluster(alg::ClusteringAlgorithm, layers::Vector{<:SDMLayer})
     assignments = deepcopy(first(layers))
@@ -29,4 +30,4 @@ function cluster(cm::FuzzyCMeans, stack::Vector{<:SDMLayer}; kw...)
     return SDMLayer(clustering_result, layers)
 end 
 
-
+"""

@@ -1,6 +1,6 @@
 abstract type VelocityMetric end 
 
-# -----------------------------------------------------------------------------
+# ---------------------------------------------
 # Begin Loarie2009 
 
 struct Loarie2009 <: VelocityMetric end 
@@ -58,10 +58,10 @@ function velocity(::Loarie2009, years, timeseries; threshold=0.95)
 end
 
 # End Loarie2009 
-# -----------------------------------------------------------------------------
+# ---------------------------------------------
 
 
-# -----------------------------------------------------------------------------
+# ---------------------------------------------
 # Begin ClosestAnalogue
 
 struct ClosestAnalogue <: VelocityMetric end 
@@ -101,5 +101,5 @@ function velocity(::ClosestAnalogue, baseline, future)
     return vel
 end 
 
-# End Loarie2009 
-# -----------------------------------------------------------------------------
+# End ClosestAnalogue 
+# ---------------------------------------------

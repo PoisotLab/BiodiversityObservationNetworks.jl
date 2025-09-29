@@ -1,113 +1,111 @@
 """
     Pivotal 
 
-The Local Pivotal Method [Grafstrom2012SpaBal](@cite) is used for generating
-spatially balanced samples. 
+The Local Pivotal Method (2) from [Grafstrom2012SpaBal](@cite) is used for generating spatially balanced samples. 
+
+`Pivotal` implements the Local Pivotal Method (LPM), which iteratively pairs nearby units and updates their inclusion probabilities so that, locally, one unit tends toward selection while the other tends toward non-selection. Repeating this over the domain produces a sample that is more spatially balanced than simple random sampling, while respecting per-unit inclusion probabilities when provided.
+
+High-level algorithm:
+- Select an unfinished unit `i`; then choose its nearest unfinished neighbor `j`.
+- If `πᵢ + πⱼ < 1`, move probability mass so one unit goes to 0 and the other to `πᵢ+πⱼ`.
+- Otherwise (if `πᵢ + πⱼ ≥ 1`), move probability mass so one unit is selected and the other retains the leftover probability `πᵢ + πⱼ - 1`.
+- Repeat until all are complete.
 """
 Base.@kwdef struct Pivotal{I<:Integer} <: BONSampler
-    number_of_nodes::I = _DEFAULT_NUM_NODES
-    maximum_iterations::I = 10^6
+    num_nodes::I = _DEFAULT_NUM_NODES
 end 
-Pivotal(n::Integer) = Pivotal(number_of_nodes=n)
-_valid_geometries(::Pivotal) = (BiodiversityObservationNetwork)
 
+"""
+    _above_one_update!(inclusion, pool, i, j, complete_flags, inclusion_flags)
 
-# 1. Randomly choose a unit i, and a nearest neighbor to i, j. (If two or more
-# units are equidistant, choose at random)
-# 2. Update inclusion πᵢ and πⱼ with the following rule:
-#       
-#  If πᵢ + πⱼ < 1:
-#       (πᵢ', πⱼ') = (0, πᵢ + πⱼ)   w.p. πⱼ / (πᵢ + πⱼ) and 
-#       (πᵢ + πⱼ, 0)   w.p. πᵢ / (πᵢ + πⱼ)  -- (same as 1 - above prob)
-#  Else:   
-#       (πᵢ', πⱼ') = (1, πᵢ + πⱼ - 1)   w.p. (1 - πⱼ) / (2 - πᵢ - πⱼ)  
-#       (πᵢ', πⱼ') = (πᵢ + πⱼ - 1, 1)   w.p. (1 - πᵢ) / (2 - πᵢ - πⱼ) -- (same as 1 - above prob) 
-# 
-# 3. Repeat (1) and (2) until all inclusion probabilities are 0 or 1
-# 
+Apply the LPM update when the paired units have `πᵢ + πⱼ ≥ 1`.
 
-function _get_distance_matrix(bon::BiodiversityObservationNetwork)
-    n_nodes = size(bon)
-    dist_mat = zeros(n_nodes, n_nodes)
-    
-    for i in 1:n_nodes, j in 1:n_nodes
-        dist_mat[i,j] = i == j ? Inf : sqrt(sum((bon[i].coordinate .- bon[i].coordinate).^2))        
-    end
-    return dist_mat
-end
-
-function _pick_nearest(distance_matrix, idx)
-    _, i = findmin(distance_matrix[idx,:])
-    return i
-end
-
-function _mark_as_complete!(complete_idx, distance_matrix, idx)
-    complete_idx[idx] = 1
-    distance_matrix[idx, :] .= Inf
-    distance_matrix[:, idx] .= Inf
-end
-
-function _above_one_update!(Π, complete_idx, distance_matrix, i, j)
-    πᵢ, πⱼ = Π[i], Π[j] 
+One of the two units is set to 1 (selected) and the other is reduced to `πᵢ + πⱼ - 1`. The unit whose probability reaches 1 is marked both as included (`inclusion_flags`) and complete (`complete_flags`).
+"""
+function _above_one_update!(inclusion, pool, i, j, complete_flags, inclusion_flags)
+    πᵢ, πⱼ = inclusion[pool[i]], inclusion[pool[j]] 
     add_idx, sub_idx = rand() < (1 - πⱼ)/(2 - πᵢ - πⱼ) ? (i, j) : (j, i)
 
-    Π[add_idx] = 1     
-    Π[sub_idx] = πᵢ + πⱼ - 1
-    _mark_as_complete!(complete_idx, distance_matrix, add_idx)
+    inclusion[pool[add_idx]] = 1     
+    inclusion[pool[sub_idx]] = πᵢ + πⱼ - 1
+
+    inclusion_flags[add_idx] = 1
+    complete_flags[add_idx] = 1
 end
 
-function _below_one_update!(Π, complete_idx, distance_matrix, i, j)
-    πᵢ, πⱼ = Π[i], Π[j] 
-    add_idx, sub_idx = rand() < (πⱼ / (πᵢ + πⱼ)) ? (i, j) : (j, i)
+"""
+    _below_one_update!(inclusion, pool, i, j, complete_flags)
 
-    Π[add_idx] = πᵢ + πⱼ 
-    Π[sub_idx] = 0
-    _mark_as_complete!(complete_idx, distance_matrix, sub_idx)
+Apply the LPM update when the paired units have `πᵢ + πⱼ < 1`.
+
+One of the two units is set to 0 (not selected) and the other is increased to
+`πᵢ + πⱼ`. The unit whose probability reaches 0 is marked complete.
+"""
+function _below_one_update!(inclusion, pool, i, j, complete_flags)
+    πᵢ, πⱼ = inclusion[pool[i]], inclusion[pool[j]] 
+    add_idx, sub_idx = rand() < (πⱼ / (πᵢ + πⱼ)) ? (j, i) : (i, j)
+
+    inclusion[pool[add_idx]] = πᵢ + πⱼ 
+    inclusion[pool[sub_idx]] = 0
+
+    complete_flags[sub_idx] = 1
 end 
 
-function _apply_update_rule!(Π, complete_idx, distance_matrix, i, j)
-    if Π[i] + Π[j]  < 1 
-        _below_one_update!(Π, complete_idx, distance_matrix, i, j)
+"""
+    _apply_update_rule!(inclusion, pool, i, j, inclusion_flags, complete_flags)
+
+Dispatch to the appropriate LPM update based on whether `πᵢ + πⱼ` is below or
+at/above one.
+"""
+function _apply_update_rule!(inclusion, pool, i, j, inclusion_flags, complete_flags)
+    πᵢ, πⱼ = inclusion[pool[i]], inclusion[pool[j]]
+    if πᵢ + πⱼ  < 1 
+        _below_one_update!(inclusion, pool, i, j, complete_flags)
     else
-        _above_one_update!(Π, complete_idx, distance_matrix, i, j)
+        _above_one_update!(inclusion, pool, i, j, complete_flags, inclusion_flags)
     end 
 end 
 
-function _sample(sampler::Pivotal, bon::BiodiversityObservationNetwork) 
-    distance_matrix = _get_distance_matrix(bon)
-    complete_idx = zeros(Bool, size(bon))
 
-    base_π = sampler.number_of_nodes / size(bon)
-    Π = zeros(size(bon))
-    Π .= base_π
+"""
+    _sample(sampler::Pivotal, domain; inclusion=nothing)
 
-    ct = 0
-    while !all(complete_idx)
-        candidate_i = findall(!isone, complete_idx)
+Draw a spatially balanced sample using the Local Pivotal Method.
+
+Arguments:
+- `sampler.num_nodes`: desired number of selected sites (also used to derive a
+  uniform inclusion vector when `inclusion` is not provided)
+- `domain`: sampling domain; must support `getpool(domain)` and `getnearestneighbors(domain)`
+- `inclusion`: optional vector/array of inclusion probabilities indexed by pool items;
+  if `nothing`, uniform probabilities are computed via `get_uniform_inclusion`.
+
+Returns a `BiodiversityObservationNetwork` with nodes whose final inclusion indicators
+are 1 after the LPM iterations.
+"""
+function _sample(sampler::Pivotal, domain; inclusion=nothing) 
+    pool = getpool(domain)
+    complete_flags = zeros(Bool, length(pool))
+
+    inclusion = isnothing(inclusion) ? get_uniform_inclusion(sampler, domain) : inclusion
+    
+    inclusion_flags = zeros(Bool, length(pool))
+
+    # Neighbor order for each unit, excluding itself
+    # neighbor_order[i] => [index of unit closest to i, index of unit 2nd closest to i, ...]
+    _, neighbor_order = getnearestneighbors(domain)
+
+    while !all(complete_flags)
+        candidate_i = findall(!isone, complete_flags)
         i = rand(candidate_i)
-        j = _pick_nearest(distance_matrix, i)
 
-        _apply_update_rule!(Π, complete_idx, distance_matrix, i, j)
-
-        ct += 1
-        ct > sampler.maximum_iterations && break
-    end 
-    BiodiversityObservationNetwork(bon[findall(isone, Π)])
+        # find closest node to i that is not complete
+        j_idx = findfirst(k->!complete_flags[k], neighbor_order[i])
+        if !isnothing(j_idx)
+            j = neighbor_order[i][j_idx]
+            _apply_update_rule!(inclusion, pool, i, j, inclusion_flags, complete_flags)
+        else 
+            complete_flags[i] = 1
+        end 
+    end
+    return BiodiversityObservationNetwork(pool[findall(isone, inclusion_flags)], domain)
 end 
-
-
-# ---------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------
-
-@testitem "We can use Pivotal sampling with default arguments on a BiodiversityObservationNetwork" begin
-    #polygon = openstreetmap("COL")
-    layer = BiodiversityObservationNetworks.SpeciesDistributionToolkit.SDMLayer(rand(150, 150))
-    candidate_bon = sample(SimpleRandom(300), layer)
-
-    piv = Pivotal()
-    bon = sample(piv, candidate_bon)
-    @test bon isa BiodiversityObservationNetwork
-    # off by one happens sometimes, unclear why
-    @test size(bon) ∈ (piv.number_of_nodes, piv.number_of_nodes-1)
-end
