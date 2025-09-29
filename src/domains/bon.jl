@@ -27,7 +27,7 @@ Base.getindex(raster::RasterDomain, bon::BiodiversityObservationNetwork) = [rast
 """
     getpool
 """
-getpool(bon::BiodiversityObservationNetwork) = bon.nodes
+getpool(bon::BiodiversityObservationNetwork) = eachindex(bon.nodes)
 
 """
     getfeatures

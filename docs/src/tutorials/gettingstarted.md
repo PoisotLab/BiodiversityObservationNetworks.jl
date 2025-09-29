@@ -16,11 +16,11 @@ bon = sample(SimpleRandom())
 
 By default, [`SimpleRandom`](@ref) (and every other sampler), chooses 50 points. Without any other arguments, [`sample`](@ref) chooses points from a raster than covers the entire globe, with each pixel representing a 1˚ by 1˚ region.
 
-When a version of the [Makie](https://docs.makie.org/v0.22/) package for data visualization is loaded, we can use built-in functions to visualize the network. Let's use [`GeoMakie`](https://geo.makie.org/v0.7.9/ ), which specifically enables plotting of geographic plots within Makie, with the `CairoMakie` backend. (Learn mroe about Makie backends [here](https://docs.makie.org/stable/explanations/backends/backends#What-is-a-backend))
+When a version of the [Makie](https://docs.makie.org/v0.22/) package for data visualization is loaded, we can use built-in functions to visualize the network. We'll use the `CairoMakie` backend. (Learn mroe about Makie backends [here](https://docs.makie.org/stable/explanations/backends/backends#What-is-a-backend))
 
 
 ```@example 1
-using CairoMakie, GeoMakie
+using CairoMakie
 ```
 
 We can adjust the number of points to generate by passing an integer directly to [`SimpleRandom`](@ref), i.e.
@@ -29,10 +29,10 @@ We can adjust the number of points to generate by passing an integer directly to
 srs = SimpleRandom(150)
 ```
 
-Alternatively, we can use the the `number_of_nodes` keyword argument
+Alternatively, we can use the the `num_nodes` keyword argument
 
 ```@example 1
-srs = SimpleRandom(number_of_nodes=150)
+srs = SimpleRandom(num_nodes=150)
 ```
 
 Both of these methods for adjusting the number of nodes is supported for all sampling algorithms.
@@ -79,7 +79,7 @@ and we can plot it to confirm it's what we expect
 
 ```@example 1
 f = Figure()
-ga = GeoAxis(f[1,1])
+ga = Axis(f[1,1])
 lines!(ga, land)
 f
 ```
@@ -97,6 +97,8 @@ Wahoo 🥳. We've done it.
 Okay, but what if you've got raster data that describes useful environmental covariates? Or a mask of where we can sample? We can use that too.
 
 Let's start by downloading a raster to use as a source. 
+
+
 
 
 ### Can we feed a BON to itself?

@@ -16,6 +16,11 @@ end
 """ 
 function sample() end
 
+function sample(sampler::BONSampler) 
+    sample(sampler, SDMLayer(zeros(180,90)))
+end
+
+
 function sample(
     sampler::BONSampler,
     domain;

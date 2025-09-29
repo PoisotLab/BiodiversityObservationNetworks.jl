@@ -21,9 +21,10 @@ end
 Construct a uniform inclusion vector for a BON-like domain.
 """
 function get_uniform_inclusion(sampler, domain::BiodiversityObservationNetwork)
+    # TODO: this breaks if non-cartidx 
     pool = getpool(domain)
     inclusion = zeros(size(domain))
-    for p in pool
+    for p in eachindex(pool)
         inclusion[p] = sampler.num_nodes / length(pool)
     end
     return inclusion

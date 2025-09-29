@@ -19,7 +19,10 @@ module BiodiversityObservationNetworks
     const DT = DelaunayTriangulation
     const SB = StatsBase
     const GO = GeometryOps
-
+    
+    """
+        BONSampler
+    """
     abstract type BONSampler end
     allows_custom_inclusion(::BONSampler) = false
 

@@ -14,7 +14,6 @@ First, load the packages we will use for this example
 ```@example 1
 using BiodiversityObservationNetworks 
 using CairoMakie
-using GeoMakie
 using NeutralLandscapes
 import SpeciesDistributionToolkit as SDT
 ```
