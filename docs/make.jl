@@ -13,7 +13,6 @@ makedocs(
     modules = [BiodiversityObservationNetworks],
     format = DocumenterVitepress.MarkdownVitepress(
         repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl",
-        devurl="dev",
     ),
     pages = [
         "Overview" => "index.md",
@@ -39,6 +38,6 @@ makedocs(
 
 
 deploydocs(;
-    repo = "github.com/PoisotLab/BiodiversityObservationNetworks.jl.git",
+    repo = "https://github.com/PoisotLab/BiodiversityObservationNetworks.jl.git",
     push_preview = true,
 )
