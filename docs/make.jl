@@ -13,7 +13,6 @@ makedocs(
     modules = [BiodiversityObservationNetworks],
     format = DocumenterVitepress.MarkdownVitepress(
         repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl",
-        devurl="dev",
     ),
     pages = [
         "Overview" => "index.md",
