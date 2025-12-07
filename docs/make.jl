@@ -51,17 +51,23 @@ makedocs(;
     sitename="SpeciesInteractionSamplers.jl",
     format=DocumenterVitepress.MarkdownVitepress(
         repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl",
-        devurl="dev",
+        devbranch = "main",
+        devurl = "dev",
     ),
     #format = Documenter.HTML(size_threshold = nothing),
     warnonly=true,
     plugins = [bib],
 )
 
-deploydocs(;
-    repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl",
-    push_preview=true,
+# Vitepress requires their own method for deploydocs since v0.2
+DocumenterVitepress.deploydocs(;
+    repo = "github.com/PoisotLab/BiodiversityObservationNetworks.jl",
+    target = joinpath(@__DIR__, "build"),
+    branch = "gh-pages",
+    devbranch = "main", 
+    push_preview = true,
 )
+
 
 
 #= const bibfile = joinpath(@__DIR__, "docs", "BONs.bib")
