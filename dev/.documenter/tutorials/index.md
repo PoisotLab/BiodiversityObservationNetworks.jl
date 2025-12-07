@@ -1,7 +1,7 @@
 
 # Tutorials {#Tutorials}
 
-These are fully fledged, end-to-end instructional guides. 
+These are fully fledged, end-to-end instructional guides:
 - [Getting Started with `BiodiversityObservationNetworks`](./gettingstarted)
   
 - [Building Multistage Samplers](./multistage)

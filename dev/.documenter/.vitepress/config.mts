@@ -109,7 +109,7 @@ export default defineConfig({
                 }
             ]
         },
-        editLink: { pattern: "https://https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/edit/main/docs/src/:path" },
+        editLink: { pattern: "https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/edit/main/docs/src/:path" },
         socialLinks: [
             { icon: 'github', link: 'https://github.com/PoisotLab/BiodiversityObservationNetworks.jl' }
         ],
