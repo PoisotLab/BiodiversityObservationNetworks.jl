@@ -13,7 +13,7 @@ using InteractiveUtils
 using Dates
 using PrettyTables
 
-const bibfile = joinpath(@__DIR__, "src", "BONs.bib")
+const bibfile = joinpath(bonsjl_path, "docs", "BONs.bib")
 
 # Cleanup the bibliography file to make DocumenterCitations happy 
 lines = readlines(bibfile)

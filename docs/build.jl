@@ -1,6 +1,6 @@
 # Make sure we work from the version in the repo
-sdt_path = dirname(dirname(Base.current_project()))
-push!(LOAD_PATH, sdt_path)
+bons_path = dirname(dirname(Base.current_project()))
+push!(LOAD_PATH, bons_path)
 using BiodiversityObservationNetworks
 
 # Load the rest of the build environment
