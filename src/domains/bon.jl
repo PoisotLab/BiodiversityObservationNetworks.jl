@@ -5,11 +5,11 @@ Represents the selected sampling sites and their associated data.
 
 # Fields
 - `nodes::N`: The coordinates or indices of the selected sites.
-- `auxiliary::D`: The underlying domain or feature matrix associated with the nodes.
+- `auxiliary::Matrix`: The underlying feature matrix associated with the nodes.
 """
-struct BiodiversityObservationNetwork{T,D}
+struct BiodiversityObservationNetwork{T}
     nodes::Vector{T}
-    auxiliary::D
+    auxiliary::Matrix
 end 
 
 BiodiversityObservationNetwork(nodes::Vector) = BiodiversityObservationNetwork(nodes, missing)

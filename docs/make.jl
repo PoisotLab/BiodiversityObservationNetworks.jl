@@ -1,44 +1,54 @@
-push!(LOAD_PATH, "../src/")
-
-using Documenter
-using DocumenterCitations
-using DocumenterVitepress
+# Load the current repo version of BONs.jl
+bonsjl_path = dirname(dirname(Base.current_project()))
+push!(LOAD_PATH, bonsjl_path)
 using BiodiversityObservationNetworks
 
-bib = CitationBibliography(joinpath(@__DIR__, "BONs.bib"), style=:authoryear)
+# Load the rest of the build environment
+using Documenter
+using DocumenterVitepress
+using DocumenterCitations
+using Literate
+using Markdown
+using InteractiveUtils
+using Dates
+using PrettyTables
 
-makedocs(
-    sitename = "BiodiversityObservationNetworks.jl",
-    authors = "Michael D. Catchen, Timothée Poisot, Kari Norman, Hana Mayall, Tom Malpas",
-    modules = [BiodiversityObservationNetworks],
-    format = DocumenterVitepress.MarkdownVitepress(
-        repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl",
-        devurl="dev",
-    ),
-    pages = [
-        "Overview" => "index.md",
-        "Manual" => "manual.md",
-        "Tutorials" => [],
-        "How To" => [],
-        "Samplers" => [
-            joinpath("reference","samplers", "simplerandom.md"),
-            joinpath("reference", "samplers", "balancedacceptance.md"),
-            joinpath("reference", "samplers", "grts.md"),
-            joinpath("reference","samplers", "cube.md"),
-            joinpath("reference", "samplers", "adaptivehotspot.md"),
-        ],
-        "Utilities" => [
-            joinpath("reference", "utilities", "spatialbalance.md"),
-        ],
-        "API Reference" => joinpath("reference", "api.md"),
-        "Bibliography" => "bibliography.md"
-    ],
-    warnonly = true,
-    plugins = [bib]
+const bibfile = joinpath(@__DIR__, "src", "BONs.bib")
+
+# Cleanup the bibliography file to make DocumenterCitations happy 
+lines = readlines(bibfile)
+open(bibfile, "w") do bfile
+    for line in lines
+        if contains(line, "journaltitle")
+            println(bfile, replace(line, "journaltitle" => "journal"))
+        elseif contains(line, "date")
+            yrmatch = match(r"{(\d{4})", line)
+            if !isnothing(yrmatch)
+                println(bfile, "year = {$(yrmatch[1])},")
+            end
+            println(bfile, line)
+        else
+            println(bfile, line)
+        end
+    end
+end
+bib = CitationBibliography(
+    bibfile;
+    style = :authoryear,
 )
 
 
+makedocs(;
+    sitename = "BiodiversityObservationNetworks.jl",
+    format = MarkdownVitepress(;
+        repo = "github.com/PoisotLab/BiodiversityObservationNetworks.jl",
+    ),
+    warnonly = true,
+    plugins = [bib],
+)
+
 deploydocs(;
     repo = "github.com/PoisotLab/BiodiversityObservationNetworks.jl.git",
+    devbranch = "main",
     push_preview = true,
 )

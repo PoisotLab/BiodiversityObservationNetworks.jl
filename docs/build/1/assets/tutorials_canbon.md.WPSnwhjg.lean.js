@@ -1,0 +1,1 @@
+import{_ as t,c as a,o as e}from"./chunks/framework.DPDPlp3K.js";const l=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"tutorials/canbon.md","filePath":"tutorials/canbon.md"}'),o={name:"tutorials/canbon.md"};function n(r,c,s,i,p,_){return e(),a("div")}const m=t(o,[["render",n]]);export{l as __pageData,m as default};
