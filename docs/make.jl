@@ -13,6 +13,14 @@ using InteractiveUtils
 using Dates
 using PrettyTables
 
+@info pwd()
+@info readdir()
+
+bib = CitationBibliography(
+    "BONs.bib";
+    style = :authoryear,
+)
+
 
 makedocs(;
     modules=[BiodiversityObservationNetworks],
@@ -24,6 +32,7 @@ makedocs(;
         devurl="dev",
     ),
     warnonly=true,
+    plugins = [bib],
 )
 
 deploydocs(;
