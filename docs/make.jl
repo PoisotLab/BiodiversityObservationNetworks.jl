@@ -13,7 +13,7 @@ using InteractiveUtils
 using Dates
 using PrettyTables
 
-const bibfile = joinpath(bonsjl_path, "docs", "BONs.bib")
+#= const bibfile = joinpath(@__DIR__, "docs", "BONs.bib")
 
 # Cleanup the bibliography file to make DocumenterCitations happy 
 lines = readlines(bibfile)
@@ -36,7 +36,7 @@ bib = CitationBibliography(
     bibfile;
     style = :authoryear,
 )
-
+=#
 
 makedocs(;
     sitename = "BiodiversityObservationNetworks.jl",
@@ -44,7 +44,7 @@ makedocs(;
         repo = "github.com/PoisotLab/BiodiversityObservationNetworks.jl",
     ),
     warnonly = true,
-    plugins = [bib],
+    #plugins = [bib],
 )
 
 deploydocs(;
