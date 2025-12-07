@@ -1,2 +1,0 @@
-
-# Environmental Distance {#Environmental-Distance}

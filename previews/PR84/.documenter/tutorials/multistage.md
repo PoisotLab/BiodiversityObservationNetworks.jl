@@ -1,2 +1,0 @@
-
-# Multistage Sampling {#Multistage-Sampling}
