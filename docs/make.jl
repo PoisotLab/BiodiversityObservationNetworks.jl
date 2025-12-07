@@ -49,11 +49,10 @@ makedocs(;
     authors="Michael D. Catchen",
     repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/{commit}{path}#{line}",
     sitename="SpeciesInteractionSamplers.jl",
-    #=format=DocumenterVitepress.MarkdownVitepress(
+    format=DocumenterVitepress.MarkdownVitepress(
         repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl",
-        devurl="dev",
-    ), =#
-    format = Documenter.HTML(size_threshold = nothing),
+    ),
+    #format = Documenter.HTML(size_threshold = nothing),
     warnonly=true,
     plugins = [bib],
 )
