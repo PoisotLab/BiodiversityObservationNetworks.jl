@@ -1,25 +1,50 @@
 name: Documentation
+
 on:
   push:
-    branches: [main]
-    tags: [v*]
+    branches:
+      - main
+    tags: '*'
   pull_request:
 
+concurrency:
+    group: doc-build-pipeline
+    cancel-in-progress: ${{ !contains(github.ref, 'main')}}
+
 jobs:
-  Documenter:
+  BiodiversityObservationNetworks:
     permissions:
+      actions: write
       contents: write
+      pull-requests: read
       statuses: write
-    name: Documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
-          version: '1'                         # replace this with whatever version you need
-          show-versioninfo: true               # this causes versioninfo to be printed to the action log
-      - uses: julia-actions/cache@v2              # cache using https://github.com/julia-actions/cache
-      - uses: julia-actions/julia-buildpkg@v1  # if package requires Pkg.build()
-      - uses: julia-actions/julia-docdeploy@v1
+          version: '1'
+      - uses: julia-actions/cache@v2
+      - name: Install dependencies
+        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
+      - name: Build howto
         env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          DATADEPS_ALWAYS_ACCEPT: true
+        run: julia --project=docs/ --threads=auto docs/build.jl howto
+      - name: Build tutorials
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          DATADEPS_ALWAYS_ACCEPT: true
+        run: julia --project=docs/ --threads=auto docs/build.jl tutorials
+      - name: Build and deploy docs
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          DATADEPS_ALWAYS_ACCEPT: true
+        run: julia --project=docs/ --threads=auto docs/make.jl
