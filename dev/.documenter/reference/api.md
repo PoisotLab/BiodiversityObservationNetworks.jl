@@ -29,7 +29,7 @@ Starts at the global maximum of the target/uncertainty surface. Subsequent point
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/adaptivehotspot.jl#L1-L18" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/adaptivehotspot.jl#L1-L18" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -44,7 +44,7 @@ BONSampler
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/BiodiversityObservationNetworks.jl#L23-L25" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/BiodiversityObservationNetworks.jl#L23-L25" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -73,7 +73,7 @@ BAS generates spatially balanced samples by mapping the domain to a Halton seque
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/balancedacceptance.jl#L1-L16" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/balancedacceptance.jl#L1-L16" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -96,7 +96,7 @@ Represents the selected sampling sites and their associated data.
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/bon.jl#L1-L9" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/bon.jl#L1-L9" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -129,7 +129,7 @@ The algorithm selects a sample such that the Horvitz-Thompson estimates of auxil
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/cubesampling.jl#L1-L17" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/cubesampling.jl#L1-L17" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -146,7 +146,7 @@ DistanceToMedian
 Rarity score defined as Euclidean distance in feature space to the per-feature median across the raster stack. Optionally, features can be PCA-transformed prior to z-scoring.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/rarity.jl#L26-L32" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/rarity.jl#L26-L32" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -177,7 +177,7 @@ The value of `D` depends on the size of the raster. GRTS works by recursively sp
 The addresses are then sorted numerically, and the `num_nodes` smallest values are chosen.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/grts.jl#L1-L28" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/grts.jl#L1-L28" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -198,7 +198,7 @@ Computes Moran&#39;s I on the inclusion indicator variable.
 Calculates spatial autocorrelation of the sample indicator $\delta$ (1 if sampled, 0 otherwise). Negative values indicate spatial inhibition (spread), which is desired for balanced sampling.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/spatialbalance.jl#L17-L25" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/spatialbalance.jl#L17-L25" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -215,7 +215,7 @@ MultivariateEnvironmentalSimilarity
 Multivariate Environmental Similarity Surface (MESS). For each cell, compute the minimum over features of a per-feature similarity score derived from the ECDF of the training distribution, following the standard MESS definition.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/rarity.jl#L56-L62" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/rarity.jl#L56-L62" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -254,7 +254,7 @@ High-level algorithm:
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/pivotal.jl#L1-L24" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/pivotal.jl#L1-L24" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -275,7 +275,7 @@ A domain defined by a vector geometry (polygon).
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/polygon.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/polygon.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -298,7 +298,7 @@ A wrapper around a raster-like object (Matrix or SDMLayer) that maintains a &quo
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L1-L10" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L1-L10" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -321,7 +321,7 @@ A collection of aligned `RasterDomain`s, used when sampling requires multivariat
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/stack.jl#L1-L9" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/stack.jl#L1-L9" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -350,7 +350,7 @@ Selects `num_nodes` locations from the domain uniformly at random without replac
 While computationally efficient, Simple Random Sampling does not guarantee spatial  balance and may result in clustering of sampling points.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/simplerandom.jl#L1-L18" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/simplerandom.jl#L1-L18" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -379,7 +379,7 @@ Iterates through units, selecting them based on inclusion probabilities, and  dy
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/spatiallycorrelatedpoisson.jl#L1-L15" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/spatiallycorrelatedpoisson.jl#L1-L15" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -396,7 +396,7 @@ SpatiallyStratified
 `SpatiallyStratified` performs stratified random sampling over discrete categories present in the domain. Each pool element belongs to a stratum given by `domain[x]`. The number of draws allocated to each stratum is proportional to the stratum size (via the multinomial distribution), and units are then sampled without replacement from each stratum.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/stratified.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/stratified.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -429,7 +429,7 @@ $$B = \frac{1}{n} \sum_{i=1}^n (v_i - 1)^2$$
 to measure spatial balance, where _smaller values indicate better spatial balance_.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/spatialbalance.jl#L92-L126" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/spatialbalance.jl#L92-L126" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -444,7 +444,7 @@ contains
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/polygon.jl#L23-L25" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/polygon.jl#L23-L25" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -459,7 +459,7 @@ extent(p::PolygonDomain{T<:SimpleSDMPolygons.AbstractGeometry})
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/polygon.jl#L13-L15" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/polygon.jl#L13-L15" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -474,7 +474,7 @@ extent
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L83-L85" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L83-L85" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -493,7 +493,7 @@ The [Jensen-Shannon Divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Sha
 This method provides a comparison between the distribution of environmental variables in set of `SDMLayers`, `layers`, to the values of those variables at the sites within a [`BiodiversityObservationNetwork`](/reference/api#BiodiversityObservationNetworks.BiodiversityObservationNetwork) `bon`. 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/distances.jl#L28-L39" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/distances.jl#L28-L39" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -510,7 +510,7 @@ rarity(::DistanceToAnalogNode, bon, layers; pca=false)
 For each cell, compute the distance in z-scored feature space to the nearest selected BON node in `layers`. Optionally apply a shared PCA transform first.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/rarity.jl#L99-L104" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/rarity.jl#L99-L104" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -527,7 +527,7 @@ rarity(::WithinRange, bon, layers)
 Boolean rarity surface indicating whether each cell lies within the hyper- rectangle spanned by the per-feature minima and maxima of the BON nodes.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/rarity.jl#L149-L154" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/rarity.jl#L149-L154" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -542,7 +542,7 @@ sample
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/sample.jl#L14-L16" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/sample.jl#L14-L16" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -557,7 +557,7 @@ spatialbalance(::MoransI, raster::SDMLayer, bon::BiodiversityObservationNetwork)
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/spatialbalance.jl#L56-L58" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/spatialbalance.jl#L56-L58" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -572,7 +572,7 @@ spatialbalance(::Type{VoronoiVariance}, bon::BiodiversityObservationNetwork, geo
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/spatialbalance.jl#L131-L133" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/spatialbalance.jl#L131-L133" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -589,7 +589,7 @@ spatialbalance(metric::SpatialBalanceMetric, bon, domain)
 Calculate a specific spatial balance metric for a given network and domain.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/spatialbalance.jl#L3-L7" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/spatialbalance.jl#L3-L7" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -606,7 +606,7 @@ voronoi(bon, domain)
 Construct Voronoi polygons for the nodes in a `BiodiversityObservationNetwork` within the given domain. The domain is coerced to a `PolygonDomain` when needed. Output polygons are clipped to the domain extent.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/voronoi.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/voronoi.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -625,7 +625,7 @@ RarityMetric
 Abstract type encompassing all methods for computing environmental rarity.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/rarity.jl#L1-L5" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/rarity.jl#L1-L5" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -642,7 +642,7 @@ _2d_bas(sampler, domain)
 2D BAS using Halton bases `[2,3]` to generate spatially spread candidate cells, accepting those that fall on unmasked locations until `num_nodes` are selected.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/balancedacceptance.jl#L78-L83" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/balancedacceptance.jl#L78-L83" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -659,7 +659,7 @@ _3d_bas(sampler, domain, inclusion)
 3D BAS using Halton bases `[2,3,5]`. A candidate `(i,j,z)` is accepted if the cell is unmasked and `z < inclusion[i,j]`.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/balancedacceptance.jl#L55-L60" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/balancedacceptance.jl#L55-L60" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -678,7 +678,7 @@ Apply the LPM update when the paired units have `πᵢ + πⱼ ≥ 1`.
 One of the two units is set to 1 (selected) and the other is reduced to `πᵢ + πⱼ - 1`. The unit whose probability reaches 1 is marked both as included (`inclusion_flags`) and complete (`complete_flags`).
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/pivotal.jl#L29-L35" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/pivotal.jl#L29-L35" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -707,7 +707,7 @@ Compute the intersection of valid sampling pools across multiple domains.
 This internal utility is primarily used when constructing a `RasterStack`. It ensures  that sampling only occurs in locations that are valid across every layer in the stack  (e.g., avoiding `NaN`s, missing data, or masked areas present in any single layer).
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/stack.jl#L53-L70" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/stack.jl#L53-L70" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -724,7 +724,7 @@ _apply_update_rule!(inclusion, pool, i, j, inclusion_flags, complete_flags)
 Dispatch to the appropriate LPM update based on whether `πᵢ + πⱼ` is below or at/above one.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/pivotal.jl#L65-L70" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/pivotal.jl#L65-L70" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -743,7 +743,7 @@ Apply the LPM update when the paired units have `πᵢ + πⱼ < 1`.
 One of the two units is set to 0 (not selected) and the other is increased to `πᵢ + πⱼ`. The unit whose probability reaches 0 is marked complete.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/pivotal.jl#L47-L54" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/pivotal.jl#L47-L54" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -762,7 +762,7 @@ Run the flight phase of the cube method.
 `πₖ` are current inclusion probabilities; `x` (auxiliary matrix) is augmented with a first row of `πₖ'` so sample size fixed. The method repeatedly finds a direction in the null space of the constraint matrix and pushes a small subset of probabilities to 0 or 1 while preserving balances in expectation.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/cubesampling.jl#L90-L98" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/cubesampling.jl#L90-L98" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -779,7 +779,7 @@ _cube_landing_phase(pikstar, πₖ, x)
 Run the landing phase if some probabilities are still fractional after flight. Formulate a small linear program over the fractional units to select a 0/1 sample whose auxiliary totals match `pikstar` in expectation with minimal cost `C(s)` (per Deville &amp; Tillé, 2004).
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/cubesampling.jl#L192-L199" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/cubesampling.jl#L192-L199" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -796,7 +796,7 @@ _get_address_length
 Returns the number of digits in a [`GeneralizedRandomTessellatedStratified`](@ref) address for a specific geometry, computed based on the raster dimensions. 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/grts.jl#L80-L85" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/grts.jl#L80-L85" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -811,7 +811,7 @@ _get_addresses()
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/grts.jl#L88-L90" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/grts.jl#L88-L90" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -828,7 +828,7 @@ _h(K)
 Entropy-like diversity score based on the log-determinant of the kernel matrix `K`. Larger values encourage selecting points that are diverse with respect to previously chosen sites.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/adaptivehotspot.jl#L86-L92" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/adaptivehotspot.jl#L86-L92" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -845,7 +845,7 @@ _matérn(d, ρ, ν)
 Matérn covariance kernel evaluated at distance `d`, range `ρ`, smoothness `ν`. Normalized so that `_matérn(0, ρ, ν) == 1`.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/adaptivehotspot.jl#L73-L78" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/adaptivehotspot.jl#L73-L78" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -860,7 +860,7 @@ _pick_nodes(sampler, raster, addresses)
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/grts.jl#L104-L106" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/grts.jl#L104-L106" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -877,7 +877,7 @@ _quadrant_fill!(mat)
 Takes a matrix `mat` and splits it into quadrants randomly labeled one through four. 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/grts.jl#L44-L48" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/grts.jl#L44-L48" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -894,7 +894,7 @@ _quadrant_split!(mat, grid_size)
 Splits a matrix `mat` into nested quadrants, where the side-length of a submatrix to be split into quadrants is given by `grid_size`.  
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/grts.jl#L61-L66" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/grts.jl#L61-L66" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -911,7 +911,7 @@ _redistribute_masked_weight!(domain, inclusion::RasterDomain{<:Matrix})
 Matrix-backed variant of masked weight redistribution.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/inclusion.jl#L48-L52" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/inclusion.jl#L48-L52" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -928,7 +928,7 @@ _redistribute_masked_weight!(domain, inclusion::RasterDomain{<:SDMLayer})
 Redistribute any probability mass assigned to masked-out cells uniformly across valid indices in `domain`. Mutates `inclusion` in-place.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/inclusion.jl#L32-L37" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/inclusion.jl#L32-L37" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -945,7 +945,7 @@ _rescale_node(domain, x::Real, y::Real)
 Map unit-cube Halton coordinates `(x, y)` to integer raster indices in `domain`.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/balancedacceptance.jl#L25-L29" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/balancedacceptance.jl#L25-L29" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -962,7 +962,7 @@ _sample(sampler::BalancedAcceptance, domain; inclusion=nothing)
 Generate a spatially balanced sample using BAS. With `inclusion`, perform 3D BAS to respect per-cell probabilities; otherwise perform 2D BAS over the mask.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/balancedacceptance.jl#L36-L41" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/balancedacceptance.jl#L36-L41" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -989,7 +989,7 @@ Arguments:
 Returns a `BiodiversityObservationNetwork`.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/cubesampling.jl#L22-L34" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/cubesampling.jl#L22-L34" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1016,7 +1016,7 @@ Arguments:
 Returns a `BiodiversityObservationNetwork` with nodes whose final inclusion indicators are 1 after the LPM iterations.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/pivotal.jl#L81-L95" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/pivotal.jl#L81-L95" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1049,7 +1049,7 @@ Perform Spatially Correlated Poisson sampling following Grafström (2012).
 `sample(SpatiallyCorrelatedPoisson(), zeros(30,20))`
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/spatiallycorrelatedpoisson.jl#L28-L44" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/spatiallycorrelatedpoisson.jl#L28-L44" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1074,7 +1074,7 @@ Arguments:
 Returns a `BiodiversityObservationNetwork`.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/stratified.jl#L14-L24" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/stratified.jl#L14-L24" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1091,7 +1091,7 @@ _sort_features_by_mahalanobis(features, inclusion)
 Order units to stabilize the flight phase by spreading early decisions across feature space. Units are sorted by Mahalanobis distance from the inclusion- weighted mean feature vector.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/cubesampling.jl#L69-L75" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/cubesampling.jl#L69-L75" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1116,7 +1116,7 @@ _Arguments_:
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/distances.jl#L1-L16" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/distances.jl#L1-L16" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1133,7 +1133,7 @@ _update_psi(Ψ, B)
 Given current working vector `Ψ` and constraint block `B`, compute a feasible update along a null-space direction `u` by maximizing step sizes `λ₁, λ₂` that keep probabilities within [0,1].
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/cubesampling.jl#L148-L154" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/cubesampling.jl#L148-L154" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1150,7 +1150,7 @@ convert_inclusion(sampler, domain, inclusion; kwargs...)
 Coerce an `inclusion` specification to a representation compatible with `domain`. Also ensures totals sum to `sampler.num_nodes` (renormalizing if needed) and redistributes probability assigned to masked-out cells back to valid cells. Returns `nothing` when `inclusion` is `nothing`.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/inclusion.jl#L89-L96" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/inclusion.jl#L89-L96" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1167,7 +1167,7 @@ convert_mask(domain::RasterDomain, mask::AbstractMatrix; kwargs...)
 Convert a boolean matrix mask to a `RasterDomain`-aligned mask.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/mask.jl#L20-L24" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/mask.jl#L20-L24" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1184,7 +1184,7 @@ convert_mask(domain::RasterDomain, mask::PolygonDomain; kwargs...)
 Rasterize a polygon mask into the grid of `domain` and return a `RasterDomain`-aligned mask.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/mask.jl#L71-L76" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/mask.jl#L71-L76" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1201,7 +1201,7 @@ convert_mask(domain::RasterDomain, mask::SDMLayer; kwargs...)
 Convert an `SDMLayer` to a `RasterDomain` mask with aligned indices.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/mask.jl#L30-L34" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/mask.jl#L30-L34" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1218,7 +1218,7 @@ convert_mask(domain::RasterDomain, mask::SimpleSDMPolygons.AbstractGeometry)
 Coerce a polygon geometry to a `RasterDomain` mask by rasterizing the polygon.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/mask.jl#L62-L66" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/mask.jl#L62-L66" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1235,7 +1235,7 @@ convert_mask(domain::RasterDomain{<:SDMLayer}, mask::RasterDomain{<:SDMLayer}; k
 Validate size, extent, and CRS when both domain and mask are SDMLayer-backed.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/mask.jl#L39-L43" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/mask.jl#L39-L43" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1252,7 +1252,7 @@ convert_mask(domain::RasterDomain{T}, mask::RasterDomain{<:Matrix}; kwargs...) w
 Validate size when the mask is matrix-backed.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/mask.jl#L52-L56" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/mask.jl#L52-L56" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1267,7 +1267,7 @@ convert_node
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L97-L99" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L97-L99" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1282,7 +1282,7 @@ convert_nodes
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L103-L105" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L103-L105" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1297,7 +1297,7 @@ crs
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L90-L92" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L90-L92" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1314,7 +1314,7 @@ get_uniform_inclusion(sampler, bon::BiodiversityObservationNetwork)
 Construct a uniform inclusion vector for a BON-like domain.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/inclusion.jl#L18-L22" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/inclusion.jl#L18-L22" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1333,7 +1333,7 @@ Construct a uniform inclusion surface for `domain` such that the sum of inclusio
 Returns a `RasterDomain` when given a raster-like domain.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/inclusion.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/inclusion.jl#L1-L8" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1348,7 +1348,7 @@ getcoordinates
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/bon.jl#L39-L41" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/bon.jl#L39-L41" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1385,7 +1385,7 @@ Returns a matrix of coordinates corresponding to the valid sampling pool.
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L53-L72" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L53-L72" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1400,7 +1400,7 @@ getfeatures
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/bon.jl#L34-L36" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/bon.jl#L34-L36" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1417,7 +1417,7 @@ getfeatures(domain)
 Return a matrix of auxiliary variables (features) for valid pixels in the domain. Rows are features, columns are pixels.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L42-L47" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L42-L47" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1432,7 +1432,7 @@ getpool
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/bon.jl#L29-L31" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/bon.jl#L29-L31" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1449,7 +1449,7 @@ getpool(domain)
 Return the collection of valid (unmasked) indices for the given domain.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L34-L38" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L34-L38" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1464,7 +1464,7 @@ ismasked
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L124-L126" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L124-L126" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1481,7 +1481,7 @@ mask!(domain, mask)
 Apply `mask` to `domain` in-place. Overloads handle `RasterDomain`s backed by `SDMLayer` or `Matrix`, and propagate to all rasters in a `RasterStack`. Polygon masks are supported for SDMLayer-backed rasters.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/mask.jl#L88-L94" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/mask.jl#L88-L94" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1498,7 +1498,7 @@ normalize_inclusion!(sampler, inclusion)
 Scale `inclusion` so that its total mass equals `sampler.num_nodes`. Overloads exist for SDMLayer-backed rasters, matrix-backed rasters, and vectors. Mutates `inclusion` in-place.
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/inclusion.jl#L66-L72" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/inclusion.jl#L66-L72" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1513,7 +1513,7 @@ rescale_node
 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/raster.jl#L109-L111" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/raster.jl#L109-L111" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1530,7 +1530,7 @@ tilt(layer, α)
 Performs logistic-exponential tilting on the on a layer with scaling factor α.  This is useful for adjusting inclusion probabilities to scale more toward  (α &gt; 1) or away from (α &lt; 1) extreme values. 
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/utilities/tilting.jl#L1-L7" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/utilities/tilting.jl#L1-L7" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1581,7 +1581,7 @@ Coerce an input object into a valid internal domain representation (e.g., `Raste
   
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/domains/conversion.jl#L1-L31" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/domains/conversion.jl#L1-L31" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
@@ -1598,7 +1598,7 @@ unique_permutations(x::T, prefix = T()) where {T}
 Generate all unique permutations for a multiset `x` without repetition of duplicates. Based on StackOverflow (`https://stackoverflow.com/questions/65051953/julia-generate-all-non-repeating-permutations-in-set-with-duplicates`).
 
 
-<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/152bb91956bc765b516495293b4b0bd4bd40cfcd/src/samplers/cubesampling.jl#L291-L297" target="_blank" rel="noreferrer">source</a></Badge>
+<Badge type="info" class="source-link" text="source"><a href="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/41caf6a82510fd4a40afdc88c8a60851df450c81/src/samplers/cubesampling.jl#L291-L297" target="_blank" rel="noreferrer">source</a></Badge>
 
 </details>
 
