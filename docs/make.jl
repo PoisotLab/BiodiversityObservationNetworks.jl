@@ -51,6 +51,7 @@ makedocs(;
     sitename="SpeciesInteractionSamplers.jl",
     format=DocumenterVitepress.MarkdownVitepress(
         repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl",
+        devurl="dev",
     ),
     #format = Documenter.HTML(size_threshold = nothing),
     warnonly=true,
