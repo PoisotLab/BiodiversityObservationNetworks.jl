@@ -1,50 +1,25 @@
 name: Documentation
-
 on:
   push:
-    branches:
-      - main
-    tags: '*'
+    branches: [main]
+    tags: [v*]
   pull_request:
 
-concurrency:
-    group: doc-build-pipeline
-    cancel-in-progress: ${{ !contains(github.ref, 'main')}}
-
 jobs:
-  BiodiversityObservationNetworks:
+  Documenter:
     permissions:
-      actions: write
       contents: write
-      pull-requests: read
       statuses: write
+    name: Documentation
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@v2
         with:
-          version: '1'
-      - uses: julia-actions/cache@v2
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Build howto
+          version: '1'                         # replace this with whatever version you need
+          show-versioninfo: true               # this causes versioninfo to be printed to the action log
+      - uses: julia-actions/cache@v2              # cache using https://github.com/julia-actions/cache
+      - uses: julia-actions/julia-buildpkg@v1  # if package requires Pkg.build()
+      - uses: julia-actions/julia-docdeploy@v1
         env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-          DATADEPS_ALWAYS_ACCEPT: true
-        run: julia --project=docs/ --threads=auto docs/build.jl howto
-      - name: Build tutorials
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-          DATADEPS_ALWAYS_ACCEPT: true
-        run: julia --project=docs/ --threads=auto docs/build.jl tutorials      
-      - name: Build and deploy docs
-        uses: julia-actions/julia-docdeploy@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
-          JULIA_DEBUG: "Documenter"
-          DATADEPS_ALWAYS_ACCEPT: true
