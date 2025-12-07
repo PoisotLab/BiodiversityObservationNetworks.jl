@@ -22,6 +22,9 @@ function pre_collapse_figure(content)
     # :::
     """
     replacer = SubstitutionString(replace(replacement_template, "HASH" => fig_hash))
+
+    @info match(matcher, content)
+
     content = replace(content, matcher => replacer)
     return content
 end
