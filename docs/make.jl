@@ -53,7 +53,7 @@ makedocs(;
         repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl",
         devurl="dev",
     ), =#
-    HTMLWriter = Documenter.HTMLWriter(size_threshold = nothing),
+    HTMLWriter = Documenter.HTML(size_threshold = nothing),
     warnonly=true,
     plugins = [bib],
 )
