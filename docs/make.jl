@@ -47,12 +47,12 @@ bib = CitationBibliography(
 makedocs(;
     modules=[BiodiversityObservationNetworks],
     authors="Michael D. Catchen",
-    repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/{commit}{path}#{line}",
+    repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/{commit}{path}#{line}",
     sitename="SpeciesInteractionSamplers.jl",
-    format=DocumenterVitepress.MarkdownVitepress(
-        repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl",
+    #=format=DocumenterVitepress.MarkdownVitepress(
+        repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl",
         devurl="dev",
-    ),
+    ), =#
     warnonly=true,
     plugins = [bib],
 )
