@@ -53,10 +53,8 @@ land = getpolygon(PolygonData(NaturalEarth, Land))
 # and we can plot it to confirm it's what we expect
 
 # fig-known-occurrences
-f = Figure()
-ga = Axis(f[1,1])
-lines!(ga, land)
-f #hide 
+lines(ga, land)
+current_figure() #hide 
 
 # Now we can generate a [`BiodiversityObservationNetwork`](@ref) using [`BalancedAcceptance`](@ref) in the same way as before, but while passing `col` as a second argument to [`sample`](@ref)
 
