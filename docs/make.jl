@@ -13,6 +13,25 @@ using InteractiveUtils
 using Dates
 using PrettyTables
 
+
+makedocs(;
+    modules=[BiodiversityObservationNetworks],
+    authors="Michael D. Catchen",
+    repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/blob/{commit}{path}#{line}",
+    sitename="SpeciesInteractionSamplers.jl",
+    format=DocumenterVitepress.MarkdownVitepress(
+        repo="https://github.com/PoisotLab/BiodiversityObservationNetworks.jl",
+        devurl="dev",
+    ),
+    warnonly=true,
+)
+
+deploydocs(;
+    repo="github.com/gottacatchenall/SpeciesInteractionSamplers.jl",
+    push_preview=true,
+)
+
+
 #= const bibfile = joinpath(@__DIR__, "docs", "BONs.bib")
 
 # Cleanup the bibliography file to make DocumenterCitations happy 
@@ -36,7 +55,6 @@ bib = CitationBibliography(
     bibfile;
     style = :authoryear,
 )
-=#
 
 makedocs(;
     sitename = "BiodiversityObservationNetworks.jl",
@@ -52,3 +70,4 @@ deploydocs(;
     devbranch = "main",
     push_preview = true,
 )
+=#
