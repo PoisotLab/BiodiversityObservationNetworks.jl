@@ -17,7 +17,7 @@ using PrettyTables
 @info readdir()
 
 bib = CitationBibliography(
-    "BONs.bib";
+    joinpath("docs", "BONs.bib");
     style = :authoryear,
 )
 
