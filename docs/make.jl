@@ -37,8 +37,6 @@ open(bibfile, "w") do bfile
         end
     end
 end
-# Look how they massacred my boy
-
 bib = CitationBibliography(
     bibfile;
     style = :authoryear,
