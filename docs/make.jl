@@ -16,11 +16,33 @@ using PrettyTables
 @info pwd()
 @info readdir()
 
+bibfile = joinpath("docs", "BONs.bib")
+
+# Cleanup the bibliography file to make DocumenterCitations happy despite their
+# refusal to acknowledge modern field names. The people will partu like it's
+# 1971 and they will like it.
+lines = readlines(bibfile)
+open(bibfile, "w") do bfile
+    for line in lines
+        if contains(line, "journaltitle")
+            println(bfile, replace(line, "journaltitle" => "journal"))
+        elseif contains(line, "date")
+            yrmatch = match(r"{(\d{4})", line)
+            if !isnothing(yrmatch)
+                println(bfile, "year = {$(yrmatch[1])},")
+            end
+            println(bfile, line)
+        else
+            println(bfile, line)
+        end
+    end
+end
+# Look how they massacred my boy
+
 bib = CitationBibliography(
-    joinpath("docs", "BONs.bib");
+    bibfile;
     style = :authoryear,
 )
-
 
 makedocs(;
     modules=[BiodiversityObservationNetworks],
