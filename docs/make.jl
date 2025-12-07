@@ -24,9 +24,9 @@ bibfile = joinpath("docs", "BONs.bib")
 lines = readlines(bibfile)
 open(bibfile, "w") do bfile
     for line in lines
-        if contains(line, "journaltitle")
+        if Base.contains(line, "journaltitle")
             println(bfile, replace(line, "journaltitle" => "journal"))
-        elseif contains(line, "date")
+        elseif Base.contains(line, "date")
             yrmatch = match(r"{(\d{4})", line)
             if !isnothing(yrmatch)
                 println(bfile, "year = {$(yrmatch[1])},")
