@@ -160,7 +160,7 @@ BiodiversityObservationNetwork with 500 nodes
 ```
 
 
-Wow. We&#39;re doing groundbreaking work here. Next up, let&#39;s choose a set of spatially balanced coordinates from this set of candidates. We&#39;ll do this using a different sampling algorithm, called the Pivotal method [?], [`Pivotal`](/reference/api#BiodiversityObservationNetworks.Pivotal). Is this because [`BalancedAcceptance`](/reference/api#BiodiversityObservationNetworks.BalancedAcceptance) doesn&#39;t work on point-like geometries? Yes
+Wow. We&#39;re doing groundbreaking work here. Next up, let&#39;s choose a set of spatially balanced coordinates from this set of candidates. We&#39;ll do this using a different sampling algorithm, called the Pivotal method ([Grafström _et al._, 2012](/bibliography#Grafstrom2012SpaBal)), [`Pivotal`](/reference/api#BiodiversityObservationNetworks.Pivotal). Is this because [`BalancedAcceptance`](/reference/api#BiodiversityObservationNetworks.BalancedAcceptance) doesn&#39;t work on point-like geometries? Yes
 
 ```julia
 num_points_to_pick = 30

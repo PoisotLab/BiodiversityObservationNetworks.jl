@@ -6,7 +6,7 @@ import footnote from "markdown-it-footnote";
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
     base: '/BiodiversityObservationNetworks.jl/dev/',// TODO: replace this in makedocs!
-    title: 'BiodiversityObservationNetworks.jl',
+    title: 'SpeciesInteractionSamplers.jl',
     description: 'Documentation for BiodiversityObservationNetworks.jl',
     cleanUrls: true,
     outDir: '../1', // This is required for MarkdownVitepress to work correctly...
@@ -109,7 +109,7 @@ export default defineConfig({
                 }
             ]
         },
-        editLink: { pattern: "https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/edit/main/docs/src/:path" },
+        editLink: { pattern: "https://https://github.com/PoisotLab/BiodiversityObservationNetworks.jl/edit/main/docs/src/:path" },
         socialLinks: [
             { icon: 'github', link: 'https://github.com/PoisotLab/BiodiversityObservationNetworks.jl' }
         ],
