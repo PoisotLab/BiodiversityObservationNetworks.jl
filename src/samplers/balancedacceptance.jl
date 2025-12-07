@@ -1,12 +1,18 @@
 """
-    BalancedAcceptance
+    BalancedAcceptance <: BONSampler
 
-`BalancedAcceptance` implements Balanced Acceptance Sampling (BAS), which uses
-Halton sequences to provide spatially well-spread samples. When inclusion probabilities are supplied, a 3D Halton sequence is used: the first
-two dimensions spread locations spatially and the third acts as a random
-threshold for acceptance against the inclusion surface.
+Implements Balanced Acceptance Sampling (BAS) using Halton sequences.
 
-If inclusion probabilities are not provided, a 2D Halton sequence is used to generate a spatially balanced sample of size `num_nodes` while respecting raster masks.
+# Fields
+- `num_nodes::Int`: The number of sites to select.
+
+# Description
+BAS generates spatially balanced samples by mapping the domain to a Halton sequence.
+If `inclusion` probabilities are provided, it uses a 3D Halton sequence where the 
+third dimension acts as an acceptance threshold against the probability surface.
+
+# References
+- Robertson, B. L., et al. (2013). 
 """
 @kwdef struct BalancedAcceptance <: BONSampler
     num_nodes = _DEFAULT_NUM_NODES

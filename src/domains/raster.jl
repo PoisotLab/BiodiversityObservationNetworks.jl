@@ -1,3 +1,13 @@
+"""
+    RasterDomain{T, P} <: AbstractDomain
+
+A wrapper around a raster-like object (Matrix or SDMLayer) that maintains a "pool"
+of valid sampling indices.
+
+# Fields
+- `data::T`: The underlying raster data (e.g., `Matrix` or `SDMLayer`).
+- `pool::P`: A collection of valid indices that can be sampled.
+"""
 struct RasterDomain{T}
     data::T
     pool
@@ -5,6 +15,7 @@ end
 
 RasterDomain(data) = RasterDomain(data, ones(Bool, size(data)))
 
+# Base overloads for RasterDomain
 Base.size(raster::RasterDomain) = size(raster.data)
 Base.size(raster::RasterDomain, i) = size(raster.data, i)
 Base.length(raster::RasterDomain) = length(raster.data)
@@ -21,13 +32,18 @@ Base.setindex!(raster::RasterDomain, v, i) = setindex!(raster.data, v, i)
 Base.sum(raster::RasterDomain) = sum(raster.data)
 
 """
-    getpool
+    getpool(domain)
+
+Return the collection of valid (unmasked) indices for the given domain.
 """
 getpool(raster::RasterDomain) = findall(raster.pool)
 
 
 """
-    getfeatures
+    getfeatures(domain)
+
+Return a matrix of auxiliary variables (features) for valid pixels in the domain.
+Rows are features, columns are pixels.
 """
 function getfeatures(rd::RasterDomain)
     pool = getpool(rd)
@@ -35,7 +51,24 @@ function getfeatures(rd::RasterDomain)
 end
 
 """
-    getcoordinates
+    getcoordinates(domain)
+
+Retrieve the spatial coordinates of all valid (unmasked) sampling locations in the domain.
+
+# Arguments
+- `domain`: A `RasterDomain` or a `RasterStack`.
+
+# Returns
+- A `2 x N` Matrix{Float32}, where `N` is the number of valid locations in the pool, 
+where each column is a coordinate in the valid pool of locations.
+
+# Description
+Returns a matrix of coordinates corresponding to the valid sampling pool. 
+- For **Matrix-backed domains**, coordinates are the integer column (x) and row (y) indices.
+- For **SDMLayer-backed domains**, coordinates are the projected spatial coordinates 
+  (e.g., Longitude/Latitude) derived from the layer's geotransform.
+- For **RasterStacks**, coordinates are derived from the first layer in the stack 
+  (assuming all layers share the same grid).
 """
 function getcoordinates(raster::RasterDomain{<:Matrix})
     return Float32.(hcat([[x[1], x[2]] for x in getpool(raster)]...))
@@ -45,6 +78,7 @@ function getcoordinates(raster::RasterDomain{<:SDMLayer})
     Es, Ns = SpeciesDistributionToolkit.eastings(raster.data), SpeciesDistributionToolkit.northings(raster.data)
     return hcat([[j,i] for i in Ns, j in Es][raster.pool]...)
 end
+
 
 """
     extent

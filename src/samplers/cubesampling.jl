@@ -1,18 +1,19 @@
 """
-    CubeSampling
+    CubeSampling <: BONSampler
 
-`CubeSampling` implements the cube method of [Deville2004EffSam](@cite) for
-balanced sampling with respect to a set of auxiliary variables (features).
+Implements the Cube method for balanced sampling with respect to auxiliary variables.
 
-The algorithm proceeds in two phases:
-- Flight phase: probabilities are iteratively moved towards 0/1 while preserving
-  linear constraints on the mean of auxiliary variables in expectation (including fixed sample size).
-- Landing phase: if fractional probabilities remain, an optimization step chooses
-  a 0/1 sample that best matches the target constraints.
+# Fields
+- `num_nodes::Int`: The expected sample size.
 
-If `inclusion` is not provided, uniform inclusion probabilities are derived from
-`sampler.num_nodes` and the domain pool size. Returned nodes correspond to units
-with final probability 1.
+# Description
+The algorithm selects a sample such that the Horvitz-Thompson estimates of auxiliary 
+variables match the population totals as closely as possible. It proceeds in two phases:
+1. **Flight Phase**: Random walk modifying inclusion probabilities while respecting constraints.
+2. **Landing Phase**: Linear programming (using HiGHS) to resolve remaining fractional probabilities.
+
+# References
+- Deville, J. C., & Tillé, Y. (2004). Efficient balanced sampling: The cube method.
 """
 @kwdef struct CubeSampling <: BONSampler
     num_nodes = _DEFAULT_NUM_NODES

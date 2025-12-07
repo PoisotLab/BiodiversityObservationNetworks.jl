@@ -1,7 +1,9 @@
 abstract type SpatialBalanceMetric end 
 
 """
-    spatialbalance
+    spatialbalance(metric::SpatialBalanceMetric, bon, domain)
+
+Calculate a specific spatial balance metric for a given network and domain.
 """
 spatialbalance(::Type{T}, bon, domain) where T = spatialbalance(T(), bon, domain)
 
@@ -13,17 +15,13 @@ spatialbalance(
 ) = spatialbalance(metric, bon, to_domain(domain))
 
 """
-    MoransI
+    MoransI <: SpatialBalanceMetric
 
-`MoransI` is a measure of spatial balance proposed by [Tille2018MeaSpa](@cite).
+Computes Moran's I on the inclusion indicator variable.
 
-Conceptually, the idea is to use [Moran's I](https://en.wikipedia.org/wiki/Moran%27s_I), a measure of spatial autocorrelation, on an indicator variable ``\\delta_i``, which is ``1`` if unit ``i`` is included in the sample, and 0 otherwise. 
-
-If ``\\delta`` has a negative value, this means included samples have negative autocorrelation and therefore are more spread out than if generated at random. 
-
-In principle, Moran's I should exist on the interval ``[-1,1]``, but the original definition uses a renormalization that doesn't always guarantee this, so [Tille2018MeaSpa](@cite) introduce a slight variation, called ``I_C`` so this always holds.
-
-Note that the performance of this algorithm scales as ``O(N^3)``, where ``N`` is the number of all possible candidate locations, and therefore for large rasters this method is unlikely to be performant. A faster approximation could be made by taking a smaller random sample of the candidate points. 
+# Description
+Calculates spatial autocorrelation of the sample indicator ``\\delta`` (1 if sampled, 0 otherwise).
+Negative values indicate spatial inhibition (spread), which is desired for balanced sampling.
 """
 struct MoransI <: SpatialBalanceMetric end 
 

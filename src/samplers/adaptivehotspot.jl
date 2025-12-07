@@ -1,29 +1,26 @@
 """
-    AdaptiveHotspot
+    AdaptiveHotspot{I, F} <: BONSampler
 
-Adaptive hotspot sampling prioritizes high-uncertainty
-regions while encouraging spatial diversity via a kernel-based criterion. This
-implementation follows [Andrade-Pacheco2020FinHot](@cite): start
-at the maximum of the uncertainty surface and iteratively add locations that
-optimize a trade-off between local value and diversity with respect to already
-chosen sites using a Matérn covariance kernel.
+Implements Adaptive Hotspot Sampling for high-uncertainty or high-value targets.
 
-Arguments:
-- `num_nodes`: number of sites to select
-- `scale` (`ρ`): range parameter of the Matérn kernel
-- `smoothness` (`ν`): smoothness parameter of the Matérn kernel
+# Fields
+- `num_nodes::I`: Number of sites.
+- `scale::F`: Range parameter (ρ) of the Matérn covariance kernel.
+- `smoothness::F`: Smoothness parameter (ν) of the Matérn covariance kernel.
+
+# Description
+Starts at the global maximum of the target/uncertainty surface. Subsequent points 
+are chosen to maximize a trade-off between the target value and spatial diversity 
+(measured via the determinant of a kernel matrix).
+
+# References
+- Andrade-Pacheco, R., et al. (2020) Finding hotspots...
 """
 @kwdef mutable struct AdaptiveHotspot{I <: Integer, F <: Real} <: BONSampler
     num_nodes::I = _DEFAULT_NUM_NODES
     scale::F = 1.
     smoothness::F = 0.5 # equivalent to exponential covariance  
 end
-
-
-# TODO:
-# biased toward exterior points.
-# for rasters, choose matern values from the (n,m) raster sized window around a particular point by reflecting the raster on the border, and compute distance matrix. i think average distance to all points should be equal then?
-
 
 function _sample(
     sampler::AdaptiveHotspot, 

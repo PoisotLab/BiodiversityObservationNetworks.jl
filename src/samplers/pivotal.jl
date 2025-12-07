@@ -1,15 +1,26 @@
 """
-    Pivotal 
+    Pivotal <: BONSampler
 
-The Local Pivotal Method (2) from [Grafstrom2012SpaBal](@cite) is used for generating spatially balanced samples. 
+Implements the Local Pivotal Method (LPM).
 
-`Pivotal` implements the Local Pivotal Method (LPM), which iteratively pairs nearby units and updates their inclusion probabilities so that, locally, one unit tends toward selection while the other tends toward non-selection. Repeating this over the domain produces a sample that is more spatially balanced than simple random sampling, while respecting per-unit inclusion probabilities when provided.
+# Fields
+- `num_nodes::Int`: The number of sites to select.
+
+# Description
+Iteratively pairs nearby units and updates their inclusion probabilities 
+so that, locally, one unit tends toward selection while the other tends 
+toward non-selection. Repeating this over the domain produces a sample that 
+is more spatially balanced than simple random sampling, while respecting 
+per-unit inclusion probabilities when provided.
 
 High-level algorithm:
 - Select an unfinished unit `i`; then choose its nearest unfinished neighbor `j`.
 - If `πᵢ + πⱼ < 1`, move probability mass so one unit goes to 0 and the other to `πᵢ+πⱼ`.
 - Otherwise (if `πᵢ + πⱼ ≥ 1`), move probability mass so one unit is selected and the other retains the leftover probability `πᵢ + πⱼ - 1`.
 - Repeat until all are complete.
+
+# References
+- Grafström, A. (2012).
 """
 Base.@kwdef struct Pivotal{I<:Integer} <: BONSampler
     num_nodes::I = _DEFAULT_NUM_NODES

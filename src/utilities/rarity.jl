@@ -17,7 +17,6 @@ end
 function _transform_pca(pca, X)
     return MultivariateStats.transform(pca, X)
 end 
-
 function _zscore(X)
     z = StatsBase.fit(StatsBase.ZScoreTransform, X)
     return z, StatsBase.transform(z, X)

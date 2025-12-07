@@ -1,11 +1,17 @@
 """
-    SpatiallyCorrelatedPoisson
+    SpatiallyCorrelatedPoisson <: BONSampler
 
-Implements the Spatially Correlated Poisson Sampling algorithm from Grafström (2012), Journal of Statistical Planning and Inference. doi:10.1016/j.jspi.2011.07.003
-    
-Iterate through all potential nodes i. Select it w.p. πᵢ, and adjust all πⱼ for all subsequent nodes j to maintain expected sample size.
+Implements Spatially Correlated Poisson Sampling (SCPS).
 
-I think the issue w/ samples occasionally being off-by-one is the last sample is rejected and the remaining inclusion probability has nowhere left to go. Same for Pivotal.
+# Fields
+- `num_nodes::Int`: The number of sites to select.
+
+# Description
+Iterates through units, selecting them based on inclusion probabilities, and 
+dynamically adjusting the probabilities of neighboring units to maintain spatial balance.
+
+# References
+- Grafström, A. (2012). Spatially correlated Poisson sampling.
 """
 @kwdef mutable struct SpatiallyCorrelatedPoisson <: BONSampler
     num_nodes = _DEFAULT_NUM_NODES
@@ -35,7 +41,6 @@ Perform Spatially Correlated Poisson sampling following Grafström (2012).
 
 # Example Usage
 `sample(SpatiallyCorrelatedPoisson(), zeros(30,20))`
-
 """
 function _sample(
     sampler::SpatiallyCorrelatedPoisson,
