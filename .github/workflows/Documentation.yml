@@ -40,11 +40,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
           DATADEPS_ALWAYS_ACCEPT: true
-        run: julia --project=docs/ --threads=auto docs/build.jl tutorials
+        run: julia --project=docs/ --threads=auto docs/build.jl tutorials      
       - name: Build and deploy docs
+        uses: julia-actions/julia-docdeploy@v1
         env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # For authentication with GitHub Actions token
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # For authentication with SSH deploy key
+          JULIA_DEBUG: "Documenter"
           DATADEPS_ALWAYS_ACCEPT: true
-        run: julia --project=docs/ --threads=auto docs/make.jl
