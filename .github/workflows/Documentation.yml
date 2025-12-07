@@ -12,62 +12,7 @@ concurrency:
     cancel-in-progress: ${{ !contains(github.ref, 'main')}}
 
 jobs:
-  HowTo:
-    permissions:
-      actions: write
-      contents: write
-      pull-requests: read
-      statuses: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1'
-      - uses: julia-actions/cache@v2
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Build and deploy
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-          DATADEPS_ALWAYS_ACCEPT: true
-        run: julia --project=docs/ --threads=auto ../docs/build.jl howto
-      - name: "Upload the howto folder"
-        uses: actions/upload-artifact@v4
-        with:
-          path: "docs/src/howto"
-          name: howto-folder
-  Tutorials:
-    permissions:
-      actions: write
-      contents: write
-      pull-requests: read
-      statuses: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1'
-      - uses: julia-actions/cache@v2
-      - name: Install dependencies
-        run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Build and deploy
-        env:
-          NODE_OPTIONS: "--max_old_space_size=4096"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-          DATADEPS_ALWAYS_ACCEPT: true
-        run: julia --project=docs/ --threads=auto ../docs/build.jl tutorials
-      - name: "Upload the tutorials folder"
-        uses: actions/upload-artifact@v4
-        with:
-          path: "docs/src/tutorials"
-          name: tutorials-folder
   BiodiversityObservationNetworks:
-    needs: [HowTo, Tutorials]
     permissions:
       actions: write
       contents: write
@@ -76,23 +21,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: "Download the compiled how-to"
-        uses: actions/download-artifact@v4
-        with:
-          name: howto-folder
-          path: docs/src/howto
-      - name: "Download the compiled tutorials"
-        uses: actions/download-artifact@v4
-        with:
-          name: tutorials-folder
-          path: docs/src/tutorials
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1'
       - uses: julia-actions/cache@v2
       - name: Install dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Build and deploy
+      - name: Build howto
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          DATADEPS_ALWAYS_ACCEPT: true
+        run: julia --project=docs/ --threads=auto docs/build.jl howto
+      - name: Build tutorials
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+          DATADEPS_ALWAYS_ACCEPT: true
+        run: julia --project=docs/ --threads=auto docs/build.jl tutorials
+      - name: Build and deploy docs
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
