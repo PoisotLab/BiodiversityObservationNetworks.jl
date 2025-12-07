@@ -36,7 +36,7 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/gottacatchenall/SpeciesInteractionSamplers.jl",
+    repo="github.com/PoisotLab/BiodiversityObservationNetworks.jl",
     push_preview=true,
 )
 
