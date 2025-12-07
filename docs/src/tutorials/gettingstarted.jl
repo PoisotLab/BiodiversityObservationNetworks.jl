@@ -55,8 +55,7 @@ land = getpolygon(PolygonData(NaturalEarth, Land))
 
 # fig-foo
 lines(land)
-current_figure() #hide 
-
+current_figure() #hide
 
 # Now we can generate a [`BiodiversityObservationNetwork`](@ref) using [`BalancedAcceptance`](@ref) in the same way as before, but while passing `col` as a second argument to [`sample`](@ref)
 

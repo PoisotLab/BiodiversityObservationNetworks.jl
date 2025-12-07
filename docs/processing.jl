@@ -9,8 +9,7 @@ end
 function pre_collapse_figure(content)
     fig_hash = string(hash(rand(100)))
     
-    matcher = r"^# fig-(?<title>[\w-]+)$\n(?<code>(?>^[^#].*$\n){1,})^current_figure\(\) #hide$"m
-
+    matcher = r"# fig-(?<title>[\w-]+)\n(?<code>(?>^[^#].*\n){1,})current_figure\(\) #hide"m
     replacement_template = """
     # ![](HASH-\\g<title>.png)
 
@@ -23,7 +22,8 @@ function pre_collapse_figure(content)
     """
     replacer = SubstitutionString(replace(replacement_template, "HASH" => fig_hash))
 
-    @info match(matcher, content)
+    #@info content
+    #@info match(r"# fig-(?<title>[\w-]+)\n(?<code>(?>^[^#].*\n){1,})current_figure\(\) #hide"m, content)
 
     content = replace(content, matcher => replacer)
     return content

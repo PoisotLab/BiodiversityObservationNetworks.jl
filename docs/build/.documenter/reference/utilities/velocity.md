@@ -1,2 +1,0 @@
-
-# Climate Velocity {#Climate-Velocity}
