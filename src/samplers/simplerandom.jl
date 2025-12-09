@@ -28,6 +28,45 @@ function _sample(
     pool = getpool(domain)
 
     nodes = isnothing(inclusion) ? SB.sample(pool, sampler.num_nodes, replace=false) : SB.wsample(pool, inclusion[pool], sampler.num_nodes, replace=false)
-
-    return BiodiversityObservationNetwork(nodes, domain)
+    return nodes, nothing
 end 
+
+# ========================================================================
+# Tests
+# ========================================================================
+
+@testitem "We can use SimpleRandom with a RasterDomain" begin
+    bon = sample(SimpleRandom(), rand(30,20))
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end
+
+
+@testitem "We can use SimpleRandom with a RasterDomain and custom inclusion probabilities" begin
+    inclusion = rand(30, 20)
+    bon = sample(SimpleRandom(100), rand(30,20), inclusion=inclusion)
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end
+
+
+@testitem "We can use SimpleRandom with a BON" begin
+    candidate_bon = sample(SimpleRandom(100), rand(30,20))
+
+    bon = sample(SimpleRandom(50), candidate_bon)
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end
+
+
+@testitem "We can use SimpleRandom with a BON and custom inclusion probabilities" begin
+    candidate_bon = sample(SimpleRandom(100), rand(30,20))
+    inclusion = rand(100)
+    bon = sample(SimpleRandom(50), candidate_bon, inclusion=inclusion)
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end

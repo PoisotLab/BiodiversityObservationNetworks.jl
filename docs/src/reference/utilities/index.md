@@ -4,7 +4,8 @@
 
 The utilities are divided into the following categories:
 
-- [Spatial Balance](./spatialbalance)
-- [Environmental Distance](./envdistance)
-- [Climate Velocity](./velocity)
-- [Climate Rarity](./rarity)
+- [Spatial Balance](./spatialbalance): utilities for measuring the spatial balance of BONs
+- [Environmental Distance](./envdistance): 
+- Travel Time: (Time to site mixed with sites)
+- [Climate Velocity](./velocity): 
+- [Climate Rarity](./rarity): 

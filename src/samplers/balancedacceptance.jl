@@ -62,17 +62,17 @@ function _3d_bas(sampler, domain, inclusion)
     seeds = rand(Int.(1e0:1e7), 3)
     bases = [2, 3, 5]
     attempt = 0
-    nodes = []
+    nodes = CartesianIndex[]
     while length(nodes) < sampler.num_nodes
         i, j, z  = _halton(bases, seeds, attempt, 3)
         i, j = _rescale_node(domain, i,j)
 
         if !ismasked(domain, i,j) && z < inclusion[i,j] 
-            push!(nodes, (i,j))
+            push!(nodes, CartesianIndex(i,j))
         end 
         attempt += 1
     end 
-    return BiodiversityObservationNetwork(nodes, domain)
+    return nodes, domain[nodes]
 end 
 
 """
@@ -85,7 +85,7 @@ function _2d_bas(sampler, domain)
     seeds = rand(Int.(1e0:1e7), 2)
     bases = [2, 3]
     attempt = 0
-    nodes = []
+    nodes = CartesianIndex[]
     while length(nodes) < sampler.num_nodes
         i, j = _halton(bases, seeds, attempt, 2)
         i, j = _rescale_node(domain, i,j)
@@ -95,5 +95,24 @@ function _2d_bas(sampler, domain)
         end 
         attempt += 1
     end
-    return BiodiversityObservationNetwork(nodes, domain)
+    return nodes, domain[nodes]
 end 
+
+# ========================================================================
+# Tests
+# ========================================================================
+
+@testitem "We can use Balanced Acceptance with a RasterDomain" begin
+    bon = sample(BalancedAcceptance(), rand(30,20))
+    
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end
+
+@testitem "We can use Balanced Acceptance with a RasterDomain and Inclusion" begin
+    inclusion = rand(30,20)
+    bon = sample(BalancedAcceptance(), rand(30,20), inclusion=inclusion)
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end

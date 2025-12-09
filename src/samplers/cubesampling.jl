@@ -62,7 +62,7 @@ function _sample(
     nodes = sorted_pool[selected_idx]
     selected_features = features[:,selected_idx]
 
-    return BiodiversityObservationNetwork(nodes, selected_features)
+    return nodes, selected_features
 end 
 
 
@@ -312,3 +312,12 @@ function unique_permutations(x::T, prefix = T()) where {T}
         return t
     end
 end
+
+
+@testitem "We can use CubeSampling with a RasterStack" begin
+    bon = sample(CubeSampling(), [rand(30,20) for _ in 1:3])
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end
+

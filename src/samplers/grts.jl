@@ -38,7 +38,7 @@ function _sample(
 )
     addresses = _get_addresses(sampler, domain)
     nodes = _pick_nodes(sampler, domain, addresses)
-    return BiodiversityObservationNetwork(nodes, domain)
+    return nodes, domain[nodes]
 end 
 
 """
@@ -112,7 +112,7 @@ function _pick_nodes(sampler, raster, addresses)
     num_selected = 0
     cursor = 1
 
-    selected_nodes = []
+    selected_nodes = CartesianIndex[]
     while num_selected < sampler.num_nodes && cursor <= length(sort_idx)
         candidate = cart_idxs[cursor]
         if candidate[1] <= xbound && candidate[2] <= ybound
@@ -126,4 +126,16 @@ function _pick_nodes(sampler, raster, addresses)
         cursor += 1
     end 
     return selected_nodes 
+end
+
+
+# ========================================================================
+# Tests
+# ========================================================================
+
+@testitem "We can use GRTS with a RasterDomain" begin
+    bon = sample(GeneralizedRandomTesselated(), rand(30,20))
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
 end

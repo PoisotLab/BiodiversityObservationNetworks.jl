@@ -42,7 +42,7 @@ function _sample(
     # Start from the maximum of the uncertainty surface
     imax = last(findmax(vec(features)))
  
-    coords = [pool[imax]]
+    nodes = [pool[imax]]
     selected_idxs = [imax]
 
     # Greedily add points maximizing sum of value and diversity score
@@ -63,11 +63,11 @@ function _sample(
         end
         done_idx[best_s] = true
         push!(selected_idxs, best_s)
-        push!(coords, pool[best_s])
+        push!(nodes, pool[best_s])
     end
 
     features = features[:, selected_idxs]
-    return BiodiversityObservationNetwork(coords, features)
+    return nodes, features
 end
 
 """
@@ -92,4 +92,15 @@ previously chosen sites.
 """
 function _h(K)
     return (0.5 * log(2 * π * ℯ)^size(K,1)-1) * logabsdet(K)[1]
+end
+
+# ========================================================================
+# Tests
+# ========================================================================
+
+@testitem "We can use AdaptiveHotspot with a RasterDomain" begin
+    bon = sample(AdaptiveHotspot(), rand(30,20))
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
 end

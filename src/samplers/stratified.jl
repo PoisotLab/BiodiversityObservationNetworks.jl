@@ -40,7 +40,8 @@ function _sample(
 
     nodes = vcat([SB.sample(stratified_pool[i], samples_per_stratum[i], replace=false) for i in eachindex(samples_per_stratum)]...)
 
-    return BiodiversityObservationNetwork(nodes, domain)
+    return nodes, domain[nodes]
 end
+
 
 

@@ -5,14 +5,16 @@ Represents the selected sampling sites and their associated data.
 
 # Fields
 - `nodes::N`: The coordinates or indices of the selected sites.
-- `auxiliary::Matrix`: The underlying feature matrix associated with the nodes.
+- `auxiliary`: The matrix of auxiliary variables associated with each node.
 """
-struct BiodiversityObservationNetwork{T}
+struct BiodiversityObservationNetwork{T,A}
     nodes::Vector{T}
-    auxiliary::Matrix
+    auxiliary::A
 end 
 
 BiodiversityObservationNetwork(nodes::Vector) = BiodiversityObservationNetwork(nodes, missing)
+BiodiversityObservationNetwork(nodes::Vector, aux::Vector) = BiodiversityObservationNetwork(nodes, Matrix(aux'))
+BiodiversityObservationNetwork(nodes::Vector, ::Nothing) = BiodiversityObservationNetwork(nodes, missing)
 
 # Base overload 
 Base.show(io::IO, bon::BiodiversityObservationNetwork) = print(io, "BiodiversityObservationNetwork with $(size(bon)) nodes")

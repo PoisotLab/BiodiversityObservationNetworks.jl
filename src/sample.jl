@@ -2,7 +2,26 @@ function check_args(domain, mask, inclusion)
     if domain isa Matrix && mask isa Union{PolygonDomain,SimpleSDMPolygons.AbstractGeometry}
         throw(ArgumentError("Cannot use a polygon to mask a Matrix domain"))
     end
+end
 
+function preprocess(sampler, domain, mask, inclusion)
+    check_args(domain, mask, inclusion)
+
+    domain = to_domain(domain)
+    mask = convert_mask(domain, mask)
+    mask!(domain, mask)
+
+    inclusion = convert_inclusion(sampler, domain, inclusion)
+
+    return domain, mask, inclusion
+end
+
+function postprocess(domain, selected, auxiliary)
+    BiodiversityObservationNetwork(selected, auxiliary)
+end
+
+function postprocess(domain::BiodiversityObservationNetwork, selected, auxiliary)
+    BiodiversityObservationNetwork(domain.nodes[selected], auxiliary)
 end
 
 
@@ -28,16 +47,14 @@ function sample(
     inclusion = nothing,
     kwargs...
 )
-    check_args(domain, mask, inclusion)
-
-    domain = to_domain(domain)
-    mask = convert_mask(domain, mask)
-
-    mask!(domain, mask)
-    
-    inclusion = convert_inclusion(sampler, domain, inclusion)
-
-    _sample(sampler, domain; inclusion=inclusion, kwargs...)
+    domain, mask, inclusion = preprocess(sampler, domain, mask, inclusion)
+    result, auxiliary = _sample(sampler, domain; inclusion=inclusion, kwargs...)
+    #@info "Sampler: $sampler"
+    #@info "Domain: $domain"
+    #@info "Result: $result"
+    #@info "Aux: $auxiliary"
+    #@info "\n\n"
+    postprocess(domain, result, auxiliary)
 end
 
 

@@ -118,5 +118,25 @@ function _sample(sampler::Pivotal, domain; inclusion=nothing)
             complete_flags[i] = 1
         end 
     end
-    return BiodiversityObservationNetwork(pool[findall(isone, inclusion_flags)], domain)
+    return pool[findall(isone, inclusion_flags)], nothing
 end 
+
+# ========================================================================
+# Tests
+# ========================================================================
+
+@testitem "We can use Pivotal with a RasterDomain" begin
+    bon = sample(Pivotal(), rand(30,20))
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end
+
+@testitem "We can use Pivotal with a BON" begin
+    candidate_bon = sample(SimpleRandom(100), rand(30,20))
+
+    bon = sample(Pivotal(50), candidate_bon)
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end

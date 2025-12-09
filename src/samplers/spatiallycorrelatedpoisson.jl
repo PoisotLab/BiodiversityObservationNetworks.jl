@@ -99,12 +99,27 @@ function _sample(
         for i in neighbor_order[j]
             πᵢ_prev = prev_inclusion_probs[pool[i]]
 
-            if i > j
+            if i > j # only apply update rule to indices that haven't been resolved yet
                 # Apply update rule
                 inclusion_probs[i] = πᵢ_prev - (inclusion_flag - πⱼ_prev) * neighbor_weights[i]
             end
         end
     end
 
-    return BiodiversityObservationNetwork(pool[inclusion_flags], domain)
+    return pool[inclusion_flags], nothing
+end
+
+@testitem "We can use SCP with a RasterDomain" begin
+    bon = sample(SpatiallyCorrelatedPoisson(), rand(30,20))
+
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
+end
+
+
+@testitem "We can use SCP with a BON" begin
+    candidate_bon = sample(SimpleRandom(100), rand(30,20)) 
+    bon = sample(SpatiallyCorrelatedPoisson(), candidate_bon)
+    @test bon isa BiodiversityObservationNetwork
+    @test first(bon) isa CartesianIndex
 end

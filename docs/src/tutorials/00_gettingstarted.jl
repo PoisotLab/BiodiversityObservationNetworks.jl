@@ -61,6 +61,13 @@ current_figure() #hide
 
 bon = sample(BalancedAcceptance(), land)
 
+# and plot 
+
+# fig-scatter-earth
+lines(land, color=:grey20)
+scatter!(vec(bon.nodes), color=:red)
+current_figure() #hide
+
 # Wahoo 🥳. We've done it. 
 
 # ## A Raster as a Geometry
@@ -81,9 +88,28 @@ swi = getpolygon(PolygonData(OpenStreetMap, Places), place="Switzerland")
 
 candidate_bon = sample(SimpleRandom(500), swi)
 
+# and visualize 
+
+# fig-swiss-candidate-bon
+f = Figure()
+ax = Axis(f[1,1])
+hidedecorations!(ax)
+hidespines!(ax)
+lines!(ax, swi)
+scatter!(ax, vec(candidate_bon.nodes), color=:red)
+current_figure()
+
 # Wow. We're doing groundbreaking work here.
 # Next up, let's choose a set of spatially balanced coordinates from this set of candidates. We'll do this using a different sampling algorithm, called the Pivotal method [Grafstrom2012SpaBal](@cite), [`Pivotal`](@ref). Is this because [`BalancedAcceptance`](@ref) doesn't work on point-like geometries? Yes
 
 num_points_to_pick = 30
-sample(Pivotal(num_points_to_pick), candidate_bon)
+swiss_bon = sample(SpatiallyCorrelatedPoisson(num_points_to_pick), candidate_bon)
 
+# fig-swiss-final-bon
+f = Figure()
+ax = Axis(f[1,1])
+hidedecorations!(ax)
+hidespines!(ax)
+lines!(ax, swi)
+scatter!(ax, vec(swiss_bon.nodes), color=:red)
+current_figure()

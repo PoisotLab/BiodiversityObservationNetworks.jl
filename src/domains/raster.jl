@@ -26,6 +26,7 @@ Base.iterate(raster::RasterDomain, i) = iterate(raster.data, i)
 Base.getindex(raster::RasterDomain, i) = getindex(raster.data[i])
 Base.getindex(raster::RasterDomain, i, j) = getindex(raster.data, i,j)
 Base.getindex(raster::RasterDomain, ci::CartesianIndex) = raster.data[ci]
+Base.getindex(raster::RasterDomain, v::Vector{<:CartesianIndex}) = [raster.data[x] for x in v]
 Base.getindex(raster::RasterDomain, i::Tuple) = raster[i...]
 Base.setindex!(raster::RasterDomain, v, i) = setindex!(raster.data, v, i)
 

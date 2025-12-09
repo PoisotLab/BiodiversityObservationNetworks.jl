@@ -1,3 +1,7 @@
-# How to
+# Case Studies
 
-These are small scale examples for very particular tasks
+"Full" use cases, used in the manuscript. 
+
+- Comparing the spatial balance of algorithms
+- Designing a national BON
+- Balancing budget for time/space sampling 
