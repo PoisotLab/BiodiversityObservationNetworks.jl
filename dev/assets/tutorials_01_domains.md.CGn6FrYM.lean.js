@@ -1,0 +1,1 @@
+import{_ as t,c as a,o as e}from"./chunks/framework.CUy-DHUw.js";const p=JSON.parse('{"title":"","description":"","frontmatter":{},"headers":[],"relativePath":"tutorials/01_domains.md","filePath":"tutorials/01_domains.md"}'),o={name:"tutorials/01_domains.md"};function s(r,n,i,_,c,d){return e(),a("div")}const l=t(o,[["render",s]]);export{p as __pageData,l as default};
