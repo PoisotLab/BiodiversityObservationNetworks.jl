@@ -20,6 +20,11 @@ function postprocess(domain, selected, auxiliary)
     BiodiversityObservationNetwork(selected, auxiliary)
 end
 
+function postprocess(domain::RasterDomain{<:SDMLayer}, selected, auxiliary)
+    Es, Ns = eastings(domain.data), northings(domain.data)
+    BiodiversityObservationNetwork([(Es[s[2]], Ns[s[1]]) for s in selected], auxiliary)
+end
+
 function postprocess(domain::BiodiversityObservationNetwork, selected, auxiliary)
     BiodiversityObservationNetwork(domain.nodes[selected], auxiliary)
 end
