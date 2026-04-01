@@ -1,4 +1,15 @@
 module BiodiversityObservationNetworks
+    using Random 
+    using StatsBase
+    using TestItems
+    using Distributions
+    using LinearAlgebra
+
+    include("pool.jl")
+
+    export CandidatePool
+    
+    #=
     using DelaunayTriangulation
     using Distances
     using Distributions
@@ -75,5 +86,5 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "adaptivehotspot.jl"))
     include(joinpath("samplers", "stratified.jl"))
 
-
+    =# 
 end     

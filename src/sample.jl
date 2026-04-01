@@ -1,3 +1,43 @@
+"""
+    BONSampler
+
+Abstract supertype for all spatial sampling algorithms. Each concrete sampler
+is a struct with at minimum an `n::Int` field specifying the desired
+sample size.
+
+Implement `_sample(rng, sampler, candidatepool)` to add a new algorithm.
+"""
+abstract type BONSampler end
+
+# ========================================================================
+# Sampler traits
+# ========================================================================
+
+"""Whether the sampler uses custom inclusion probabilities."""
+supports_inclusion(::BONSampler) = false
+
+"""Whether the sampler can support features (auxiliary variables associated with each site)."""
+supports_features(::BONSampler) = false
+
+"""Whether the sampler requires features (auxiliary variables associated with each site) to be present."""
+requires_features(::BONSampler) = false
+
+"""Whether the sampler guarantees exactly `n` selected sites."""
+guarantees_exact_n(::BONSampler) = false
+
+
+# Fallback _sample: called when a sampler's internal method is not implemented, or the extension package is not loaded.
+function _sample(::AbstractRNG, sampler::BONSampler, ::CandidatePool)
+    error(
+        "No sampling method is available for $(typeof(sampler)). " *
+        "Using this sampler may require an extension package — see `?$(typeof(sampler))`.",
+    )
+end
+
+
+
+
+#= 
 function check_args(domain, mask, inclusion)
     if domain isa Matrix && mask isa Union{PolygonDomain,SimpleSDMPolygons.AbstractGeometry}
         throw(ArgumentError("Cannot use a polygon to mask a Matrix domain"))
@@ -138,18 +178,5 @@ end
 @testitem "We can sample from a RasterDomain{<:SDMLayer} with a RasterDomain{<:SDMLayer} Mask" setup=[TestModule] begin
 
 end
-
-
-# ------------------------------------------
-#  Custom Inclusion Probabilities 
-#
-# ------------------------------------------
-
-
-# ------------------------------------------
-#  Mask and Custom Inclusion Probabilities 
-#
-# ------------------------------------------
-
-
+=#
 
