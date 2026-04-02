@@ -1,3 +1,5 @@
+#=
+
 """
     CubeSampling <: BONSampler
 
@@ -321,3 +323,4 @@ end
     @test first(bon) isa CartesianIndex
 end
 
+=#

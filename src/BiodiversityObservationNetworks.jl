@@ -8,6 +8,7 @@ module BiodiversityObservationNetworks
     include("pool.jl")
 
     export CandidatePool
+    export BiodiversityObservationNetwork
     
     #=
     using DelaunayTriangulation

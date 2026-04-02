@@ -1,3 +1,5 @@
+#=
+
 """
     GeneralizedRandomTesselated
 
@@ -139,3 +141,5 @@ end
     @test bon isa BiodiversityObservationNetwork
     @test first(bon) isa CartesianIndex
 end
+
+=#
