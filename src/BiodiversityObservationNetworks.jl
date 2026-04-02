@@ -5,11 +5,19 @@ module BiodiversityObservationNetworks
     using Distributions
     using LinearAlgebra
 
+    include("sampler.jl")
+    include("bon.jl")
     include("pool.jl")
+    include("sample.jl")
+    include(joinpath("samplers", "simplerandom.jl"))
 
+    export sample 
     export CandidatePool
     export BiodiversityObservationNetwork
-    
+
+    export BONSampler
+    export SimpleRandom
+
     #=
     using DelaunayTriangulation
     using Distances

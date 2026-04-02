@@ -1,32 +1,22 @@
-"""
-    BONSampler
 
-Abstract supertype for all spatial sampling algorithms. Each concrete sampler
-is a struct with at minimum an `n::Int` field specifying the desired
-sample size.
 
-Implement `_sample(rng, sampler, candidatepool)` to add a new algorithm.
-"""
-abstract type BONSampler end
 
 # ========================================================================
-# Sampler traits
+# Internal pipeline
 # ========================================================================
 
-"""Whether the sampler uses custom inclusion probabilities."""
-supports_inclusion(::BONSampler) = false
+# Checks if BONSampler is parameterized properly and can function with the given CandidatePool
+function validate(sampler::BONSampler, cpool::CandidatePool)
+    sampler.n > 0 || throw(ArgumentError("Sample size must be positive, got $(sampler.n)"))
+    sampler.n <= cpool.n || throw(ArgumentError(
+        "Sample size ($(sampler.n)) exceeds number of candidates ($(cpool.n))"))
+    if requires_features(sampler) && ismissing(cpool.features)
+        throw(ArgumentError(
+            "$(typeof(sampler)) requires features but the CandidatePool has none."))
+    end
+end
 
-"""Whether the sampler can support features (auxiliary variables associated with each site)."""
-supports_features(::BONSampler) = false
-
-"""Whether the sampler requires features (auxiliary variables associated with each site) to be present."""
-requires_features(::BONSampler) = false
-
-"""Whether the sampler guarantees exactly `n` selected sites."""
-guarantees_exact_n(::BONSampler) = false
-
-
-# Fallback _sample: called when a sampler's internal method is not implemented, or the extension package is not loaded.
+# Fallback _sample, called when a sampler's internal method is not implemented, or the extension package is not loaded.
 function _sample(::AbstractRNG, sampler::BONSampler, ::CandidatePool)
     error(
         "No sampling method is available for $(typeof(sampler)). " *
@@ -34,42 +24,67 @@ function _sample(::AbstractRNG, sampler::BONSampler, ::CandidatePool)
     )
 end
 
-
-# ========================================================================
-# BiodiversityObservationNetwork
-# ========================================================================
-
-"""
-    BiodiversityObservationNetwork{K}
-
-The output of [`sample`](@ref). Holds selected sites together with the sampler
-and domain that produced them, enabling downstream evaluation without passing
-the domain separately.
-
-# Fields
-- `sites::Vector{K}`: selected keys 
-- `coordinates::Matrix` — `d x n_selected` positions
-- `features::Union{Matrix, Missing}` — `p x n_selected` or `Missing`
-- `inclusion::Vector` — inclusion weights of the selected sites
-- `sampler::BONSampler` — the sampler that produced this result
-"""
-struct BiodiversityObservationNetwork{K}
-    sites::Vector{K}
-    coordinates::Matrix
-    features::Union{Matrix, Missing}
-    inclusion::Vector
-    sampler::BONSampler
+# The internal call made by the public-facing `sample` method.
+function _run_sample(rng::AbstractRNG, sampler::BONSampler, cpool::CandidatePool)
+    validate(sampler, cpool)
+    indices = _sample(rng, sampler, cpool)
+    
+    selected_keys = cpool.keys[indices]
+    selected_coords = cpool.coordinates[:, indices]
+    selected_feats = ismissing(cpool.features) ? Missing() : cpool.features[:, indices]
+    selected_inclusion = cpool.inclusion[indices] ./ sum(cpool.inclusion[indices])
+    BiodiversityObservationNetwork(selected_keys, selected_coords, selected_feats, selected_inclusion, sampler)
 end
 
 
-# Base overloads
-Base.length(bon::BiodiversityObservationNetwork) = length(bon.sites)
-Base.size(bon::BiodiversityObservationNetwork) = (length(bon.sites),)
-Base.iterate(bon::BiodiversityObservationNetwork, state = 1) = iterate(bon.sites, state)
-Base.getindex(bon::BiodiversityObservationNetwork, i::Int) = bon.sites[i]
-Base.firstindex(::BiodiversityObservationNetwork) = 1
-Base.lastindex(bon::BiodiversityObservationNetwork) = length(bon.sites)
+# ========================================================================
+# Public sample API
+# ========================================================================
 
+"""
+    sample([rng::AbstractRNG,] sampler::BONSampler, domain; mask=missing, inclusion=missing)
+
+Select sites from `domain` using `sampler`. Pass an explicit `rng` for reproducibility.
+
+`domain` can be any type accepted by [`CandidatePool`](@ref) — a `Matrix`,
+a `Vector` of matrices, a [`CandidatePool`](@ref), or a [`BiodiversityObservationNetwork`](@ref)
+(for multi-stage sampling).
+
+`CandidatePool` can also accept types from [`SpeciesDistributionToolkit`](https://poisotlab.github.io/SpeciesDistributionToolkit.jl/),
+including [`SDMLayer`]s from the [`SimpleSDMLayers`] subpackage, which represent rasters 
+with geospatial metadata, and vector data types from the [`SimpleSDMPolygons`] subpackage.
+The support for these types are included as extensions, meaning their functionality is only
+loaded once [`SpeciesDistributionToolkit`] (or one of the corresponding subpackages) is loaded.
+For more information on this functionality, see [this]() TODO how-to. 
+"""
+function sample end
+
+# Without RNG
+function sample(sampler::BONSampler, domain; mask=missing, inclusion=missing)
+    sample(Random.default_rng(), sampler, domain; mask, inclusion)
+end
+
+function sample(sampler::BONSampler, cpool::CandidatePool)
+    sample(Random.default_rng(), sampler, cpool)
+end
+
+function sample(sampler::BONSampler, bon::BiodiversityObservationNetwork)
+    sample(Random.default_rng(), sampler, bon)
+end
+
+# With explicit RNG
+function sample(rng::AbstractRNG, sampler::BONSampler, domain; mask=missing, inclusion=missing)
+    cpool = CandidatePool(domain; mask, inclusion)
+    _run_sample(rng, sampler, cpool)
+end
+
+function sample(rng::AbstractRNG, sampler::BONSampler, cpool::CandidatePool)
+    _run_sample(rng, sampler, cpool)
+end
+
+function sample(rng::AbstractRNG, sampler::BONSampler, result::BiodiversityObservationNetwork)
+    _run_sample(rng, sampler, CandidatePool(result))
+end
 
 
 

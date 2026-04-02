@@ -13,11 +13,10 @@ The internal representation of a sampling domain: a matrix of `n` candidate loca
 """
 struct CandidatePool{K}
     n::Int
+    keys::Vector{K}
     coordinates::Matrix
     features::Union{Matrix, Missing}
     inclusion::Vector
-    keys::Vector{K}
-    metadata::Dict{Symbol, Any}
 end
 
 # Base overloads 
@@ -82,13 +81,30 @@ function CandidatePool(mat::AbstractMatrix; mask = missing, inclusion = missing)
 
     return CandidatePool(
         n, 
+        keys,
         coords, 
         feat,
         incl, 
-        keys,
-        Dict{Symbol,Any}(:source => :matrix, :size => size(mat))
     )
 end
+
+"""
+    CandidatePool(result::BiodiversityObservationNetwork)
+
+Convert a [`BiodiversityObservationNetwork`](@ref) into a new [`CandidatePool`](@ref) for
+multi-stage sampling. Selected sites become candidates with uniform inclusion.
+"""
+function CandidatePool(result::BiodiversityObservationNetwork) 
+    n = length(result.sites)
+    CandidatePool(
+        n, 
+        result.sites,
+        copy(result.coordinates),
+        ismissing(result.features) ? missing : copy(result.features),
+        result.inclusion,
+    )
+end
+
 
 
 # ========================================================================
@@ -130,8 +146,8 @@ end
 
 @testitem "We can construct a CandidatePool from a BON" begin
     cp1 = CandidatePool(rand(10, 10))
-    sr = SamplingResult(cp1, [1, 5, 10], SimpleRandom(n=3), Dict{Symbol,Any}())
-    cp2 = candidatepool(sr)
+    sr = sample(SimpleRandom(n=3), cp1)
+    cp2 = CandidatePool(sr)
     @test cp2.n == 3
     @test cp2.keys == sr.sites
 end
