@@ -6,7 +6,11 @@ module BiodiversityObservationNetworks
     using LinearAlgebra
     using NearestNeighbors
     using SpecialFunctions
+    using Distances
     using HaltonSequences
+    using JuMP
+    using HiGHS
+
 
     include("sampler.jl")
     include("bon.jl")
@@ -21,13 +25,14 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "balancedacceptance.jl"))
     include(joinpath("samplers", "grts.jl"))
     include(joinpath("samplers", "adaptivehotspot.jl"))
+    include(joinpath("samplers", "cubesampling.jl"))
 
     export sample 
     export CandidatePool
     export BiodiversityObservationNetwork
 
     export BONSampler
-    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal, BalancedAcceptance, GRTS, AdaptiveHotspot
+    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal, BalancedAcceptance, GRTS, AdaptiveHotspot, CubeSampling
 
     #=
     using DelaunayTriangulation
