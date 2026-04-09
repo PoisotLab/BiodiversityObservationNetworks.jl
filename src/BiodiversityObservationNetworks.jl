@@ -4,19 +4,25 @@ module BiodiversityObservationNetworks
     using TestItems
     using Distributions
     using LinearAlgebra
+    using NearestNeighbors
+
 
     include("sampler.jl")
     include("bon.jl")
     include("pool.jl")
     include("sample.jl")
+
+    include(joinpath("utilities", "nearestneighbors.jl"))
+
     include(joinpath("samplers", "simplerandom.jl"))
+    include(joinpath("samplers", "spatiallycorrelatedpoisson.jl"))
 
     export sample 
     export CandidatePool
     export BiodiversityObservationNetwork
 
     export BONSampler
-    export SimpleRandom
+    export SimpleRandom, SpatiallyCorrelatedPoisson
 
     #=
     using DelaunayTriangulation
