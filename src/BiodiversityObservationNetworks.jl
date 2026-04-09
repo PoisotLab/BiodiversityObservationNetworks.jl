@@ -16,13 +16,14 @@ module BiodiversityObservationNetworks
 
     include(joinpath("samplers", "simplerandom.jl"))
     include(joinpath("samplers", "spatiallycorrelatedpoisson.jl"))
+    include(joinpath("samplers", "pivotal.jl"))
 
     export sample 
     export CandidatePool
     export BiodiversityObservationNetwork
 
     export BONSampler
-    export SimpleRandom, SpatiallyCorrelatedPoisson
+    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal
 
     #=
     using DelaunayTriangulation

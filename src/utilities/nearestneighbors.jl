@@ -15,6 +15,19 @@ function _neighbor_order(tree::KDTree, coords::Matrix, i::Int)
     return idxs[2:end] # first is always self
 end
 
+"""
+    _neighbor_map(tree, coords)
+
+Return a dictionary with keys for all nodes `i` pointing to the list of indices sorted by distance to `i`.
+"""
+function _neighbor_map(tree::KDTree, coords::Matrix)
+    return Dict([i=>_neighbor_order(tree, coords, i) for i in 1:size(coords,2)])
+end
+
+
+
+
+
 #=
 _node_distance(a::Tuple, b::Tuple) = sqrt(sum(a .- b) .^ 2)
 _node_distance(a::CartesianIndex, b::CartesianIndex) = sqrt(sum(Tuple(a - b) .^ 2))
