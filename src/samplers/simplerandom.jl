@@ -28,7 +28,7 @@ end
     mask[10:20, 10:20] .= true
     result = sample(SimpleRandom(10), rand(20, 20); mask)
     @test all(s -> s[1] >= 10 && s[2] >= 10, result.sites)
-end
+end 
 
 #=
 

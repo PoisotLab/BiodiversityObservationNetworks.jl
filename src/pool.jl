@@ -5,11 +5,10 @@ The internal representation of a sampling domain: a matrix of `n` candidate loca
 
 # Fields
 - `n::Int` — the number of candidate locations
+- `keys::Vector{K}` — original identifiers (e.g. `CartesianIndex` for raster inputs)
 - `coordinates::Matrix` — `2 x n` spatial coordinate matrix
 - `features::Union{Matrix, Missing}` — `p x n` feature matrix (where p is the number of auxiliary variables) or `Missing`
 - `inclusion::Vector` — `n`-vector of relative inclusion probability summing to 1
-- `keys::Vector{K}` — original identifiers (e.g. `CartesianIndex` for raster inputs)
-- `metadata::Dict{Symbol, Any}` — source info, CRS, extent, etc.
 """
 struct CandidatePool{K}
     n::Int
@@ -89,6 +88,44 @@ function CandidatePool(mat::AbstractMatrix; mask = missing, inclusion = missing)
 end
 
 """
+    CandidatePool(matrices::AbstractVector{<:AbstractMatrix}; mask=missing, inclusion=missing)
+
+Convert a vector of same-sized matrices into a [`CandidatePool`](@ref) with features.
+Each matrix contributes one feature row.
+"""
+function CandidatePool(matrices::AbstractVector{<:AbstractMatrix}; mask=missing, inclusion=missing)
+    sz = size(first(matrices))
+    all(m -> size(m) == sz, matrices) || throw(ArgumentError("All matrices must have the same size"))
+
+    valid = ismissing(mask) ? trues(sz) : BitMatrix(Bool.(mask))
+    ismissing(mask) || size(mask) == sz ||
+        throw(ArgumentError("Mask size $(size(mask)) must match domain size $sz"))
+
+    all_indices = CartesianIndices(first(matrices))
+    keys = vec(all_indices)[vec(valid)]
+    n = length(keys)
+    n > 0 || throw(ArgumentError("No valid candidates after masking"))
+
+    coords = _get_coordinates_from_cartesian_indices(keys)
+    features = zeros(length(matrices), n)
+    for (row, m) in enumerate(matrices)
+        for (col, k) in enumerate(keys)
+            features[row, col] = Float64(m[k])
+        end
+    end
+
+    incl = _extract_and_process_inclusion(inclusion, keys, n)
+
+    return CandidatePool(
+        n, 
+        keys,
+        coords, 
+        features,
+        incl, 
+    )
+end
+
+"""
     CandidatePool(result::BiodiversityObservationNetwork)
 
 Convert a [`BiodiversityObservationNetwork`](@ref) into a new [`CandidatePool`](@ref) for
@@ -144,6 +181,13 @@ end
     @test cp.inclusion == inclusion[mask] ./ sum(inclusion[mask])
 end
 
+@testitem "We can construct a CandidatePool from vector of matrices" begin
+    cp = CandidatePool([rand(8, 6) for _ in 1:3])
+    @test cp.n == 48
+    @test size(cp.features) == (3, 48)
+    @test sum(cp.inclusion) ≈ 1.0
+end
+
 @testitem "We can construct a CandidatePool from a BON" begin
     cp1 = CandidatePool(rand(10, 10))
     sr = sample(SimpleRandom(n=3), cp1)
@@ -151,3 +195,4 @@ end
     @test cp2.n == 3
     @test cp2.keys == sr.sites
 end
+
