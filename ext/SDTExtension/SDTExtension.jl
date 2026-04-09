@@ -1,5 +1,5 @@
-module SimpleSDMLayersExtension
-    using SimpleSDMLayers
+module SDTExtension
+    using SpeciesDistributionToolkit
     using BiodiversityObservationNetworks
     using TestItems
 
@@ -87,6 +87,55 @@ module SimpleSDMLayersExtension
         incl = BiodiversityObservationNetworks._extract_and_process_inclusion(inclusion, keys, n)
 
         return CandidatePool(n, keys, coords, features, incl)
+    end
+    
+    """
+        CandidatePool(poly::SimpleSDMPolygons.AbstractGeometry; resolution=0.5, mask=missing, inclusion=missing)
+    
+    Rasterize a polygon geometry into a [`CandidatePool`](@ref). A regular grid at
+    the given `resolution` (in decimal degrees) is created over the polygon's
+    bounding box, cells outside the polygon are excluded, and the result is returned
+    as a pool with geographic (lon, lat) coordinates.
+
+    Accepts any `SimpleSDMPolygons.AbstractGeometry`: `Polygon`, `MultiPolygon`,
+    `Feature`, or `FeatureCollection`.
+
+    ## Arguments
+    - `poly`: the polygon to rasterize
+    - `resolution`: grid cell size in decimal degrees (default `0.5°`)
+    - `mask`: optional additional `BitMatrix` or `SDMLayer` mask applied after polygon rasterization
+    - `inclusion`: optional per-cell weight `Matrix` or `Vector`
+    """
+    function BiodiversityObservationNetworks.CandidatePool(
+        poly::SimpleSDMPolygons.AbstractGeometry;
+        resolution = 0.5,
+        mask = missing,
+        inclusion = missing,
+    )
+        bbox = SimpleSDMPolygons.boundingbox(poly)
+        nrows = max(1, round(Int, (bbox.top - bbox.bottom) / resolution))
+        ncols = max(1, round(Int, (bbox.right - bbox.left) / resolution))
+
+        layer = SDMLayer(
+            ones(nrows, ncols);
+            x = (Float64(bbox.left),  Float64(bbox.right)),
+            y = (Float64(bbox.bottom), Float64(bbox.top)),
+        )
+
+        # turns off cells whose centres fall outside the polygon
+        mask!(layer, poly)
+
+        return CandidatePool(layer; mask, inclusion)
+    end
+
+    @testitem "CandidatePool from Polygon" setup=[TestModule] begin
+        poly = SDT.Polygon(
+            (-5.0, 45.0), (5.0, 45.0), (5.0, 55.0), (-5.0, 55.0),
+        )
+        cp = CandidatePool(poly; resolution = 1.0)
+        @test cp isa CandidatePool
+        @test cp.n > 0
+        @test sum(cp.inclusion) ≈ 1.0
     end
 
     @testitem "CandidatePool from SDMLayer" setup=[TestModule] begin

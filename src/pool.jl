@@ -1,7 +1,7 @@
 """
     CandidatePool{K}
 
-The internal representation of a sampling domain: a matrix of `n` candidate locations, each with coordinates. Each candidate coordinate can potentially have features (auxiliary variables) and inclusion weights, which may be required/optional for some sampling methods. 
+The internal representation of a sampling domain: a set of `n` candidate locations, each with coordinates. Each candidate coordinate can potentially have features (auxiliary variables) and inclusion weights, which may be required/optional for some sampling methods. 
 
 # Fields
 - `n::Int` — the number of candidate locations
