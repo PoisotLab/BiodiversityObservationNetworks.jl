@@ -5,7 +5,7 @@ module BiodiversityObservationNetworks
     using Distributions
     using LinearAlgebra
     using NearestNeighbors
-
+    using HaltonSequences
 
     include("sampler.jl")
     include("bon.jl")
@@ -17,13 +17,14 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "simplerandom.jl"))
     include(joinpath("samplers", "spatiallycorrelatedpoisson.jl"))
     include(joinpath("samplers", "pivotal.jl"))
+    include(joinpath("samplers", "balancedacceptance.jl"))
 
     export sample 
     export CandidatePool
     export BiodiversityObservationNetwork
 
     export BONSampler
-    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal
+    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal, BalancedAcceptance
 
     #=
     using DelaunayTriangulation

@@ -103,6 +103,13 @@ function _sample(rng::AbstractRNG, sampler::Pivotal, cpool::CandidatePool)
     return selected
 end 
 
+
+@testitem "We can use Pivotal" begin
+    bon = sample(Pivotal(50), rand(30,20))
+    @test bon isa BiodiversityObservationNetwork
+end
+
+
 @testitem "We can use Pivotal with a BON" begin
     candidate_bon = sample(SimpleRandom(100), rand(30,20))
 

@@ -1,80 +1,48 @@
-#=
-
 """
     BalancedAcceptance <: BONSampler
 
-Implements Balanced Acceptance Sampling (BAS) using Halton sequences.
+Balanced Acceptance Sampling (BAS) using Halton sequences.
+
+Generates spatially balanced samples by mapping Halton
+sequences to the candidate coordinate space. When inclusion weights are
+non-uniform, a third Halton dimension acts as a threshold for acceptance,
+preferentially selecting higher-weighted candidates.
 
 # Fields
-- `num_nodes::Int`: The number of sites to select.
-
-# Description
-BAS generates spatially balanced samples by mapping the domain to a Halton sequence.
-If `inclusion` probabilities are provided, it uses a 3D Halton sequence where the 
-third dimension acts as an acceptance threshold against the probability surface.
+- `n::Int`: number of sites to select (default 50)
 
 # References
-- Robertson, B. L., et al. (2013). 
+- Robertson, B. L., et al. (2013).
 """
 @kwdef struct BalancedAcceptance <: BONSampler
-    num_nodes = _DEFAULT_NUM_NODES
-end 
+    n::Int = 50
+end
+
+supports_inclusion(::BalancedAcceptance) = true
+guarantees_exact_n(::BalancedAcceptance) = true
 
 _get_halton_value(base, offset, element) = haltonvalue(offset + element, base)
 _halton(bases, seeds, step, dims) = [_get_halton_value(bases[i], seeds[i], step) for i in 1:dims] 
+_rescale_node(sz, x::Real, y::Real) = Int.(ceil.(sz .* [x, y]))
 
+function _construct_explicit_mask_and_inclusion(cpool::CandidatePool, sz)
+    mask, inclusion, key_index = zeros(Bool, sz), zeros(sz), zeros(Int, sz)
 
-"""
-    _rescale_node(domain, x::Real, y::Real)
-
-Map unit-cube Halton coordinates `(x, y)` to integer raster indices in `domain`.
-"""
-function _rescale_node(domain, x::Real, y::Real) 
-    x_scaled, y_scaled = Int.(ceil.(size(domain) .* [x, y]))
-    return x_scaled, y_scaled
-end    
-
-
-"""
-    _sample(sampler::BalancedAcceptance, domain; inclusion=nothing)
-
-Generate a spatially balanced sample using BAS. With `inclusion`, perform 3D BAS
-to respect per-cell probabilities; otherwise perform 2D BAS over the mask.
-"""
-function _sample(
-    sampler::BalancedAcceptance,
-    domain;
-    inclusion = nothing
-)   
-    if !isnothing(inclusion)
-        return _3d_bas(sampler, domain, inclusion)
-    else
-        return _2d_bas(sampler, domain)
+    for i in eachindex(cpool.keys)
+        mask[cpool.keys[i]] = true
+        inclusion[cpool.keys[i]] = cpool.inclusion[i]
+        key_index[cpool.keys[i]] = i
     end
+    return mask, inclusion, key_index
 end
 
-
-"""
-    _3d_bas(sampler, domain, inclusion)
-
-3D BAS using Halton bases `[2,3,5]`. A candidate `(i,j,z)` is accepted if the
-cell is unmasked and `z < inclusion[i,j]`.
-"""
-function _3d_bas(sampler, domain, inclusion)
-    seeds = rand(Int.(1e0:1e7), 3)
-    bases = [2, 3, 5]
-    attempt = 0
-    nodes = CartesianIndex[]
-    while length(nodes) < sampler.num_nodes
-        i, j, z  = _halton(bases, seeds, attempt, 3)
-        i, j = _rescale_node(domain, i,j)
-
-        if !ismasked(domain, i,j) && z < inclusion[i,j] 
-            push!(nodes, CartesianIndex(i,j))
-        end 
-        attempt += 1
-    end 
-    return nodes, domain[nodes]
+function _sample(rng::AbstractRNG, sampler::BalancedAcceptance, cpool::CandidatePool)
+    unequal_inclusion = !all(≈(cpool.inclusion[1]), cpool.inclusion)
+    if unequal_inclusion
+        return _3d_bas(rng, sampler, cpool)
+    else
+        return _2d_bas(rng, sampler, cpool)
+    end
 end 
 
 """
@@ -83,40 +51,62 @@ end
 2D BAS using Halton bases `[2,3]` to generate spatially spread candidate cells,
 accepting those that fall on unmasked locations until `num_nodes` are selected.
 """
-function _2d_bas(sampler, domain)
-    seeds = rand(Int.(1e0:1e7), 2)
+function _2d_bas(rng, sampler, cpool)
+    seeds = rand(rng, Int.(1e0:1e7), 2)
     bases = [2, 3]
     attempt = 0
-    nodes = CartesianIndex[]
-    while length(nodes) < sampler.num_nodes
+    selected = []
+    xmax, ymax = maximum([x[1] for x in cpool.keys]), maximum([x[2] for x in cpool.keys])
+    valid_sites, _, key_index = _construct_explicit_mask_and_inclusion(cpool, (xmax, ymax))
+
+    while length(selected) < sampler.n
         i, j = _halton(bases, seeds, attempt, 2)
-        i, j = _rescale_node(domain, i,j)
+        i, j = _rescale_node((xmax, ymax), i, j)
         
-        if !ismasked(domain, i,j)
-            push!(nodes, CartesianIndex(i,j))
+        if valid_sites[i,j] 
+            push!(selected, key_index[i,j])
         end 
         attempt += 1
     end
-    return nodes, domain[nodes]
+    return selected
 end 
 
-# ========================================================================
-# Tests
-# ========================================================================
+"""
+    _3d_bas(rng, sampler, cpool)
 
-@testitem "We can use Balanced Acceptance with a RasterDomain" begin
-    bon = sample(BalancedAcceptance(), rand(30,20))
+3D BAS using Halton bases `[2,3,5]`. A candidate `(i,j,z)` is accepted if the
+cell is unmasked and `z < inclusion[i,j]`.
+"""
+function _3d_bas(rng, sampler, cpool)
+    seeds = rand(rng, Int.(1e0:1e7), 3)
+    bases = [2, 3, 5]
+    attempt = 0
+    selected = []
+    xmax, ymax = maximum([x[1] for x in cpool.keys]), maximum([x[2] for x in cpool.keys])
     
+    valid_sites, inclusion, key_index = _construct_explicit_mask_and_inclusion(cpool, (xmax, ymax))
+
+    while length(selected) < sampler.n
+        i, j, z  = _halton(bases, seeds, attempt, 3)
+        i, j = _rescale_node((xmax, ymax), i,j)
+        
+        if valid_sites[i,j]  && z < inclusion[i,j] 
+            push!(selected, key_index[i,j])
+        end 
+        attempt += 1
+    end 
+    return selected
+end 
+
+
+@testitem "We can use Balanced Acceptance" begin
+    bon = sample(BalancedAcceptance(), rand(30,20))
     @test bon isa BiodiversityObservationNetwork
-    @test first(bon) isa CartesianIndex
 end
 
-@testitem "We can use Balanced Acceptance with a RasterDomain and Inclusion" begin
+@testitem "We can use Balanced Acceptance with custom inclusion" begin
     inclusion = rand(30,20)
     bon = sample(BalancedAcceptance(), rand(30,20), inclusion=inclusion)
-
     @test bon isa BiodiversityObservationNetwork
-    @test first(bon) isa CartesianIndex
 end
 
-=#

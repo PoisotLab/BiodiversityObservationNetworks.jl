@@ -3,6 +3,8 @@ module SDTExtension
     using BiodiversityObservationNetworks
     using TestItems
 
+    @info "Hi from SDTExtension"
+
 
     _apply_sdm_mask!(::BitMatrix, ::SDMLayer, ::Missing) = nothing
     function _apply_sdm_mask!(valid::BitMatrix, layer::SDMLayer, mask::AbstractMatrix)
