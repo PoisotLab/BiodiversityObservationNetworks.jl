@@ -11,7 +11,7 @@ module SDTExtension
         return
     end
     function _apply_sdm_mask!(valid::BitMatrix, layer::SDMLayer, mask::SDMLayer)
-        SimpleSDMLayers._layers_are_compatible(layer, mask) || throw(ArgumentError("Layer and mask are not compatible. Ensure size, extent, and CRS match."))
+        SimpleSDMLayers._layers_are_compatible(layer, mask) 
         valid .&= mask.indices
         return
     end
@@ -66,8 +66,7 @@ module SDTExtension
     )
         first_layer = first(layers)
         
-        all(l -> SimpleSDMLayers._layers_are_compatible(l, first_layer), layers) ||
-            throw(ArgumentError("All SDMLayers must have the same size, extent, and CRS"))
+        all(l -> SimpleSDMLayers._layers_are_compatible(l, first_layer), layers) 
 
         valid = reduce((a, b) -> a .& b, [l.indices for l in layers])
         _apply_sdm_mask!(valid, first_layer, mask)
