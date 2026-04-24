@@ -1,6 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
-import mathjax3 from "markdown-it-mathjax3";
+//import mathjax3 from "markdown-it-mathjax3";
 import footnote from "markdown-it-footnote";
 
 // https://vitepress.dev/reference/site-config
@@ -16,7 +16,7 @@ export default defineConfig({
         math: true,
         config(md) {
             md.use(tabsMarkdownPlugin),
-                md.use(mathjax3),
+                //md.use(mathjax3),
                 md.use(footnote)
         },
         theme: {
