@@ -11,6 +11,7 @@ end
 supports_inclusion(::SimpleRandom) = true
 guarantees_exact_n(::SimpleRandom) = true
 
+
 function _sample(rng::AbstractRNG, sampler::SimpleRandom, cpool::CandidatePool)
     weights = StatsBase.Weights(cpool.inclusion)
     selected = StatsBase.sample(rng, 1:cpool.n, weights, sampler.n; replace=false)

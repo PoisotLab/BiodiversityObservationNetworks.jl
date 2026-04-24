@@ -4,6 +4,7 @@ version = "0.5.0"
 authors = ["michael catchen <michael.catchen@colorado.edu>"]
 
 [deps]
+Crayons = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 DelaunayTriangulation = "927a84f5-c5f4-47a5-9785-b46e178433df"
 Distances = "b4f34e82-e78d-54a5-968a-f98e89d6e8f7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
@@ -31,6 +32,7 @@ SpeciesDistributionToolkit = "72b53823-5c0b-4575-ad0e-8e97227ad13b"
 SDTExtension = "SpeciesDistributionToolkit"
 
 [compat]
+Crayons = "4.1.1"
 DelaunayTriangulation = "1.6.4"
 Distances = "0.10.12"
 Distributions = "0.25.120"

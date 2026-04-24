@@ -10,6 +10,7 @@ module BiodiversityObservationNetworks
     using HaltonSequences
     using JuMP
     using HiGHS
+    using Crayons
 
 
     include("sampler.jl")
@@ -26,6 +27,8 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "grts.jl"))
     include(joinpath("samplers", "adaptivehotspot.jl"))
     include(joinpath("samplers", "cubesampling.jl"))
+
+    #include("show.jl")
 
     export sample 
     export CandidatePool

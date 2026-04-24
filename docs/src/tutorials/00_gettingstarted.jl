@@ -8,108 +8,75 @@ CairoMakie.activate!(; px_per_unit = 3) #hide
 
 # In this tutorial, we will cover the basics of how to use BiodiversityObservationNetworks.jl. We'll start by loading the package.
 
-# ## _Hello World_ in BiodiversityObservationNetworks.jl
+# ## Installing and loading
 
-# The primary use of BiodiversityObservationNetworks is for generating [`BiodiversityObservationNetwork`](@ref) using a variety of point-selection algorithms. Generating networks, regardless of the specific algorithm chosen, is done using the [`sample`](@ref) method. The simplest point-selection algorithm is [`SimpleRandom`](@ref), where each location in space (what is meant be location? More on this in the next section) has an equal probability of inclusion.
+# Install the package from the Julia REPL:
+# ```julia
+# using Pkg; Pkg.add("BiodiversityObservationNetworks")
+# ```
+# Then load it:
+# ```julia
+# using BiodiversityObservationNetworks
+# ```
 
-bon = sample(SimpleRandom())
+# ## Your first sample
 
-# By default, [`SimpleRandom`](@ref) (and every other sampler), chooses 50 points. Without any other arguments, [`sample`](@ref) chooses points from a raster than covers the entire globe, with each pixel representing a 1˚ by 1˚ region.
+# The core function is [`sample`](@ref). At minimum it needs a sampler and a
+# domain. The simplest domain is a plain Julia `Matrix`:
 
-# When a version of the [Makie](https://docs.makie.org/v0.22/) package for data visualization is loaded, we can use built-in functions to visualize the network. We'll use the `CairoMakie` backend. (Learn mroe about Makie backends [here](https://docs.makie.org/stable/explanations/backends/backends#What-is-a-backend))
+mat = rand(50, 50)   # 50×50 grid of random values (imagine an elevation raster)
 
-# We can adjust the number of points to generate by passing an integer directly to [`SimpleRandom`](@ref), i.e.
+# and the simplest sampler is [`SimpleRandom`](@ref), which randomly selects sites without replacement.
 
-srs = SimpleRandom(150)
+result = sample(SimpleRandom(10), mat)
 
-# Alternatively, we can use the the `num_nodes` keyword argument
-
-srs = SimpleRandom(num_nodes=150)
-
-# Both of these methods for adjusting the number of nodes is supported for all sampling algorithms.
-# Let's sample and visualize a [`BiodiversityObservationNetwork`](@ref) with more points
-# One thing you may notice about the [`BiodiversityObservationNetwork`](@ref) generated using [`SimpleRandom`](@ref) is that many of the points are clumped together. Many of the sampling algorithms in BiodiversityObservationNetworks aim to produce points that are _spatially balanced_, meaning they are well spread out across space, with little clumping. 
-# One such sampler is [`BalancedAcceptance`](@ref). Let's similarly make a [`BiodiversityObservationNetwork`](@ref) with 300 nodes that are spatially balanced.
-
-bon = sample(BalancedAcceptance(150))
-
-# Much better! However, we are still missing some crucial things here. For example, what if we only want to select sites on land? This brings us to applying sampling algorithms to different _geometries_.
-
-# ## Geometries in BiodiversityObservationNetworks.jl
-
-# For most practical use-cases, we aren't interested in developing a [`BiodiversityObservationNetwork`](@ref) for all of Earth, but instead for a small region delineated by a polygon, or represented using raster data, which may contain useful covariate information that we want to incorporate into our BON design.  
-# In this case, we want our sampling algorithm `algo` to work on some `geometry` which specifies the spatial domain from which sites should be selected. In this case, we still use `sample`, and pass the spatial domain `geometry` as the second argument, i.e. `sample(algo, geometry)`
+# [`sample`](@ref) returns a [`BiodiversityObservationNetwork`](@ref). It carries the selected
+# site indices, their coordinates, and the values of auxiliary variables at the selected sites.
 
 
-# ## A Polygon as a Geometry
-# For example, maybe we only want to draw points on land. consider drawing a spatially balanced sample using [`BalancedAcceptance`](@ref) for the nation of Colombia. We can start by downloading a Polygon representing the land
+# TODO plotting with scatter (requires simple Makie extension)
 
-using SimpleSDMPolygons
-
-# Then, we can download a polygon from the NaturalEarth database that represents the land on Earth .
-
-land = getpolygon(PolygonData(NaturalEarth, Land))
-
-# and we can plot it to confirm it's what we expect
+scatter(result.coordinates; axis=(;aspect=1))
 
 
-# fig-foo
-lines(land)
-current_figure() #hide
+# When the domain is a single matrix (like `mat`), the auxiliary variables in the [`BiodiversityObservationNetwork`](@ref) 
+# are simply the values of the original matrix at each selected.
 
-# Now we can generate a [`BiodiversityObservationNetwork`](@ref) using [`BalancedAcceptance`](@ref) in the same way as before, but while passing `col` as a second argument to [`sample`](@ref)
+# We can verify this by taking a look at the internals of the [`BiodiversityObservationNetwork`](@ref). 
+# The sites are stored in a field called `sites`
 
-bon = sample(BalancedAcceptance(), land)
+result.sites
 
-# and plot 
+# and the auxiliary data associated which each site is stored in a matrix called `features`
 
-# fig-scatter-earth
-lines(land, color=:grey20)
-scatter!(vec(bon.nodes), color=:red)
-current_figure() #hide
+result.features
 
-# Wahoo 🥳. We've done it. 
+# We can see that the first feature is the value of the domain at the first site
 
-# ## A Raster as a Geometry
+mat[result.sites[begin]]
 
-# Okay, but what if you've got raster data that describes useful environmental covariates? Or a mask of where we can sample? We can use that too.
+# [`BiodiversityObservationNetwork`](@ref) also have a field called `coordinates`
 
-# Let's start by downloading a raster to use as a source. 
+result.coordinates
+
+# At first, this may seem to be redundant as the same information is stored in `sites`,
+# but this allows for storing both the Cartesian indices of a raster, and their corresponding 
+# geospatial coordinates when using domains from [`SpeciesDistributionToolkit.jl`](). You can read
+# more about the different types of domains [`here`](todo). 
 
 
-# ## Can we feed a BON to itself?
+# ## Masking sites
 
-# Ethically I'm not 100% sure. But it is technically possible. That's both true about sampling BONs from BONs, and the moral of Jurassic Park (1994). 
-# Let's download Switzerland.
+# Use the `mask` keyword to restrict sampling to a subset of the grid.
+# A `true` value in the mask means the cell is *valid* (can be sampled):
 
-swi = getpolygon(PolygonData(OpenStreetMap, Places), place="Switzerland")
+mask = falses(50, 50)
+mask[10:40, 10:40] .= true   # only sample the central region
+result_masked = sample(SimpleRandom(10), mat; mask)
 
-# and now lets choose a buncha random places in there
+# We can plot the valid region in white and the invalid region in grey to see all 
+# the coordinates fall in the valid region of the mask. 
 
-candidate_bon = sample(SimpleRandom(500), swi)
-
-# and visualize 
-
-# fig-swiss-candidate-bon
-f = Figure()
-ax = Axis(f[1,1])
-hidedecorations!(ax)
-hidespines!(ax)
-lines!(ax, swi)
-scatter!(ax, vec(candidate_bon.nodes), color=:red)
-current_figure()
-
-# Wow. We're doing groundbreaking work here.
-# Next up, let's choose a set of spatially balanced coordinates from this set of candidates. We'll do this using a different sampling algorithm, called the Pivotal method [Grafstrom2012SpaBal](@cite), [`Pivotal`](@ref). Is this because [`BalancedAcceptance`](@ref) doesn't work on point-like geometries? Yes
-
-num_points_to_pick = 30
-swiss_bon = sample(SpatiallyCorrelatedPoisson(num_points_to_pick), candidate_bon)
-
-# fig-swiss-final-bon
-f = Figure()
-ax = Axis(f[1,1])
-hidedecorations!(ax)
-hidespines!(ax)
-lines!(ax, swi)
-scatter!(ax, vec(swiss_bon.nodes), color=:red)
+heatmap(mask, colormap=[:grey50, :grey98])
+scatter!(result_masked.coordinates)
 current_figure()
