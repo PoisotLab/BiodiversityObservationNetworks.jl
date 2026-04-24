@@ -1,70 +1,30 @@
 """
     CubeSampling <: BONSampler
 
-Implements the Cube method for balanced sampling with respect to auxiliary variables.
+Balanced sampling with respect to auxiliary variables, using the Cube method
+from Deville & Tillé (2004).
+
+Selects a sample whose Horvitz–Thompson estimates of auxiliary variables
+match the population as closely as possible. The algorithm runs in two
+phases:
+
+1. **Flight phase**: a random walk on inclusion probabilities that preserves
+   balance constraints while driving inclusion probabilities toward 0 or 1.
+2. **Landing phase**: uses integer programming (via the JuMP + HiGHS packages) 
+    to resolve any remaining fractional probabilities once the flight phase terminates.
+
+Requires a `CandidatePool` with features; pass a vector of matrices or
+construct a pool with explicit features.
 
 # Fields
-- `num_nodes::Int`: The expected sample size.
-
-# Description
-The algorithm selects a sample such that the Horvitz-Thompson estimates of auxiliary 
-variables match the population totals as closely as possible. It proceeds in two phases:
-1. **Flight Phase**: Random walk modifying inclusion probabilities while respecting constraints.
-2. **Landing Phase**: Linear programming (using HiGHS) to resolve remaining fractional probabilities.
+- `n::Int`: number of sites to select (default 50)
 
 # References
-- Deville, J. C., & Tillé, Y. (2004). Efficient balanced sampling: The cube method.
+- Deville, J. C., & Tillé, Y. (2004). TODO
 """
 @kwdef struct CubeSampling <: BONSampler
-    num_nodes = _DEFAULT_NUM_NODES
+    n::Int = 50
 end
-
-"""
-    _sample(sampler::CubeSampling, domain; inclusion=nothing)
-
-Draw a sample using the cube method, balancing means of auxiliary variables
-(`getfeatures(domain)`) while achieving the desired sample size in expectation.
-
-Arguments:
-- `sampler.num_nodes`: desired number of selected sites
-- `domain`: sampling domain; must support `getpool(domain)` and `getfeatures(domain)`
-- `inclusion`: optional vector/array of inclusion probabilities indexed by pool items
-
-Returns a `BiodiversityObservationNetwork`.
-"""
-function _sample(
-    sampler::CubeSampling,
-    domain;
-    inclusion = nothing
-)
-    inclusion = isnothing(inclusion) ? get_uniform_inclusion(sampler, domain) : inclusion
-
-    inclusion = [inclusion[p] for p in getpool(domain)]
-
-    features = getfeatures(domain)
-
-    # Sort domain units by Mahalanobis distance to mean feature vector
-    sorted_idx = _sort_features_by_mahalanobis(features, inclusion)
-
-    sorted_inclusion = inclusion[sorted_idx]
-    sorted_features = features[:, sorted_idx]
-
-    # Flight phase of cube method
-    π_flight = _cube_flight_phase(sorted_inclusion, sorted_features)
-    
-    # Landing phase if fractional probabilities remain
-    π_optimal = any(x -> x ∉ [0,1], π_flight) ? _cube_landing_phase(π_flight, sorted_inclusion, sorted_features) : π_flight
-
-    # Select included nodes from sorted pool
-    sorted_pool = getpool(domain)[sorted_idx]
-    
-    selected_idx = Bool.(π_optimal)
-    nodes = sorted_pool[selected_idx]
-    selected_features = features[:,selected_idx]
-
-    return nodes, selected_features
-end 
-
 
 """
     _sort_features_by_mahalanobis(features, inclusion)
@@ -79,7 +39,7 @@ function _sort_features_by_mahalanobis(features, inclusion)
     
     # Normalize features by inclusion probabilities
     x = features ./ inclusion'
-    x_bar = SB.mean(eachcol(x))
+    x_bar = StatsBase.mean(eachcol(x))
 
     # Sort features by Mahalanobis distance to mean (descending)
     perm = sortperm([mh(x_bar, x) for x in eachcol(features)]) |> reverse
@@ -93,10 +53,11 @@ end
 Run the flight phase of the cube method.
 
 `πₖ` are current inclusion probabilities; `x` (auxiliary matrix) is augmented
-with a first row of `πₖ'` so sample size fixed. The method repeatedly finds a direction in the null space of the constraint matrix and pushes a small subset of probabilities to 0 or 1 while preserving
-balances in expectation.
+with a first row of `πₖ'` so sample size fixed. The method repeatedly finds a 
+direction in the null space of the constraint matrix and pushes a small subset 
+of probabilities to 0 or 1 while preserving balances in expectation.
 """
-function _cube_flight_phase(πₖ, x)
+function _cube_flight_phase(rng, πₖ, x)
     x = vcat(transpose(πₖ), x) # add inclusion probabilities to fix sample size
 
     # number of auxillary variables
@@ -116,7 +77,7 @@ function _cube_flight_phase(πₖ, x)
     k = num_aux + 2
 
     while k <= length(π_nonint)
-        Ψ =_update_psi(Ψ, B)
+        Ψ =_update_psi(rng, Ψ, B)
 
         if length(findall(z -> z .< 0, Ψ)) > 0
             throw(error("Negative inclusion probability"))
@@ -140,10 +101,11 @@ function _cube_flight_phase(πₖ, x)
         end
     end
     # now do the final iteration
-    Ψ = _update_psi(Ψ, B)
+    Ψ = _update_psi(rng, Ψ, B)
     π_nonint[r] = Ψ
     return π_nonint
 end
+
 
 """
     _update_psi(Ψ, B)
@@ -152,7 +114,7 @@ Given current working vector `Ψ` and constraint block `B`, compute a feasible
 update along a null-space direction `u` by maximizing step sizes `λ₁, λ₂` that
 keep probabilities within [0,1].
 """
-function _update_psi(Ψ, B)
+function _update_psi(rng, Ψ, B)
     # get vector u in the kernel of B
     u = nullspace(B)[:, 1]
 
@@ -185,9 +147,35 @@ function _update_psi(Ψ, B)
     # the new inclusion probability π is one of the lambda expressions with a given probability q1, q2
     q₁ = λ₂ / (λ₁ + λ₂)
 
-    new_πₖ = rand() < q₁ ? λ₁_ineq : λ₂_ineq
+    new_πₖ = rand(rng) < q₁ ? λ₁_ineq : λ₂_ineq
     return (new_πₖ)
 end
+
+"""
+    unique_permutations(x::T, prefix = T()) where {T}
+
+Generate all unique permutations for a multiset `x` without repetition of
+duplicates. Based on StackOverflow
+(`https://stackoverflow.com/questions/65051953/julia-generate-all-non-repeating-permutations-in-set-with-duplicates`).
+"""
+function unique_permutations(x::T, prefix = T()) where {T}
+    if length(x) == 1
+        return [[prefix; x]]
+    else
+        t = T[]
+        for i in eachindex(x)
+            if i > firstindex(x) && x[i] == x[i - 1]
+                continue
+            end
+            append!(
+                t,
+                unique_permutations([x[begin:(i - 1)]; x[(i + 1):end]], [prefix; x[i]]),
+            )
+        end
+        return t
+    end
+end
+
 
 """
     _cube_landing_phase(pikstar, πₖ, x)
@@ -288,36 +276,41 @@ function _cube_landing_phase(pikstar, πₖ, x)
     return pikstar_return
 end
 
-"""
-    unique_permutations(x::T, prefix = T()) where {T}
 
-Generate all unique permutations for a multiset `x` without repetition of
-duplicates. Based on StackOverflow
-(`https://stackoverflow.com/questions/65051953/julia-generate-all-non-repeating-permutations-in-set-with-duplicates`).
-"""
-function unique_permutations(x::T, prefix = T()) where {T}
-    if length(x) == 1
-        return [[prefix; x]]
-    else
-        t = T[]
-        for i in eachindex(x)
-            if i > firstindex(x) && x[i] == x[i - 1]
-                continue
-            end
-            append!(
-                t,
-                unique_permutations([x[begin:(i - 1)]; x[(i + 1):end]], [prefix; x[i]]),
-            )
-        end
-        return t
-    end
+function _sample(
+    rng::AbstractRNG,
+    sampler::CubeSampling, 
+    cpool::CandidatePool,
+)
+
+    # Scale inclusion to sum to n
+    inclusion = cpool.inclusion .* sampler.n
+    features = cpool.features
+
+    # Sort candidates by Mahalanobis distance to mean feature vector to stabilise the flight phase numerically
+    sorted_idx = _sort_features_by_mahalanobis(features, inclusion)
+
+    sorted_inclusion = inclusion[sorted_idx]
+    sorted_features = features[:, sorted_idx]
+
+    # Flight phase of cube method
+    π_flight = _cube_flight_phase(rng, sorted_inclusion, sorted_features)
+    
+    # Landing phase if fractional probabilities remain
+    π_optimal = any(x -> x ∉ [0,1], π_flight) ? _cube_landing_phase(π_flight, sorted_inclusion, sorted_features) : π_flight
+
+    # These are the selected sites in the sorted_idx space
+    idx = findall(isone, π_optimal)
+
+    # Map sorted positions back to original candidate indices
+    selected = sorted_idx[idx]
+
+    return selected
 end
 
 
-@testitem "We can use CubeSampling with a RasterStack" begin
+@testitem "We can use CubeSampling" begin
     bon = sample(CubeSampling(), [rand(30,20) for _ in 1:3])
-
     @test bon isa BiodiversityObservationNetwork
-    @test first(bon) isa CartesianIndex
 end
 
