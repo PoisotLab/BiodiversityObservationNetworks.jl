@@ -60,8 +60,8 @@ For more information on this functionality, see [this]() TODO how-to.
 function sample end
 
 # Without RNG
-function sample(sampler::BONSampler, domain; mask=missing, inclusion=missing)
-    sample(Random.default_rng(), sampler, domain; mask, inclusion)
+function sample(sampler::BONSampler, domain; mask=missing, inclusion=missing, kwargs...)
+    sample(Random.default_rng(), sampler, domain; mask, inclusion, kwargs...)
 end
 
 function sample(sampler::BONSampler, cpool::CandidatePool)
@@ -73,8 +73,8 @@ function sample(sampler::BONSampler, bon::BiodiversityObservationNetwork)
 end
 
 # With explicit RNG
-function sample(rng::AbstractRNG, sampler::BONSampler, domain; mask=missing, inclusion=missing)
-    cpool = CandidatePool(domain; mask, inclusion)
+function sample(rng::AbstractRNG, sampler::BONSampler, domain; mask=missing, inclusion=missing, kwargs...)
+    cpool = CandidatePool(domain; mask, inclusion, kwargs...)
     _run_sample(rng, sampler, cpool)
 end
 

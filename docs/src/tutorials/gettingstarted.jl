@@ -120,8 +120,8 @@ result_masked = sample(SimpleRandom(10), mat; mask = mask)
 # fig-masked-matrix
 f = Figure()
 ax = Axis(f[1,1])
-heatmap!(mask, colormap=[:grey50, :grey98])
-scatter!(result_masked)
+heatmap!(ax, mask, colormap=[:grey50, :grey98])
+scatter!(ax, result_masked)
 current_figure() #hide
 
 # ## Custom Inclusion Probabilities 
@@ -175,9 +175,9 @@ inclusion_masked_bon = sample(SimpleRandom(), rand(50, 50), inclusion = inclusio
 
 # fig-inclusion-masked-bon
 fig = Figure()
-ax = Axis(f[1,1])
-heatmap!(mask, colormap=[:grey50, :grey98])
-scatter!(inclusion_masked_bon)
+ax = Axis(fig[1,1])
+heatmap!(ax, mask, colormap=[:grey50, :grey98])
+scatter!(ax, inclusion_masked_bon)
 current_figure() #hide
 
 # In this case, any inclusion probability in masked regions is ignored and inclusion weights are renormalized only using unmasked regions (see note above).

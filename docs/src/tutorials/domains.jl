@@ -221,12 +221,46 @@ poly!(ville_de_m, color=:seagreen4)
 scatter!(masked_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
-# TODO
-# if you want to use custom inclusion probabilities, it's possible using a polygon directly.
-# its going to be more straightforward to construct an SDMLayer masked by the polygon with mask! 
-# and base the inclusion probabilities on that. 
+# ### Under the hood with polygons
+
+# When using a vector-based domain, the vector data is first rasterized because all sampling algorithms work on discrete sets of points. 
+
+# The size at which they are rasterized is controllable with the `resolution` keyword argument. By default, it is (100, 100).
+
+# We can rasterize at a very coarse resolution to get a better of what's happening 
+
+coarse_bon = sample(SimpleRandom(35), montreal; resolution = (10, 10))
+
+# fig-poly-bon-coarse
+fig = Figure()
+ax = Axis(fig[1,1])
+poly!(montreal)
+scatter!(coarse_bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure() #hide
+
+# Note at a resolution this coarse, it is possible to see the underlying grid from which the points are selected.  
+
+# ## Using vector domains with inclusion probabilities
+
+# ### Vector domains with matrix inclusion
+
+res = (200, 200)
+
+bbox = SpeciesDistributionToolkit.boundingbox(montreal)
+
+inclusion_matrix = [1.2^j for i in 1:res[1], j in 1:res[2]];
+inclusion_layer = SDMLayer(
+    inclusion_matrix,
+    x = (bbox.left, bbox,right),
+    y = (bbox.bottom, bbox.top)
+)
 
 
+# TODO: ensure inclusion dimensions match rasterized poly dimensions
+inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_matrix)
 
+poly(montreal)
+scatter!(inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure()
 
 
