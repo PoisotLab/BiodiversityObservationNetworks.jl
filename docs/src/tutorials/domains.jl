@@ -29,10 +29,12 @@ temp = SDMLayer(RasterData(CHELSA1, AverageTemperature); spatial_extent...,)
 
 # We can plot it using `heatmap` from Makie to visualize
 
+
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp, colormap=:OrRd)
-current_figure()
+current_figure() #hide
+
 
 # Sampling from this `SDMLayer` works exactly like sampling from a matrix. For example, we can use the [`SimpleRandom`](@ref) as follows:
 
@@ -44,7 +46,7 @@ f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp, colormap=:OrRd)
 scatter!(ax, bon, color=:white, strokewidth=1, strokecolor=:black)
-current_figure()
+current_figure() #hide
 
 # Note that there are regions in the raster (the water of surrouding Corsica) that have no value. Samplers will automatically avoid sampling sites in those regions --- only pixels with valid data are considered for sampling. 
 
@@ -79,19 +81,20 @@ f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp2, colormap=:OrRd)
 scatter!(ax, masked_bon, color=:white, strokewidth=1, strokecolor=:black)
-current_figure()
+current_figure() #hide
 
 # ::: note Hiding masked regions in the SDMLayer
 #
 # Note that we have done a bit of trickery on the SDMLayer to hide the masked pixels in the plot.
 # This was done by running 
 # ```julia
-# temp2 = copy(temp) #hide 
-# temp2.indices[findall(iszero, matrix_mask)] .= 0 #hide
+# temp2 = copy(temp) 
+# temp2.indices[findall(iszero, matrix_mask)] .= 0 
 # ```
 # and plotting `temp2`, which we sneakily hid from the code above to avoid confusion and unnecessary detail.
 #
 # Note this has *no effect* on the actual sampling of the sites, it is simply for visualization purposes to verify no sampled sites fall within the mask.
+# 
 # :::
 
 # ### Masking a `SDMLayer` with another `SDMLayer`
@@ -103,6 +106,7 @@ current_figure()
 # `SDMLayer`s have a separate field called `indices`, which determine what pixels are valid. *The `indices` field is what is used to mask sampling sites*
 
 # To construct an `SDMLayer` mask, we start by constructing a `copy` of our temp
+
 layer_mask = copy(temp)
 
 # The validity of each pixel is stored in the `indices` field of an SDM. To construct a mask, we can run the lines
@@ -116,7 +120,7 @@ layer_mask.indices[100:150, 50:125] .= 0; # set center of Corsica to 0
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, layer_mask, colormap=:OrRd)
-f
+current_figure() #hide
 
 # We can then pass the `layer_mask` to the `mask` keyword argument as normal:
 
@@ -124,18 +128,48 @@ masked_bon = sample(SimpleRandom(), temp, mask = layer_mask)
 
 # and plot to verify the masking works
 
+
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, layer_mask, colormap=:OrRd)
 scatter!(ax, masked_bon, color=:white, strokewidth=1, strokecolor=:black)
-f
+current_figure() #hide
 
 
 # ## Custom Inclusion Probabilities with Geospatial Rasters
 
-# it's the same thing but with inclusions
+# When using custom inclusion probabilities with an `SDMLayer` domain, things work very similarly to masking.
+# Either (1) a matrix of the same size or (2) an `SDMLayer` with the same size, extent and crs can be used as inclusion probabilities. 
+
+# ### A inclusion probabilities matrix with an `SDMLayer` domain.
+
+# Let's construct inclusion probabilities where the right side is more likely to be included, as we did in the first tutorial.
+
+inclusion_probabilies = [1.15^j for i in 1:size(temp,1), j in 1:size(temp, 2)];
+
+# ::: note x/y vs. longitude/latitude
+#
+# You may notice above that to make inclusion increase as we go right, we use `1.15^j`, where as in the first tutorial we used `1.15^i`.
+#  
+# This is because in a matrix, `i` (the first axis) typically corresponds to the horizontal axis, but in a raster, `j` (the second axis) typically corresponds to the horizontal/longitude axis. 
+# 
+# This is a result of decisions that people made before many of us were born and that we will all likely have to live with until we are all dead. That's just how it is.
+#
+# :::
+
+# We can then use this with the `inclusion` keyword argument
+
+inclusion_bon = sample(SimpleRandom(), temp, inclusion = inclusion_probabilies)
+
+# and visualize to confirm it worked
 
 
+f = Figure()
+ax = Axis(f[1,1])
+heatmap!(ax, temp, colormap=[:grey80])
+scatter!(inclusion_bon, color=:dodgerblue)
+current_figure() #hide
+ 
 
 # # Using a geospatial vector as a domain
 
@@ -149,6 +183,8 @@ f
 # if you want to use custom inclusion probabilities, it's possible using a polygon directly.
 # its going to be more straightforward to construct an SDMLayer masked by the polygon with mask! 
 # and base the inclusion probabilities on that. 
+
+
 
 
 

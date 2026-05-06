@@ -112,7 +112,7 @@ multilayer_result.features
 
 mask = falses(50, 50)
 mask[10:40, 10:40] .= true   # only sample the central region
-result_masked = sample(SimpleRandom(10), mat; mask)
+result_masked = sample(SimpleRandom(10), mat; mask = mask)
 
 # We can plot the valid region in white and the invalid region in grey to verify that all 
 # the coordinates fall in the valid region of the mask. 
@@ -145,12 +145,10 @@ scatter(result)
 
 # ::: tip Inclusion probabilities as weights
 #
-# Formally, inclusion probabilities are defined as follows.
-#
-# The unit `i` has inclusion probability $\pi_i$, and the expected number of total units included in the sample is $\sum_i \pi_i$.
+# Formally, inclusion probabilities are defined as the unit $i$ having inclusion probability $\pi_i$, and the expected number of total units included in the sample is $\sum_i \pi_i$.
 # 
 # In BONs.jl, the desired sample size $N$ are defined as properties of the [`BONSampler`](@ref). As a result, we take any arbitrary set of positive values provided as inclusion probabilities, and renormalize them such that 
-# $$\sum_i \pi_i = N$$
+# $$\sum_i \pi_i = N$$, rather than enforcing that they sum to $N$ to begin with. 
 #
 # :::
  
@@ -164,7 +162,21 @@ result = sample(SimpleRandom(), rand(50, 50); inclusion = inclusion_probability)
 
 # is also valid.
 
+# ## Custom Inclusion Probabilities with Masks
 
+# Note that both masks and inclusion probabilities can be used together. 
+
+inclusion_masked_bon = sample(SimpleRandom(), rand(50, 50), inclusion = inclusion_probability, mask = mask)
+
+# We can visualize this to show the middle masked region is the only valid region, but points are still more likely on the right side.
+
+f = Figure()
+ax = Axis(f[1,1])
+heatmap!(mask, colormap=[:grey50, :grey98])
+scatter!(inclusion_masked_bon)
+current_figure() #hide
+
+# In this case, any inclusion probability in masked regions is ignored and inclusion weights are renormalized only using unmasked regions (see note above).
 
 
 # ## Next Steps
