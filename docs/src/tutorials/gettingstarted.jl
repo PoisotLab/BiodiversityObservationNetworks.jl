@@ -143,6 +143,17 @@ result = sample(SimpleRandom(), inclusion_probability, inclusion = inclusion_pro
 
 scatter(result)
 
+# ::: tip Inclusion probabilities as weights
+#
+# Formally, inclusion probabilities are defined as follows.
+#
+# The unit `i` has inclusion probability $\pi_i$, and the expected number of total units included in the sample is $\sum_i \pi_i$.
+# 
+# In BONs.jl, the desired sample size $N$ are defined as properties of the [`BONSampler`](@ref). As a result, we take any arbitrary set of positive values provided as inclusion probabilities, and renormalize them such that 
+# $$\sum_i \pi_i = N$$
+#
+# :::
+ 
 # Note that the inclusion probability matrix doesn't _have_ to be the domain. 
 # Different inclusion probabilities and domains can be used as long as they are compatible,
 # meaning they are equally sized matrices, or a SDMLayer with matching size, extent, and crs if using the SDMLayers extension.
@@ -152,6 +163,9 @@ scatter(result)
 result = sample(SimpleRandom(), rand(50, 50); inclusion = inclusion_probability)
 
 # is also valid.
+
+
+
 
 # ## Next Steps
 

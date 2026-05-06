@@ -32,7 +32,7 @@ temp = SDMLayer(RasterData(CHELSA1, AverageTemperature); spatial_extent...,)
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp, colormap=:OrRd)
-f
+current_figure()
 
 # Sampling from this `SDMLayer` works exactly like sampling from a matrix. For example, we can use the [`SimpleRandom`](@ref) as follows:
 
@@ -44,7 +44,7 @@ f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp, colormap=:OrRd)
 scatter!(ax, bon, color=:white, strokewidth=1, strokecolor=:black)
-f
+current_figure()
 
 # Note that there are regions in the raster (the water of surrouding Corsica) that have no value. Samplers will automatically avoid sampling sites in those regions --- only pixels with valid data are considered for sampling. 
 
@@ -79,7 +79,7 @@ f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp2, colormap=:OrRd)
 scatter!(ax, masked_bon, color=:white, strokewidth=1, strokecolor=:black)
-f
+current_figure()
 
 # ::: note Hiding masked regions in the SDMLayer
 #
