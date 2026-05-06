@@ -195,6 +195,7 @@ poly_bon = sample(SimpleRandom(), montreal)
 
 # which we can then visualize
 
+#
 # fig-simple-poly-bon
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -216,6 +217,7 @@ masked_poly_bon = sample(SimpleRandom(), montreal, mask=ville_de_m)
 
 # and visualize
 
+#
 # fig-masked-poly-bon
 fig = Figure()
 ax = Axis(fig[1,1])
@@ -234,6 +236,7 @@ current_figure() #hide
 
 coarse_bon = sample(SimpleRandom(35), montreal; resolution = (10, 10))
 
+#
 # fig-poly-bon-coarse
 fig = Figure()
 ax = Axis(fig[1,1])
