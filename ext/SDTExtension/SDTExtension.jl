@@ -15,6 +15,11 @@ module SDTExtension
         valid .&= mask.indices
         return
     end
+    function _apply_sdm_mask!(valid::BitMatrix, layer::SDMLayer, mask::SpeciesDistributionToolkit.SimpleSDMPolygons.AbstractGeometry)
+        masked_layer = SpeciesDistributionToolkit.mask(layer, mask)
+        valid .&= masked_layer.indices
+        return
+    end
 
     function _sdm_coordinates(layer::SDMLayer, keys::Vector{CartesianIndex{2}})
         Es = SimpleSDMLayers.eastings(layer)
@@ -101,22 +106,19 @@ module SDTExtension
 
     ## Arguments
     - `poly`: the polygon to rasterize
-    - `resolution`: grid cell size in decimal degrees (default `0.5°`)
+    - `resolution`: the size to construct a raster 
     - `mask`: optional additional `BitMatrix` or `SDMLayer` mask applied after polygon rasterization
     - `inclusion`: optional per-cell weight `Matrix` or `Vector`
     """
     function BiodiversityObservationNetworks.CandidatePool(
         poly::SimpleSDMPolygons.AbstractGeometry;
-        resolution = 0.5,
+        resolution = (100, 100),
         mask = missing,
         inclusion = missing,
     )
         bbox = SimpleSDMPolygons.boundingbox(poly)
-        nrows = max(1, round(Int, (bbox.top - bbox.bottom) / resolution))
-        ncols = max(1, round(Int, (bbox.right - bbox.left) / resolution))
-
         layer = SDMLayer(
-            ones(nrows, ncols);
+            ones(resolution);
             x = (Float64(bbox.left),  Float64(bbox.right)),
             y = (Float64(bbox.bottom), Float64(bbox.top)),
         )
@@ -131,7 +133,7 @@ module SDTExtension
         poly = SDT.Polygon(
             (-5.0, 45.0), (5.0, 45.0), (5.0, 55.0), (-5.0, 55.0),
         )
-        cp = CandidatePool(poly; resolution = 1.0)
+        cp = CandidatePool(poly; resolution = (50, 30))
         @test cp isa CandidatePool
         @test cp.n > 0
         @test sum(cp.inclusion) ≈ 1.0

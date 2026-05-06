@@ -117,9 +117,12 @@ result_masked = sample(SimpleRandom(10), mat; mask = mask)
 # We can plot the valid region in white and the invalid region in grey to verify that all 
 # the coordinates fall in the valid region of the mask. 
 
-heatmap(mask, colormap=[:grey50, :grey98])
-scatter!(result_masked.coordinates)
-current_figure()
+# fig-masked-matrix
+f = Figure()
+ax = Axis(f[1,1])
+heatmap!(mask, colormap=[:grey50, :grey98])
+scatter!(result_masked)
+current_figure() #hide
 
 # ## Custom Inclusion Probabilities 
 
@@ -170,7 +173,8 @@ inclusion_masked_bon = sample(SimpleRandom(), rand(50, 50), inclusion = inclusio
 
 # We can visualize this to show the middle masked region is the only valid region, but points are still more likely on the right side.
 
-f = Figure()
+# fig-inclusion-masked-bon
+fig = Figure()
 ax = Axis(f[1,1])
 heatmap!(mask, colormap=[:grey50, :grey98])
 scatter!(inclusion_masked_bon)

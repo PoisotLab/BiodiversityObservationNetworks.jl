@@ -29,7 +29,7 @@ temp = SDMLayer(RasterData(CHELSA1, AverageTemperature); spatial_extent...,)
 
 # We can plot it using `heatmap` from Makie to visualize
 
-
+# fig-temp-corsica
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp, colormap=:OrRd)
@@ -42,6 +42,7 @@ bon = sample(SimpleRandom(), temp)
 
 # Which we can then plot 
 
+# fig-basic-sdmlayer-bon
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp, colormap=:OrRd)
@@ -77,6 +78,7 @@ masked_bon = sample(SimpleRandom(), temp, mask = matrix_mask)
 temp2 = copy(temp) #hide 
 temp2.indices[findall(iszero, matrix_mask)] .= 0 #hide
 
+# fig-matrix-masked-sdm-bon
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, temp2, colormap=:OrRd)
@@ -117,6 +119,7 @@ layer_mask.indices[100:150, 50:125] .= 0; # set center of Corsica to 0
 
 # We can visualize the new layer mask
 
+# fig-sdmlayer-mask
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, layer_mask, colormap=:OrRd)
@@ -128,7 +131,7 @@ masked_bon = sample(SimpleRandom(), temp, mask = layer_mask)
 
 # and plot to verify the masking works
 
-
+# fig-sdmlayer-mask-bon
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, layer_mask, colormap=:OrRd)
@@ -163,9 +166,9 @@ inclusion_bon = sample(SimpleRandom(), temp, inclusion = inclusion_probabilies)
 
 # and visualize to confirm it worked
 
-
+# fig-inclusion-sdmlayer-bon
 f = Figure()
-ax = Axis(f[1,1])
+ax = Axis(f[1,1], aspect=DataAspect())
 heatmap!(ax, temp, colormap=[:grey80])
 scatter!(inclusion_bon, color=:dodgerblue)
 current_figure() #hide
@@ -173,13 +176,52 @@ current_figure() #hide
 
 # # Using a geospatial vector as a domain
 
-# SpeciesDistributionToolkit also supports various types of geospatial vector data (e.g. polygons) as both domains and rasters
+# SpeciesDistributionToolkit also supports various types of geospatial vector data (e.g. polygons) as both domains and masks.
 
-# it rasterizes it because all samplers work on discrete domains.
-# the resolution it rasterizes it at is customizable.
+# Let's start by getting a polygon of the Island of Montréal.
 
-# polygons can also be used as masks for SDMLayers, or other polygons.
+montreal = getpolygon(PolygonData(OpenStreetMap, Places); place = "Island of Montreal")
 
+# We can visualize this with either the `poly` method (to have it filled in), or the `lines` method (to just show the outline)
+
+poly(montreal)
+
+# This can on its own, be used as a domain:
+
+poly_bon = sample(SimpleRandom(), montreal)
+
+# which we can then visualize
+
+# fig-simple-poly-bon
+fig = Figure()
+ax = Axis(fig[1,1])
+poly!(montreal)
+scatter!(poly_bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure() #hide
+
+# ## Masking polygons with polygons
+
+# We can also use a polygon from SDT as a mask.
+
+# Let's download the region that are formally within the Ville de Montreal's jurisdiction region as a polygon
+
+ville_de_m = getpolygon(PolygonData(OpenStreetMap, Places); place = "Montreal")
+
+# We can then just pass this as the `mask` keyword argument
+
+masked_poly_bon = sample(SimpleRandom(), montreal, mask=ville_de_m)
+
+# and visualize
+
+# fig-masked-poly-bon
+fig = Figure()
+ax = Axis(fig[1,1])
+poly!(montreal, color=:grey80)
+poly!(ville_de_m, color=:seagreen4)
+scatter!(masked_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure() #hide
+
+# TODO
 # if you want to use custom inclusion probabilities, it's possible using a polygon directly.
 # its going to be more straightforward to construct an SDMLayer masked by the polygon with mask! 
 # and base the inclusion probabilities on that. 
