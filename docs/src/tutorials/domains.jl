@@ -85,7 +85,7 @@ hm = heatmap!(ax, temp2, colormap=:OrRd)
 scatter!(ax, masked_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
-# ::: note Hiding masked regions in the SDMLayer
+# ::: tip Hiding masked regions in the SDMLayer
 #
 # Note that we have done a bit of trickery on the SDMLayer to hide the masked pixels in the plot.
 # This was done by running 
@@ -150,7 +150,7 @@ current_figure() #hide
 
 inclusion_probabilies = [1.15^j for i in 1:size(temp,1), j in 1:size(temp, 2)];
 
-# ::: note x/y vs. longitude/latitude
+# ::: tip x/y vs. longitude/latitude
 #
 # You may notice above that to make inclusion increase as we go right, we use `1.15^j`, where as in the first tutorial we used `1.15^i`.
 #  
@@ -242,12 +242,22 @@ current_figure() #hide
 
 # ## Using vector domains with inclusion probabilities
 
+
+
 # ### Vector domains with matrix inclusion
 
-res = (200, 200)
+res = (50,50)
+
+inclusion_matrix = [1.2^j for i in 1:res[1], j in 1:res[2]];
+inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_matrix, resolution=res)
+
+poly(montreal)
+scatter!(inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure()
+
+# ### Vector domains with SDM inclusion
 
 bbox = SpeciesDistributionToolkit.boundingbox(montreal)
-
 inclusion_matrix = [1.2^j for i in 1:res[1], j in 1:res[2]];
 inclusion_layer = SDMLayer(
     inclusion_matrix,
@@ -255,12 +265,9 @@ inclusion_layer = SDMLayer(
     y = (bbox.bottom, bbox.top)
 )
 
-
-# TODO: ensure inclusion dimensions match rasterized poly dimensions
-inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_matrix)
+inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_layer)
 
 poly(montreal)
 scatter!(inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure()
-
 

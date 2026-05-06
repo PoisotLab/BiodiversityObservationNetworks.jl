@@ -28,6 +28,10 @@ module SDTExtension
         return coords
     end
 
+    function BiodiversityObservationNetworks._extract_and_process_inclusion(inclusion::SDMLayer, keys, n)
+        BiodiversityObservationNetworks._process_inclusion([inclusion[k] for k in keys], n)
+    end
+
     """
         CandidatePool(layer::SDMLayer; mask=missing, inclusion=missing)
 
@@ -44,6 +48,16 @@ module SDTExtension
     )
         valid = copy(layer.indices)
         _apply_sdm_mask!(valid, layer, mask)
+
+        if !ismissing(inclusion)
+            size(inclusion) == size(layer) || throw(ArgumentError(
+            """
+            Inclusion must have same resolution as input layer. Received a $(size(layer)) domain and a $(size(inclusion)) inclusion.
+            
+            If you are using a polygon domain, the default rasterization size is (100, 100), but can be changed by passing the resolution keyword argument to sample.
+            """
+            ))
+        end
 
         keys = vec(findall(valid))
         n = length(keys)
