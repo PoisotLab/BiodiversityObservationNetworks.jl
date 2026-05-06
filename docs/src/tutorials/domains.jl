@@ -125,6 +125,8 @@ ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, layer_mask, colormap=:OrRd)
 current_figure() #hide
 
+
+# 
 # We can then pass the `layer_mask` to the `mask` keyword argument as normal:
 
 masked_bon = sample(SimpleRandom(), temp, mask = layer_mask)
@@ -258,6 +260,8 @@ current_figure()
 
 # ### Vector domains with SDM inclusion
 
+
+
 bbox = SpeciesDistributionToolkit.boundingbox(montreal)
 inclusion_matrix = [1.2^j for i in 1:res[1], j in 1:res[2]];
 inclusion_layer = SDMLayer(
@@ -265,6 +269,8 @@ inclusion_layer = SDMLayer(
     x = (bbox.left, bbox,right),
     y = (bbox.bottom, bbox.top)
 )
+
+
 
 inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_layer, resolution=res)
 
