@@ -149,7 +149,7 @@ scatter(result)
 
 # For example
 
-result = sample(SimpleRandom(), rand(50, 50); inclusion = inclusion)
+result = sample(SimpleRandom(), rand(50, 50); inclusion = inclusion_probability)
 
 # is also valid.
 
