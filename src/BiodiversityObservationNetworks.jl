@@ -11,7 +11,12 @@ module BiodiversityObservationNetworks
     using JuMP
     using HiGHS
     using Crayons
-
+    
+    if Sys.WORD_SIZE == 64
+        const _FLOAT_TYPE = Float64
+    else
+        const _FLOAT_TYPE = Float32
+    end
 
     include("sampler.jl")
     include("bon.jl")

@@ -1,3 +1,5 @@
+
+
 """
     CandidatePool{K}
 
@@ -47,7 +49,7 @@ end
 
 _extract_and_process_inclusion(::Missing, keys, n) = _process_inclusion(missing, n)
 function _extract_and_process_inclusion(inclusion::AbstractMatrix, keys, n)
-    _process_inclusion([inclusion[k] for k in keys], n)
+    _process_inclusion(_FLOAT_TYPE.([inclusion[k] for k in keys]), n)
 end
 
 

@@ -1,9 +1,9 @@
 # # Getting Started with BiodiversityObservationNetworks.jl
 
 # BiodiversityObservationNetworks.jl (BONs.jl) is a Julia package for selecting sites for spatial sampling, typically in the context of ecological or biodiversity sampling design. 
-
+# The purpose of this package is to provide a high-level, extensible, modular interface to the selection of sampling point for biodiversity processes in space.
 # BONs.jl implements a variety of algorithms for site selection, including stratified and spatially balanced sampling, and enables adaptive sampling based on model-based estimates of uncertainty or the locations of legacy sampling sites. 
-# It also includes a variety of utilities for quantifying a sample's spatial balance.
+# It also includes a variety of utilities for quantifying a sample's spatial balance and how representative a sample is of auxiliary environmental variables.
 
 using BiodiversityObservationNetworks
 import Random
@@ -32,7 +32,7 @@ CairoMakie.activate!(; px_per_unit = 3) #hide
 
 # BONs.jl supports a variety of domains, including raster and vector data. The simplest domain is a plain Julia `Matrix`:
 
-mat = rand(50, 50)   # 50×50 grid of random values (e.g. an elevation raster with very weird topography)
+mat = rand(50, 50);   # 50×50 grid of random values (e.g. an elevation raster with very weird topography)
 
 # The simplest sampler is [`SimpleRandom`](@ref), which randomly selects sites without replacement.
 
@@ -122,3 +122,47 @@ scatter!(result_masked.coordinates)
 current_figure()
 
 # ## Custom Inclusion Probabilities 
+
+# Up until this point, we have been using the [`SimpleRandom`](@ref) sampler, which draws sampling locations with equal probability, without replacement.
+# For a variety of reasons, we may want the initial probability that a site is included to vary, so some locations are more likely to be included than others. 
+# Many sampling algorithms, including [`SimpleRandom`](@ref), support this functionality. 
+
+# For example, lets make it so the inclusion probability increases as we move from left to right across the domain. This can be done via
+
+inclusion_probability = [1.1^i for i in 1:50, j in 1:50]
+
+# Let's plot this matrix to verify this is what we get
+
+heatmap(inclusion_probability)
+
+# Now we can sample with these custom inclusion probabilities using the `inclusion` keyword argument
+
+result = sample(SimpleRandom(), inclusion_probability, inclusion = inclusion_probability)
+
+# and very can verify the selected points are skewed more toward the right side of the domain
+
+scatter(result)
+
+# Note that the inclusion probability matrix doesn't _have_ to be the domain. 
+# Different inclusion probabilities and domains can be used as long as they are compatible,
+# meaning they are equally sized matrices, or a SDMLayer with matching size, extent, and crs if using the SDMLayers extension.
+
+# For example
+
+result = sample(SimpleRandom(), rand(50, 50); inclusion = inclusion)
+
+# is also valid.
+
+# ## Next Steps
+
+# This covers the basic functionality of BONs.jl. More advanced functionality is explored in the following tutorials, which we recommend following in the below order:
+#  - [Geospatial Domains with SpeciesDistributionToolkit](./tutorials/domains)
+#  - [Multistage Samplers](./tutorials/multistage)
+#  - [Targeting unique climates or regions with high climate velocity](./tutorials/climate) 
+#  - [Evaluating selected sites](./tutorials/evaluation)
+#  - [Including Legacy Sampling Sites](./tutorials/legacy)
+#  - [Adaptive Sampling of Species Distributions](./tutorials/adaptive)
+
+# In addition, full descriptions of each of the *supported algorithms for sampling* can be found [here](TODO).
+
+# Description of the various utilities in BONs.jl can be found [here](), and a design document describing how the internals of the package are designed (primarily aimed for contributors to the package) can be found [here](TODO).
