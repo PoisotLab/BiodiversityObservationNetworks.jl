@@ -64,10 +64,10 @@ module SDTExtension
         mask=missing, 
         inclusion=missing
     )
-        first_layer = first(layers)
-        
-        all(l -> SimpleSDMLayers._layers_are_compatible(l, first_layer), layers) 
+        # Check if layers have same size, extent and crs
+        SimpleSDMLayers._layers_are_compatible(layers)
 
+        first_layer = first(layers)
         valid = reduce((a, b) -> a .& b, [l.indices for l in layers])
         _apply_sdm_mask!(valid, first_layer, mask)
 
