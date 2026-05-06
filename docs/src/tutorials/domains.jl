@@ -163,8 +163,8 @@ inclusion_probabilies = [1.15^j for i in 1:size(temp,1), j in 1:size(temp, 2)];
 # We can then use this with the `inclusion` keyword argument
 
 inclusion_bon = sample(SimpleRandom(), temp, inclusion = inclusion_probabilies)
-
 # and visualize to confirm it worked
+
 
 # fig-inclusion-sdmlayer-bon
 f = Figure()
@@ -174,6 +174,7 @@ scatter!(inclusion_bon, color=:dodgerblue)
 current_figure() #hide
  
 
+#
 # # Using a geospatial vector as a domain
 
 # SpeciesDistributionToolkit also supports various types of geospatial vector data (e.g. polygons) as both domains and masks.
@@ -238,11 +239,11 @@ poly!(montreal)
 scatter!(coarse_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
+
+
 # Note at a resolution this coarse, it is possible to see the underlying grid from which the points are selected.  
 
 # ## Using vector domains with inclusion probabilities
-
-
 
 # ### Vector domains with matrix inclusion
 
@@ -265,7 +266,7 @@ inclusion_layer = SDMLayer(
     y = (bbox.bottom, bbox.top)
 )
 
-inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_layer)
+inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_layer, resolution=res)
 
 poly(montreal)
 scatter!(inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)

@@ -132,7 +132,7 @@ current_figure() #hide
 
 # For example, lets make it so the inclusion probability increases as we move from left to right across the domain. This can be done via
 
-inclusion_probability = [1.1^i for i in 1:50, j in 1:50]
+inclusion_probability = [1.1^i for i in 1:50, j in 1:50];
 
 # Let's plot this matrix to verify this is what we get
 
@@ -186,12 +186,12 @@ current_figure() #hide
 # ## Next Steps
 
 # This covers the basic functionality of BONs.jl. More advanced functionality is explored in the following tutorials, which we recommend following in the below order:
-#  - [Geospatial Domains with SpeciesDistributionToolkit](./tutorials/domains)
+#  - [Geospatial Domains with SpeciesDistributionToolkit](./domains)
 #  - [Multistage Samplers](./tutorials/multistage)
-#  - [Targeting unique climates or regions with high climate velocity](./tutorials/climate) 
-#  - [Evaluating selected sites](./tutorials/evaluation)
-#  - [Including Legacy Sampling Sites](./tutorials/legacy)
-#  - [Adaptive Sampling of Species Distributions](./tutorials/adaptive)
+#  - [Targeting unique climates or regions with high climate velocity](./climate) 
+#  - [Evaluating selected sites](./evaluation)
+#  - [Including Legacy Sampling Sites](./legacy)
+#  - [Adaptive Sampling of Species Distributions](./adaptive)
 
 # In addition, full descriptions of each of the *supported algorithms for sampling* can be found [here](TODO).
 
