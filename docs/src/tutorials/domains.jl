@@ -15,7 +15,7 @@ Random.seed!(1234567890); #hide
 using CairoMakie #hide
 CairoMakie.activate!(; px_per_unit = 3) #hide
 
-# # A Geospatial Raster Domain
+# ## A Geospatial Raster Domain
 
 # A natural extension of the `Matrix` domain, the simplest domain supported by BONs.jl, is using a geospatial raster. A raster is also just a matrix of values, but also containing additional metadata that associates each element of the matrix with a geographic location.
 
@@ -51,7 +51,7 @@ current_figure() #hide
 
 # Note that there are regions in the raster (the water of surrouding Corsica) that have no value. Samplers will automatically avoid sampling sites in those regions --- only pixels with valid data are considered for sampling. 
 
-# ## Masking Geospatial Rasters
+# ### Masking Geospatial Rasters
 
 # As we've just seen, regions without valid pixel data are automatically ignored. However, we can mask addition pixels using the `mask` keyword.
 
@@ -59,7 +59,7 @@ current_figure() #hide
 
 # Here we will provide an example of both forms to mask out the center region of Corsica.
 
-# ### Masking a `SDMLayer` with a matrix 
+# #### Masking a `SDMLayer` with a matrix 
 
 # Let's construct our mask by first creating a matrix of all ones that is the same size as our `SDMLayer`.
 
@@ -99,7 +99,7 @@ current_figure() #hide
 # 
 # :::
 
-# ### Masking a `SDMLayer` with another `SDMLayer`
+# #### Masking a `SDMLayer` with another `SDMLayer`
 
 # `SDMLayer`s can also be used as masks, assuming they have the *same size*, *extent*, and *crs* as the domain.
 
@@ -141,12 +141,12 @@ scatter!(ax, masked_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
 
-# ## Custom Inclusion Probabilities with Geospatial Rasters
+# ### Custom Inclusion Probabilities with Geospatial Rasters
 
 # When using custom inclusion probabilities with an `SDMLayer` domain, things work very similarly to masking.
 # Either (1) a matrix of the same size or (2) an `SDMLayer` with the same size, extent and crs can be used as inclusion probabilities. 
 
-# ### A inclusion probabilities matrix with an `SDMLayer` domain.
+# #### A inclusion probabilities matrix with an `SDMLayer` domain.
 
 # Let's construct inclusion probabilities where the right side is more likely to be included, as we did in the first tutorial.
 
@@ -177,7 +177,7 @@ current_figure() #hide
  
 
 #
-# # Using a geospatial vector as a domain
+# ## Using a geospatial vector as a domain
 
 # SpeciesDistributionToolkit also supports various types of geospatial vector data (e.g. polygons) as both domains and masks.
 
@@ -203,7 +203,7 @@ poly!(montreal)
 scatter!(poly_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
-# ## Masking polygons with polygons
+# ### Masking polygons with polygons
 
 # We can also use a polygon from SDT as a mask.
 
@@ -226,7 +226,7 @@ poly!(ville_de_m, color=:seagreen4)
 scatter!(masked_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
-# ### Under the hood with polygons
+# #### Under the hood with polygons
 
 # When using a vector-based domain, the vector data is first rasterized because all sampling algorithms work on discrete sets of points. 
 
@@ -235,6 +235,8 @@ current_figure() #hide
 # We can rasterize at a very coarse resolution to get a better of what's happening 
 
 coarse_bon = sample(SimpleRandom(35), montreal; resolution = (10, 10))
+
+# Note at a resolution this coarse, it is possible to see the underlying grid from which the points are selected.  
 
 #
 # fig-poly-bon-coarse
@@ -245,25 +247,32 @@ scatter!(coarse_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
 
+# ### Using vector domains with inclusion probabilities
 
-# Note at a resolution this coarse, it is possible to see the underlying grid from which the points are selected.  
+# Custom inclusion probabilities can also be used with vector domains, but because vector domains are first rasterized before sampling (as described above), the provided inclusion probabilities must have the same resolution as the rasterized polygon.
+# The easiest way to do this is to pass the `resolution` keyword argument to [`sample`](@ref) to ensure the vector domain is rasterized to the same size as the provided inclusions.
 
-# ## Using vector domains with inclusion probabilities
+# #### Vector domains with matrix inclusion
 
-# ### Vector domains with matrix inclusion
+# Using a standard matrix as inclusion is supported. Here we create a `50 x 50` matrix of inclusion that increases toward the right, and then pass the size to the `resolution` keyword argument to ensure the rasterized vector domain is compatible.
 
 res = (50,50)
 
 inclusion_matrix = [1.2^j for i in 1:res[1], j in 1:res[2]];
-inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_matrix, resolution=res)
-
-poly(montreal)
-scatter!(inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
-current_figure()
-
-# ### Vector domains with SDM inclusion
+inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_matrix, resolution=size(inclusion_matrix))
 
 
+f = Figure() #fig-matrix-inclusion-vec-domain
+ax = Axis(f[1,1])
+poly!(ax, montreal)
+scatter!(ax, inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure() #hide
+
+#
+# #### Vector domains with SDMLayer inclusion
+
+# Similarly, an SDMLayer can be used as inclusion probabilities. It is important that the geosptial extent of the `SDMLayer` overlaps with the vector domain.
+# We do this by explicitly constructing an `SDMLayer` with the same bounding box as the vector domain:
 
 bbox = SpeciesDistributionToolkit.boundingbox(montreal)
 inclusion_matrix = [1.2^j for i in 1:res[1], j in 1:res[2]];
@@ -273,11 +282,18 @@ inclusion_layer = SDMLayer(
     y = (bbox.bottom, bbox.top)
 )
 
-
+# and sample as BON in a similar way
 
 inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_layer, resolution=res)
 
-poly(montreal)
-scatter!(inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
-current_figure()
+f = Figure() # fig-sdmlayer-inclusion-vec-domain
+ax = Axis(f[1,1])
+poly!(ax, montreal)
+scatter!(ax, inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure() #hide
+
+# ## Next Steps
+
+# [The next tutorial](./climate) focuses on using SpeciesDistributionToolkit.jl to prepare climatic geospatial data to target sampling design toward unique climates, or climates expected to change the most in the future.
+
 
