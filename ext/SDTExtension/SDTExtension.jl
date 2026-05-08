@@ -2,7 +2,7 @@ module SDTExtension
     using SpeciesDistributionToolkit
     using BiodiversityObservationNetworks
     using TestItems
-
+    using BiodiversityObservationNetworks.StatsBase
 
     _apply_sdm_mask!(::BitMatrix, ::SDMLayer, ::Missing) = nothing
     function _apply_sdm_mask!(valid::BitMatrix, layer::SDMLayer, mask::AbstractMatrix)
@@ -234,4 +234,37 @@ module SDTExtension
         rar_layer.grid .= rar
         return rar_layer
     end
+
+    function BiodiversityObservationNetworks.spatial_gradient(layer::SDMLayer)
+        offset = CartesianIndices((-1:1, -1:1))
+        Δx, Δy = -(SpeciesDistributionToolkit.eastings(layer)[[2,1]]...), -(SpeciesDistributionToolkit.northings(layer)[[2,1]]...)
+        spatial_grad = BiodiversityObservationNetworks._FLOAT_TYPE.(copy(layer))
+
+        for x in eachindex(layer)
+            @inbounds l = layer.grid[x .+ offset]
+            @inbounds inc = layer.indices[x .+ offset]
+
+            l[.!(inc)] .= layer.grid[x]
+            a,b,c,d,e,f,g,h,i = [l[j,i] for i in 1:3, j in 1:3]
+
+            ∂x = ((c + 2f + i)-(a + 2d + g)) / 8Δx
+            ∂y = ((g + 2h + i)-(a + 2b + c)) / 8Δy
+            spatial_grad[x] = sqrt((∂x)^2 + (∂y)^2)
+        end
+        return spatial_grad
+    end 
+
+    function BiodiversityObservationNetworks.velocity(::Loarie2009, years, timeseries::Vector{<:SDMLayer}; threshold=0.95)
+        sg = BiodiversityObservationNetworks.spatial_gradient(timeseries[1])
+        tg = BiodiversityObservationNetworks.temporal_gradient(years, timeseries)
+        vel = tg / sg
+        
+        # this ratio gives a very small number of extremely large values, so we clip it to a high percentile that is provided as a kwarg
+        τ = quantile(vel.grid[vel.indices], [threshold])[1]
+        idx = findall(x-> x > τ, vel.grid)
+        vel.grid[idx] .= τ
+        
+        return vel
+    end
+
 end

@@ -75,9 +75,11 @@ masked_bon = sample(SimpleRandom(), temp, mask = matrix_mask)
 
 # And plot to verify points are all outside the masked region.
 
-temp2 = copy(temp) #hide 
-temp2.indices[findall(iszero, matrix_mask)] .= 0 #hide
+temp2 = copy(temp); #hide 
+temp2.indices[findall(iszero, matrix_mask)] .= 0; #hide
 
+
+#
 # fig-matrix-masked-sdm-bon
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
@@ -119,6 +121,7 @@ layer_mask.indices[100:150, 50:125] .= 0; # set center of Corsica to 0
 
 # We can visualize the new layer mask
 
+#
 # fig-sdmlayer-mask
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
@@ -140,7 +143,7 @@ hm = heatmap!(ax, layer_mask, colormap=:OrRd)
 scatter!(ax, masked_bon, color=:white, strokewidth=1, strokecolor=:black)
 current_figure() #hide
 
-
+#
 # ### Custom Inclusion Probabilities with Geospatial Rasters
 
 # When using custom inclusion probabilities with an `SDMLayer` domain, things work very similarly to masking.

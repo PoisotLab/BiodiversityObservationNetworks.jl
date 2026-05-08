@@ -35,6 +35,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "cubesampling.jl"))
 
     include(joinpath("utilities", "rarity.jl"))
+    include(joinpath("utilities", "velocity.jl"))
     #include("show.jl")
 
     export sample 
@@ -46,6 +47,9 @@ module BiodiversityObservationNetworks
 
     export rarity
     export RarityMetric, DistanceToMedian, MultivariateEnvironmentalSimilarity, DistanceToAnalogNode, WithinRange
+
+    export velocity
+    export ClosestAnalogue, Loarie2009
 
     #=
     using DelaunayTriangulation

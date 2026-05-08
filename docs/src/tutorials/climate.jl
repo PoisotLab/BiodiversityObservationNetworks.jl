@@ -6,7 +6,11 @@
 
 # We will use SpeciesDistributionToolkit.jl to download climate data. 
 
+using Pkg
+
+using BiodiversityObservationNetworks
 using SpeciesDistributionToolkit
+using CairoMakie
 
 # We'll start by downloading a polygon for the state of Oregon, which is the region we will use for this tutorial.
 
@@ -31,12 +35,14 @@ heatmap!(ax, bioclim[1])
 lines!(ax, aoi)
 current_figure() #hide
 
-[b.grid for b in bioclim]
+
 
 mess = rarity(
     MultivariateEnvironmentalSimilarity(),
     bioclim
 )
+heatmap(mess)
+
 
 rar = rarity(
     DistanceToMedian(), 
@@ -64,3 +70,21 @@ rar = rarity(
     bon,
     bioclim;
 )
+
+
+# ## Velocity
+
+future_bioclim = [
+    SDMLayer(RasterData(CHELSA1, BioClim), Projection(RCP45, ACCESS1_0); 
+    SpeciesDistributionToolkit.SimpleSDMPolygons.boundingbox(aoi)..., layer = i) 
+    for i in 1:19
+]
+mask!(future_bioclim, aoi)
+
+#vel = velocity(ClosestAnalogue(), bioclim, future_bioclim)
+
+
+vel = velocity(Loarie2009(), [2000, 2050], [bioclim[12], future_bioclim[12]])
+
+heatmap(vel)
+heatmap(quantize(vel))
