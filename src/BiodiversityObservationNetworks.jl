@@ -11,6 +11,7 @@ module BiodiversityObservationNetworks
     using JuMP
     using HiGHS
     using Crayons
+    using MultivariateStats
     
     if Sys.WORD_SIZE == 64
         const _FLOAT_TYPE = Float64
@@ -33,6 +34,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "adaptivehotspot.jl"))
     include(joinpath("samplers", "cubesampling.jl"))
 
+    include(joinpath("utilities", "rarity.jl"))
     #include("show.jl")
 
     export sample 
@@ -41,6 +43,9 @@ module BiodiversityObservationNetworks
 
     export BONSampler
     export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal, BalancedAcceptance, GRTS, AdaptiveHotspot, CubeSampling
+
+    export rarity
+    export RarityMetric, DistanceToMedian, MultivariateEnvironmentalSimilarity, DistanceToAnalogNode, WithinRange
 
     #=
     using DelaunayTriangulation

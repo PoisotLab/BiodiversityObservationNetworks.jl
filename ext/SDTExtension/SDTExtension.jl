@@ -188,4 +188,50 @@ module SDTExtension
         @test size(cp.features) == (4, 48)
         @test sum(cp.inclusion) ≈ 1.0
     end
+
+    """
+        BiodiversityObservationNetworks.rarity(metric::RarityMetric, bon::BiodiversityObservationNetwork, layers::Vector{<:SDMLayer}; kwargs...)
+
+        Applies a [`RarityMetric`](@ref) to a vector of `SDMLayer`s by passing the first layer's valid indices as a mask. 
+    """
+    function BiodiversityObservationNetworks.rarity(
+        metric::RarityMetric, 
+        layers::Vector{<:SDMLayer};
+        kwargs...
+    )
+        rar = BiodiversityObservationNetworks.rarity(
+            metric,
+            [l.grid for l in layers];
+            mask = layers[1].indices,
+            kwargs...
+        )
+        
+        rar_layer = copy(BiodiversityObservationNetworks._FLOAT_TYPE.(first(layers)))
+        rar_layer.grid .= rar
+        return rar_layer
+    end
+    
+    """
+        BiodiversityObservationNetworks.rarity(metric::RarityMetric, bon::BiodiversityObservationNetwork, layers::Vector{<:SDMLayer}; kwargs...)
+
+    Applies a [`RarityMetric`](@ref) that requires a [`BiodiversityObservationNetwork`](@ref) to a vector of `SDMLayer`s by passing the first layer's valid indices as a mask. 
+    """
+    function BiodiversityObservationNetworks.rarity(
+        metric::RarityMetric, 
+        bon::BiodiversityObservationNetwork,
+        layers::Vector{<:SDMLayer};
+        kwargs...
+    )
+        rar = BiodiversityObservationNetworks.rarity(
+            metric,
+            bon,
+            [l.grid for l in layers];
+            mask = layers[1].indices,
+            kwargs...
+        )
+        
+        rar_layer = copy(BiodiversityObservationNetworks._FLOAT_TYPE.(first(layers)))
+        rar_layer.grid .= rar
+        return rar_layer
+    end
 end

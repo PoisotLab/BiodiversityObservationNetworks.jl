@@ -6,20 +6,13 @@ Abstract type encompassing all methods for computing environmental rarity.
 abstract type RarityMetric end 
 
 
-rarity(rm::RarityMetric, bon::BiodiversityObservationNetwork, domain; kwargs...) = rarity(rm, bon, to_domain(domain); kwargs...)
-
-rarity(rm::RarityMetric, domain; kwargs...) = rarity(rm, to_domain(domain); kwargs...)
-
-
-function _fit_pca(X)
-    return MultivariateStats.fit(MultivariateStats.PCA, X)
-end 
-function _transform_pca(pca, X)
-    return MultivariateStats.transform(pca, X)
-end 
 function _zscore(X)
     z = StatsBase.fit(StatsBase.ZScoreTransform, X)
     return z, StatsBase.transform(z, X)
+end
+
+function getfeatures(layers; mask=trues(size(first(layers))))
+    hcat([[l[i] for l in layers] for i in findall(mask)]...)
 end
 
 
@@ -33,22 +26,16 @@ prior to z-scoring.
 struct DistanceToMedian <: RarityMetric end 
 function rarity(
     ::DistanceToMedian, 
-    layers::RasterStack;
-    pca = false
+    layers::Vector{<:Matrix};
+    mask = trues(size(first(layers)))
 )
-    X = getfeatures(layers)
-    if pca 
-        X = _transform_pca(_fit_pca(X), X)
-    end
+    X = _FLOAT_TYPE.(getfeatures(layers; mask))
     z, X = _zscore(X)
     X̄ = map(StatsBase.median, eachrow(X))
     dist = map(xᵢ -> sqrt(sum((xᵢ .- X̄).^2)), eachcol(X))
 
-
-    pool = getpool(layers)
-
-    rare = deepcopy(first(layers))
-    rare.data.grid[pool] .= dist
+    rare = deepcopy(_FLOAT_TYPE.(first(layers)))
+    rare[findall(mask)] .= dist
 
     return rare
 end
@@ -70,15 +57,17 @@ end
 
 function rarity(
     ::MultivariateEnvironmentalSimilarity,
-    layers::RasterStack
+    layers::Vector{<:Matrix};
+    mask = trues(size(first(layers)))
 )
-    X = getfeatures(layers)
+    X = getfeatures(layers; mask)
     ecdfs = vec(mapslices(StatsBase.ecdf, X; dims = 2))
 
-    mins, maxs = minimum.(layers.rasters), maximum.(layers.rasters)
-    mess = deepcopy(first(layers))
 
-    pool = getpool(layers)
+    mins, maxs = minimum.(eachrow(X)), maximum.(eachrow(X))
+    mess = deepcopy(_FLOAT_TYPE.(first((layers))))
+
+    pool = findall(mask)
 
     for (i, cart_idx) in enumerate(pool)
         xᵢ = X[:,i]
@@ -94,6 +83,11 @@ function rarity(
 end
 
 
+"""
+    DistanceToAnalogNode <: RarityMetric
+
+TODO
+"""
 struct DistanceToAnalogNode <: RarityMetric end
 
 """
@@ -105,24 +99,19 @@ selected BON node in `layers`. Optionally apply a shared PCA transform first.
 function rarity(
     ::DistanceToAnalogNode, 
     bon::BiodiversityObservationNetwork,
-    layers::RasterStack;
-    pca = false
+    layers::Vector{<:Matrix};
+    mask = trues(size(first(layers)))
 )
 
-    X = getfeatures(layers)
-    Xbon = layers[bon]
-    if pca
-        pca_fit = _fit_pca(X)
-        X = _transform_pca(pca_fit, X)
-        Xbon = _transform_pca(pca_fit, Xbon)
-    end
+    X = _FLOAT_TYPE.(getfeatures(layers; mask))
+    Xbon = bon.features
 
     z, X = _zscore(X)
     Xbon = StatsBase.transform(z, Xbon)
 
 
-    rar = deepcopy(first(layers))
-    pool = getpool(layers)
+    rar = deepcopy(_FLOAT_TYPE.(first(layers)))
+    pool = findall(mask)
 
     for (i, ci) in enumerate(pool)
         Xi = X[:,i]
@@ -136,7 +125,11 @@ function rarity(
     return rar
 end 
 
+"""
+    WithinRange <: RarityMetric
 
+TODO
+"""
 struct WithinRange <: RarityMetric end
 
 function _point_within_extremes(point, extremes)
@@ -155,15 +148,16 @@ rectangle spanned by the per-feature minima and maxima of the BON nodes.
 function rarity(
     ::WithinRange, 
     bon::BiodiversityObservationNetwork,
-    layers::RasterStack, 
+    layers::Vector{<:Matrix};
+    mask = trues(size(first(layers))) 
 )
-    Xbon = layers[bon]
+    Xbon = bon.features
     Xextrema = map(extrema, eachrow(Xbon))
 
-    X = getfeatures(layers)
-    pool = getpool(layers)
+    X = getfeatures(layers; mask)
+    pool = findall(mask)
 
-    rar = deepcopy(first(layers))
+    rar = falses(size(first(layers)))
     
     for (i, idx) in enumerate(pool)
         rar[idx] = _point_within_extremes(X[:,i], Xextrema)
