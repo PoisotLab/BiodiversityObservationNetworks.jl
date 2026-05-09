@@ -1,8 +1,6 @@
 # Case Study: Adaptive Sampling of Species Distributions
 
 using Pkg
-Pkg.activate("docs")
-
 
 logistic(x, α, β) = 1 / (1 + exp((x - β) / α))
 logistic(α, β) = (x) -> logistic(x, α, β)

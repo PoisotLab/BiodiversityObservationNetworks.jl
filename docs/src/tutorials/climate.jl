@@ -6,6 +6,10 @@
 
 # We will use SpeciesDistributionToolkit.jl to download climate data. 
 
+using Pkg
+
+@info Pkg.status()
+
 using BiodiversityObservationNetworks
 using SpeciesDistributionToolkit
 using CairoMakie
