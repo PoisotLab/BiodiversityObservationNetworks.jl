@@ -44,7 +44,6 @@ export default defineConfig({
                 items: [
                     { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
                     { text: "Geospatial Domains", link: "/tutorials/domains.md"},
-                    { text: "Multistage Sampling", link: "/tutorials/multistage.md"},
                     { text: "Unique and High-Velocity Climates", link: "/tutorials/climate.md"},
                     { text: "Evaluating Sites", link: "/tutorials/evaluation.md"},
                     { text: "Including Legacy Sites", link: "/tutorials/legacy.md"},
@@ -53,8 +52,16 @@ export default defineConfig({
             },
             { 
                 text: "Samplers", 
-                link: "/howto",
+                link: "/samplers",
                 items: [
+                    { text: "Simple Random", link: "/samplers/simplerandom.md"},
+                    { text: "Generalized Random Tessellation Stratified", link: "/samplers/grts.md"},
+                    { text: "Balanced Acceptance", link: "/samplers/balancedacceptance.md"},
+                    { text: "Stratified", link: "/samplers/stratified.md"},
+                    { text: "Cube Method", link: "/samplers/cube.md"},
+                    { text: "Adaptive Hotspot", link: "/samplers/adaptivehotspot.md"},
+                    { text: "Pivotal", link: "/samplers/pivotal.md"},
+                    { text: "Spatially Correlated Poisson", link: "/samplers/spatiallycorrelatedpoisson.md"},
                 ],
             },
             { 

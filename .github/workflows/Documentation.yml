@@ -27,13 +27,13 @@ jobs:
       - uses: julia-actions/cache@v2
       - name: Install dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
-      - name: Build howto
+      - name: Build samplers
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
           DATADEPS_ALWAYS_ACCEPT: true
-        run: julia --project=docs/ --threads=auto docs/build.jl howto
+        run: julia --project=docs/ --threads=auto docs/build.jl samplers
       - name: Build tutorials
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"

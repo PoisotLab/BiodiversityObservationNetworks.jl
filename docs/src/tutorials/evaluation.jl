@@ -6,9 +6,6 @@
 
 # Let's load the packages and a couple functions from StatsBase
 
-using Pkg
-Pkg.activate("docs")
-
 using BiodiversityObservationNetworks
 using BiodiversityObservationNetworks.StatsBase: mean, std
 using CairoMakie
