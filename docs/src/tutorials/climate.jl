@@ -6,15 +6,13 @@
 
 # We will use SpeciesDistributionToolkit.jl to download climate data. 
 
-using Pkg
-
 using BiodiversityObservationNetworks
 using SpeciesDistributionToolkit
 using CairoMakie
 
 # We'll start by downloading a polygon for the state of Oregon, which is the region we will use for this tutorial.
 
-aoi = getpolygon(PolygonData(OpenStreetMap, Places), place = "Oregon")
+aoi = getpolygon(PolygonData(OpenStreetMap, Places), place = "Washington State")
 
 # We can then load the 19 Bioclimatic variables from CHELSA as follows. 
 
@@ -28,6 +26,7 @@ mask!(bioclim, aoi)
 
 # And now we'll visualize the first layer, which is the mean annual temperature:
 
+#
 # fig-oregon-temp
 f = Figure() 
 ax = Axis(f[1,1], aspect=DataAspect())
@@ -36,21 +35,28 @@ lines!(ax, aoi)
 current_figure() #hide
 
 
+## Measuring Climate Rarity
+
+# BiodiversityObservationNetworks.jl contains several utilities for quantifying how rare the environmental conditions at a particular location are.
+
+# The simplest is [`DistanceToMedian`](@ref), which is each pixel's distance in environmental space to the median environmental condiations.
+rar = rarity(
+    DistanceToMedian(), 
+    bioclim
+)
+heatmap(quantize(rar))
+
+
+# Consider 
 
 mess = rarity(
     MultivariateEnvironmentalSimilarity(),
     bioclim
 )
-heatmap(mess)
+heatmap(quantize(mess))
 
 
-rar = rarity(
-    DistanceToMedian(), 
-    bioclim
-)
 
-heatmap(mess)
-heatmap(rar)
 
 bon = sample(SimpleRandom(), bioclim)
 
@@ -60,7 +66,7 @@ rar = rarity(
     bioclim;
 )
 
-heatmap(rar)
+heatmap(quantize(rar))
 scatter!(bon, color=:red)
 current_figure()
 
@@ -70,6 +76,7 @@ rar = rarity(
     bon,
     bioclim;
 )
+heatmap(rar)
 
 
 # ## Velocity
@@ -81,10 +88,9 @@ future_bioclim = [
 ]
 mask!(future_bioclim, aoi)
 
-#vel = velocity(ClosestAnalogue(), bioclim, future_bioclim)
 
-
-vel = velocity(Loarie2009(), [2000, 2050], [bioclim[12], future_bioclim[12]])
-
+vel = velocity(Loarie2009(), [2000, 2050], [bioclim[1], future_bioclim[1]])
 heatmap(vel)
-heatmap(quantize(vel))
+
+vel = velocity(Loarie2009(), [2000, 2050], [bioclim, future_bioclim])
+heatmap(vel)

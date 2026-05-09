@@ -1,3 +1,4 @@
+#= 
 """
     voronoi(bon, domain)
 
@@ -23,3 +24,4 @@ function voronoi(bon, domain::PolygonDomain)
     polys = [intersect(domain.data, LeanBONsAPI.Polygon(DT.get_polygon_coordinates(vor, i, bbox))) for i in DT.each_polygon_index(vor)]
     return polys
 end
+=#

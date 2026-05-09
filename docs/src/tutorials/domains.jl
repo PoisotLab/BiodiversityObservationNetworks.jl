@@ -289,7 +289,9 @@ inclusion_layer = SDMLayer(
 
 inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_layer, resolution=res)
 
-f = Figure() # fig-sdmlayer-inclusion-vec-domain
+#
+# fig-sdmlayer-inclusion-vec-domain
+f = Figure() 
 ax = Axis(f[1,1])
 poly!(ax, montreal)
 scatter!(ax, inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)

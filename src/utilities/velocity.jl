@@ -5,40 +5,30 @@ Abstract type encompassing all methods for computing environmental velocity.
 """
 abstract type VelocityMetric end 
 
-# ---------------------------------------------
-# Begin Loarie2009 
+velocity(::VelocityMetric, args...) = error(
+    """
+    Climate velocity is only supported when SpeciesDistributionToolkit package is also loaded.
+    """
+)
 
+"""
+    Loarie2009
+
+Implements the climate velocity metric from:
+    Loarie, S., Duffy, P., Hamilton, H. et al. 
+    The velocity of climate change. 
+    Nature 462, 1052–1055 (2009). 
+    https://doi.org/10.1038/nature08649
+"""
 struct Loarie2009 <: VelocityMetric end 
 
-spatial_gradient(layer) = nothing
-
-function _ols(x, y)
-    X = hcat(ones(size(x, 1)), x) 
-    XᵀX⁻¹ = inv(X' * X)
-    α, β = XᵀX⁻¹ * X' * y
-    return α, β
-end
-
-function temporal_gradient(years, timeseries)
-    baseline = first(timeseries)
-    temporal_grad = _FLOAT_TYPE.(copy(baseline))
-    for x in eachindex(baseline)
-        y = [l[x] for l in timeseries]
-        _, β = _ols(years, y)
-        temporal_grad[x] = β
-    end
-    return temporal_grad
-end 
-
-
-velocity(::Type{Loarie2009}, args...) = velocity(Loarie2009(), args...)
-
-# End Loarie2009 
-# ---------------------------------------------
 
 
 # ---------------------------------------------
 # Begin ClosestAnalogue
+
+
+#=
 
 struct ClosestAnalogue <: VelocityMetric end 
 
@@ -78,3 +68,5 @@ end
 
 # End ClosestAnalogue 
 # ---------------------------------------------
+
+=#

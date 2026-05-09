@@ -12,7 +12,8 @@ module BiodiversityObservationNetworks
     using HiGHS
     using Crayons
     using MultivariateStats
-    
+    using DelaunayTriangulation
+
     if Sys.WORD_SIZE == 64
         const _FLOAT_TYPE = Float64
     else
@@ -36,6 +37,9 @@ module BiodiversityObservationNetworks
 
     include(joinpath("utilities", "rarity.jl"))
     include(joinpath("utilities", "velocity.jl"))
+
+    include(joinpath("utilities", "evaluation.jl"))
+
     #include("show.jl")
 
     export sample 
@@ -50,6 +54,9 @@ module BiodiversityObservationNetworks
 
     export velocity
     export ClosestAnalogue, Loarie2009
+
+    export spatialbalance
+    export SamplingMetric, MoransI, VoronoiVariance
 
     #=
     using DelaunayTriangulation
