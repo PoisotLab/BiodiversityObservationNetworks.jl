@@ -1,2 +1,0 @@
-# # Spatially Correlated Poisson Sampling
-

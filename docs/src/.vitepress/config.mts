@@ -53,20 +53,9 @@ export default defineConfig({
             { 
                 text: "Samplers", 
                 link: "/samplers",
-                items: [
-                    { text: "Simple Random", link: "/samplers/simplerandom.md"},
-                    { text: "Generalized Random Tessellation Stratified", link: "/samplers/grts.md"},
-                    { text: "Balanced Acceptance", link: "/samplers/balancedacceptance.md"},
-                    { text: "Stratified", link: "/samplers/stratified.md"},
-                    { text: "Cube Method", link: "/samplers/cube.md"},
-                    { text: "Adaptive Hotspot", link: "/samplers/adaptivehotspot.md"},
-                    { text: "Pivotal", link: "/samplers/pivotal.md"},
-                    { text: "Spatially Correlated Poisson", link: "/samplers/spatiallycorrelatedpoisson.md"},
-                ],
             },
             { 
                 text: "Reference", 
-                link: "/reference",
                 items: [
                     { text: "Utilities", link: "/reference/utilities" },
                     { text: "Package Design", link: "/reference/design" },

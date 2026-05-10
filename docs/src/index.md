@@ -11,7 +11,7 @@ hero:
   actions:
     - theme: brand
       text: Read the manual
-      link: /manual
+      link: /tutorials/gettingstarted
     - theme: alt
       text: View on Github
       link: https://github.com/PoisotLab/BiodiversityObservationNetworks.jl
