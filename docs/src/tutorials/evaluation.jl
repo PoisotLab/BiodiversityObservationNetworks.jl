@@ -24,7 +24,7 @@ Random.seed!(123) #hide
 
 # For these examples, we'll use a `30 x 30` matrix of zeros as our domain, but any domain will work here
 
-domain = zeros(30, 30)
+domain = zeros(30, 30);
 
 # Let's compare spatial balance (using `MoransI`) for three different sampling algorithms: (1) [`SimpleRandom`](@ref), (2) [`BalancedAcceptance`](@ref) and (3) [`GRTS`](@ref).
 
