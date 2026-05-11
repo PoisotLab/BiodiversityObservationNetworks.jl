@@ -123,11 +123,9 @@ js = evaluate(JensenShannon(), bioclim, bon)
 
 # We can then compare [`BalancedAcceptance`](@ref) to [`SimpleRandom`](@ref):
 
-nreps = 300
+nreps = 150
 bas = [evaluate(JensenShannon(), bioclim, sample(BalancedAcceptance(100), bioclim)) for i in 1:nreps];
 srs = [evaluate(JensenShannon(), bioclim, sample(SimpleRandom(100), bioclim)) for i in 1:nreps];
-
-sample(CubeSampling(), bioclim)
 
 # and visualize
 
