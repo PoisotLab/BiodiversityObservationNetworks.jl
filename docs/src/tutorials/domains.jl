@@ -264,8 +264,9 @@ res = (50,50)
 inclusion_matrix = [1.2^j for i in 1:res[1], j in 1:res[2]];
 inclusion_poly_bon = sample(SimpleRandom(), montreal, inclusion=inclusion_matrix, resolution=size(inclusion_matrix))
 
-
-f = Figure() #fig-matrix-inclusion-vec-domain
+#
+#fig-matrix-inclusion-vec-domain
+f = Figure() 
 ax = Axis(f[1,1])
 poly!(ax, montreal)
 scatter!(ax, inclusion_poly_bon, color=:white, strokewidth=1, strokecolor=:black)

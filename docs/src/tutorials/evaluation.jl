@@ -123,9 +123,11 @@ js = evaluate(JensenShannon(), bioclim, bon)
 
 # We can then compare [`BalancedAcceptance`](@ref) to [`SimpleRandom`](@ref):
 
-bas = [evaluate(JensenShannon(), bioclim, sample(BalancedAcceptance(100), bioclim)) for i in 1:150];
+nreps = 300
+bas = [evaluate(JensenShannon(), bioclim, sample(BalancedAcceptance(100), bioclim)) for i in 1:nreps];
+srs = [evaluate(JensenShannon(), bioclim, sample(SimpleRandom(100), bioclim)) for i in 1:nreps];
 
-srs = [evaluate(JensenShannon(), bioclim, sample(SimpleRandom(100), bioclim)) for i in 1:150];
+sample(CubeSampling(), bioclim)
 
 # and visualize
 
@@ -135,9 +137,12 @@ f = Figure()
 ax = Axis(f[1,1], xlabel = "Jensen-Shannon Divergence", ylabel = "Number of Samples")
 hist!(bas, color=(:dodgerblue, 0.7), label = "Balanced Acceptance")
 hist!(srs, color=(:purple, 0.7), label="Simple Random")
-annotation!(ax, 80, 0, 0.015, 35,
+annotation!(ax, 150, 0, 0.015, 35,
     text = "More representative",
     style = Ann.Styles.LineArrow()
 )
 axislegend(position = :rt)
 current_figure() #hide
+
+
+# Note that the spatially balanced sampler, [`BalancedAcceptance`](@ref), is more environmentally representative than [`SimpleRandom`](@ref). 
