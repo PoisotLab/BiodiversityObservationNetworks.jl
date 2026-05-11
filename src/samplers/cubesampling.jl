@@ -2,7 +2,7 @@
     CubeSampling <: BONSampler
 
 Balanced sampling with respect to auxiliary variables, using the Cube method
-from Deville & Tillé (2004).
+from [Deville2004EffBal](@cite).
 
 Selects a sample whose Horvitz–Thompson estimates of auxiliary variables
 match the population as closely as possible. The algorithm runs in two
@@ -19,8 +19,6 @@ construct a pool with explicit features.
 # Fields
 - `n::Int`: number of sites to select (default 50)
 
-# References
-- Deville, J. C., & Tillé, Y. (2004). TODO
 """
 @kwdef struct CubeSampling <: BONSampler
     n::Int = 50

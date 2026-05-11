@@ -7,7 +7,7 @@ GRTS produces spatially balanced samples by recursively partitioning the
 domain into quadrants, assigning each cell a hierarchical address. The recursive
 tessellation ensures spatial spread without requiring distance computations.
 
-Originally proposed by Stevens & Olsen (2004) (CITE TODO).
+Originally proposed by [Stevens2004SpaBal](@cite).
 
 # Fields
 - `n::Int`: number of sites to select (default 50)

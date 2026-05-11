@@ -1,7 +1,7 @@
 """
     SpatiallyCorrelatedPoisson <: BONSampler
 
-Implements Spatially Correlated Poisson Sampling (SCPS).
+Implements Spatially Correlated Poisson Sampling (SCPS) from [Grafstrom2012SpaCor](@cite).
 
 # Fields
 - `n::Int`: expected number of sites to select (default 50)

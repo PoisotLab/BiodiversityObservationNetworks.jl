@@ -1,9 +1,9 @@
 """
     SamplingMetric
 
-Abstract supertype for metrics that evaluate a [`SamplingResult`](@ref).
+Abstract supertype for metrics that evaluate a [`BiodiversityObservationNetwork`](@ref).
 
-Implement `evaluate(metric::MyMetric, result::SamplingResult)` to add a
+Implement `evaluate(metric::MyMetric, result::BiodiversityObservationNetwork)` to add a
 new metric.
 """
 abstract type SamplingMetric end
@@ -17,6 +17,8 @@ Computes Moran's I on the inclusion indicator variable.
 # Description
 Calculates spatial autocorrelation of the sample indicator ``\\delta`` (1 if sampled, 0 otherwise).
 Negative values indicate spatial inhibition (spread), which is desired for balanced sampling.
+
+This version was proposed by [Tille2018MeaSpa](@cite).
 """
 struct MoransI <: SamplingMetric end 
 

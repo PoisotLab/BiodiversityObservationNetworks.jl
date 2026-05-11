@@ -2,7 +2,7 @@
     AdaptiveHotspot <: BONSampler
 
 Sampling for hotspots. Takes an auxiliary variable (e.g. uncertainty) to target 
-samples toward. 
+samples toward. Proposed by [Andrade-Pacheco2020FinHot](@cite).
 
 Starts at the global maximum of the target/uncertainty surface. Subsequent points 
 are chosen to maximize a trade-off between the target value and spatial diversity 
@@ -11,15 +11,11 @@ are chosen to maximize a trade-off between the target value and spatial diversit
 Requires a `CandidatePool` with features. The first feature row is used as the
 target/uncertainty surface; subsequent rows are ignored.
 
-
 # Fields
 - `n::Int`: number of sites to select (default 50)
 - `scale`: Matérn kernel range parameter ρ (default 1.0)
 - `smoothness`: Matérn kernel smoothness ν (default 0.5, equivalent
   to an exponential kernel)
-
-# References
-- Andrade-Pacheco, R., et al. (2020) TODO
 """
 @kwdef struct AdaptiveHotspot <: BONSampler
     n::Int = 50
@@ -100,6 +96,5 @@ end
 
 @testitem "We can use AdaptiveHotspot" begin
     bon = sample(AdaptiveHotspot(), rand(30,20))
-
     @test bon isa BiodiversityObservationNetwork
 end

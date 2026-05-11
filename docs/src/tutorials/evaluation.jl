@@ -18,9 +18,8 @@ Random.seed!(123) #hide
 # ## Moran's I 
 
 # [`MoransI`](@ref) is a metric that calculates spatial autocorrelation of the sample indicator variable across the domain (1 if a site is sampled, 0 otherwise).
-# Negative values indicate spatial inhibition (spread), which is desired for balanced sampling.
+# Negative values indicate spatial inhibition (spread), which is desired for balanced sampling. This version was specifcally proposed by [Tille2018MeaSpa](@cite).
 
-# TODO: cite Tille2018MeasuringSpatial
 
 # For these examples, we'll use a `30 x 30` matrix of zeros as our domain, but any domain will work here
 

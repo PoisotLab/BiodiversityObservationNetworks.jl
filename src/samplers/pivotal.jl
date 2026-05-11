@@ -8,11 +8,12 @@ so that one tends toward selection and the other toward exclusion. Repeating
 over the domain produces a spatially balanced sample that respects per-unit
 inclusion probabilities.
 
+Proposed in [`Grafstrom2012SpaBal`](@cite).
+
 # Fields
 - `n::Int`: number of sites to select (default 50)
 
-# References
-- TODO Grafström, A. (2012).
+
 """
 @kwdef struct Pivotal <: BONSampler
     n::Int = 50

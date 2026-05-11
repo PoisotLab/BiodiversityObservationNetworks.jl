@@ -1,7 +1,7 @@
 """
     BalancedAcceptance <: BONSampler
 
-Balanced Acceptance Sampling (BAS) using Halton sequences.
+Balanced Acceptance Sampling (BAS) using Halton sequences, proposed by [Robertson2013BasBal](@cite).
 
 Generates spatially balanced samples by mapping Halton
 sequences to the candidate coordinate space. When inclusion weights are
@@ -10,9 +10,6 @@ preferentially selecting higher-weighted candidates.
 
 # Fields
 - `n::Int`: number of sites to select (default 50)
-
-# References
-- Robertson, B. L., et al. (2013).
 """
 @kwdef struct BalancedAcceptance <: BONSampler
     n::Int = 50
