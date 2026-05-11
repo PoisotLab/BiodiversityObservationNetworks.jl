@@ -53,15 +53,15 @@ current_figure() #hide
 
 # The API is structured similarly to [`sample`](@ref).
 
-```julia
-evaluate(::SamplingMetric, domain)
-```
+# ```julia
+# evaluate(::SamplingMetric, domain)
+# ```
 
 # or 
 
-```julia
-evaluate(::SamplingMetric, bon, domain)
-```
+# ```julia
+# evaluate(::SamplingMetric, bon, domain)
+# ```
 
 # for metrics that involve a BON in addition to the domain.
 
