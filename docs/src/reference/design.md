@@ -50,9 +50,9 @@ Several trait methods are defined to samplers, all of which default to `false`:
 - `requires_features(::BONSampler)`: throws error if features are missing
 - `guarantees_exact_n(::BONSampler)`: will always return exactly `n` sites
 
-### `BiodiversityObservationNetwork{K}`
+### [`BiodiversityObservationNetwork`](@ref)
 
-The result of sampling. Carries selected sites, coordinates, features at those sites (or `Missing`), inclusion weights, and the sampler that produced it.
+The result of sampling. Carries selected `sites`, `coordinates`, `features` at those sites (or `Missing`), `inclusion` weights, and the `sampler` that produced it.
 
 Can be passed back to `CandidatePool(bon)` for running multi-stage sampling with multiple algorithms.
 
