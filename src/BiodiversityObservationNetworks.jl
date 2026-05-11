@@ -55,8 +55,8 @@ module BiodiversityObservationNetworks
     export velocity
     export ClosestAnalogue, Loarie2009
 
-    export spatialbalance
-    export SamplingMetric, MoransI, VoronoiVariance
+    export spatialbalance, evaluate
+    export SamplingMetric, MoransI, VoronoiVariance, JensenShannon
 
     #=
     using DelaunayTriangulation

@@ -24,7 +24,7 @@ median across the raster stack. Optionally, features can be PCA-transformed
 prior to z-scoring.
 """
 struct DistanceToMedian <: RarityMetric end 
-function rarity(
+function evaluate(
     ::DistanceToMedian, 
     layers::Vector{<:Matrix};
     mask = trues(size(first(layers)))
@@ -55,7 +55,7 @@ function _mess_score(xᵢⱼ, fᵢⱼ, mⱼ, Mⱼ)
     fᵢⱼ > 0.5 && return 2(1 - fᵢⱼ)
 end 
 
-function rarity(
+function evaluate(
     ::MultivariateEnvironmentalSimilarity,
     layers::Vector{<:Matrix};
     mask = trues(size(first(layers)))
@@ -96,7 +96,7 @@ struct DistanceToAnalogNode <: RarityMetric end
 For each cell, compute the distance in z-scored feature space to the nearest
 selected BON node in `layers`. Optionally apply a shared PCA transform first.
 """
-function rarity(
+function evaluate(
     ::DistanceToAnalogNode, 
     bon::BiodiversityObservationNetwork,
     layers::Vector{<:Matrix};
@@ -145,7 +145,7 @@ end
 Boolean rarity surface indicating whether each cell lies within the hyper-
 rectangle spanned by the per-feature minima and maxima of the BON nodes.
 """
-function rarity(
+function evaluate(
     ::WithinRange, 
     bon::BiodiversityObservationNetwork,
     layers::Vector{<:Matrix};

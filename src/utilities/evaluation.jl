@@ -150,3 +150,111 @@ function spatialbalance(::VoronoiVariance, domain::Matrix, bon::BiodiversityObse
     return _voronoi_variance(bon_coordinates, domain_coordinates)    
 end
 
+
+
+# ==========================================================================================
+# Jensen-Shannon Distance 
+# ==========================================================================================
+
+"""
+    JensenShannon
+
+The JensenShannon method for evaluating [`BiodiversityObservationNetwork`](@ref) design 
+computes how representative the selected BON sites are of the environmental variables 
+across the domain using [Jensen-Shannon divergence](https://en.wikipedia.org/wiki/Jensen%E2%80%93Shannon_divergence),
+a method for measuring the distance between two distributions. 
+
+# Fields
+- `nbins::Int`: number of bins to use when computing empirical probability mass 
+
+"""
+@kwdef struct JensenShannon <: SamplingMetric 
+    nbins::Int = 25
+end
+
+"""
+    _standardize
+
+Standardizes the values of a matrix of predictors across the entire population
+`Xfull`, and a set of predictors associated with the sampled sites, `Xsampled`,
+by scaling each predictor to [0,1].
+
+`Xsampled` is standardized based on the minimum and maximum values of each
+predictor across the population, so both matrices return on the same scale.
+
+*Arguments*:
+- `Xfull`: an `n` x `d` matrix, where `n` is the size of the population, and `d`
+  is the number of predictors
+- `Xsampled`: an `m` x `d` matrix, where `m` < `n` is the size of the sample
+
+"""
+function _standardize(Xfull, Xsampled)
+    Xsampled_std = zeros(size(Xsampled))
+    Xfull_std = zeros(size(Xfull))
+    for i in axes(Xfull, 1)
+        mi, mx = extrema(Xfull[i,:])
+        Xfull_std[i,:] .= (Xfull[i,:] .- mi) ./ (mx - mi)
+        Xsampled_std[i,:] = (Xsampled[i,:] .- mi) ./ (mx - mi)
+    end 
+    return Xfull_std, Xsampled_std
+end
+
+"""
+    _histbin(x, edges)
+
+Compute empirical probability mass by binning empirical values for a single feature `x`.
+"""
+function _histbin(x, edges)
+    n = length(edges) - 1
+    counts = fill(1e-10, n)  # avoids log(0) in KL divergence
+    for v in x
+        b = clamp(searchsortedlast(edges, v), 1, n)
+        counts[b] += 1
+    end
+    return counts ./ sum(counts)
+end
+
+"""
+    _jensen_shannon(Xfull, Xsampled; nbins=20)
+
+Compute Jensen-Shannon divergence between two empirical distributions of different size:
+`Xfull`, the features across the entire domain, and `Xsampled`, the features at sampled sites.
+"""
+function _jensen_shannon(Xfull, Xsampled; nbins=20)
+    Xf, Xs = _standardize(Xfull, Xsampled)
+    bin_edges = range(0.0, 1.0, length=nbins + 1)
+    d = size(Xf, 1)
+    total = 0.0
+
+    for i in 1:d
+        # P is the full distribution of the feature across domain
+        P = _histbin(view(Xf, i, :), bin_edges)
+
+        # Q is distribution of feature at sampled sites
+        Q = _histbin(view(Xs, i, :), bin_edges)
+
+        # Mixture distribution of P and Q
+        M = 0.5 .* (P .+ Q)
+        
+        # Definition of Jensen-Shannon from KL-Divergence 
+        total += 0.5 * StatsBase.kldivergence(P, M) + 0.5 * StatsBase.kldivergence(Q, M)
+    end
+
+    # return average JS across each dimension
+    return total / d
+end
+
+""" 
+    evaluate(::JensenShannon, bon::BiodiversityObservationNetwork, layers)
+"""
+function evaluate(
+    js::JensenShannon,
+    layers::Vector{<:Matrix}, 
+    bon::BiodiversityObservationNetwork,
+)
+
+    Xfull = hcat([[l[i] for l in layers] for i in findall(x -> x isa Number, layers[begin])]...)
+    Xbon = hcat([[l[i] for l in layers] for i in bon.sites]...)
+
+    return _jensen_shannon(Xfull, Xbon; nbins = js.nbins)
+end 

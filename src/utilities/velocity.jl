@@ -5,7 +5,7 @@ Abstract type encompassing all methods for computing environmental velocity.
 """
 abstract type VelocityMetric end 
 
-velocity(::VelocityMetric, args...) = error(
+evaluate(::VelocityMetric, args...) = error(
     """
     Climate velocity is only supported when SpeciesDistributionToolkit package is also loaded.
     """

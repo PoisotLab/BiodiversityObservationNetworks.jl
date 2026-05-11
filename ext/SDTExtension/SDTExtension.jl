@@ -200,12 +200,12 @@ module SDTExtension
 
         Applies a [`RarityMetric`](@ref) to a vector of `SDMLayer`s by passing the first layer's valid indices as a mask. 
     """
-    function BiodiversityObservationNetworks.rarity(
+    function BiodiversityObservationNetworks.evaluate(
         metric::RarityMetric, 
         layers::Vector{<:SDMLayer};
         kwargs...
     )
-        rar = BiodiversityObservationNetworks.rarity(
+        rar = BiodiversityObservationNetworks.evaluate(
             metric,
             [l.grid for l in layers];
             mask = layers[1].indices,
@@ -214,7 +214,7 @@ module SDTExtension
         
         rar_layer = copy(BiodiversityObservationNetworks._FLOAT_TYPE.(first(layers)))
         rar_layer.grid .= rar
-        return rar_layer
+        return quantize(rar_layer)
     end
     
     """
@@ -222,13 +222,13 @@ module SDTExtension
 
     Applies a [`RarityMetric`](@ref) that requires a [`BiodiversityObservationNetwork`](@ref) to a vector of `SDMLayer`s by passing the first layer's valid indices as a mask. 
     """
-    function BiodiversityObservationNetworks.rarity(
+    function BiodiversityObservationNetworks.evaluate(
         metric::RarityMetric, 
         bon::BiodiversityObservationNetwork,
         layers::Vector{<:SDMLayer};
         kwargs...
     )
-        rar = BiodiversityObservationNetworks.rarity(
+        rar = BiodiversityObservationNetworks.evaluate(
             metric,
             bon,
             [l.grid for l in layers];
@@ -238,7 +238,7 @@ module SDTExtension
         
         rar_layer = copy(BiodiversityObservationNetworks._FLOAT_TYPE.(first(layers)))
         rar_layer.grid .= rar
-        return rar_layer
+        return quantize(rar_layer)
     end
 
 
@@ -339,5 +339,10 @@ module SDTExtension
         return BiodiversityObservationNetworks._voronoi_variance(bon_coordinates, domain_coordinates)    
     end
 
-
+    function BiodiversityObservationNetworks.evaluate(js::JensenShannon, layers::Vector{<:SpeciesDistributionToolkit.SDMLayer}, bon::BiodiversityObservationNetworks.BiodiversityObservationNetwork)
+        Xfull = hcat([[l[i] for l in layers] for i in findall(first(layers).indices)]...)
+        Xbon = hcat([[l[i] for l in layers] for i in bon.sites]...)
+    
+        return BiodiversityObservationNetworks._jensen_shannon(Xfull, Xbon; nbins = js.nbins)
+    end
 end
