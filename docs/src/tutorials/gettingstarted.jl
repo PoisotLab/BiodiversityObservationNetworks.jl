@@ -5,51 +5,55 @@
 # BONs.jl implements a variety of algorithms for site selection, including stratified and spatially balanced sampling, and enables adaptive sampling based on model-based estimates of uncertainty or the locations of legacy sampling sites. 
 # It also includes a variety of utilities for quantifying a sample's spatial balance and how representative a sample is of auxiliary environmental variables.
 
+# In this tutorial, we will cover the basics of how to use BiodiversityObservationNetworks.jl. Let's start by loading the package.
+
 using BiodiversityObservationNetworks
 using CairoMakie
 import Random #hide
 Random.seed!(1234567890); #hide
 CairoMakie.activate!(; px_per_unit = 3); #hide
 
-# In this tutorial, we will cover the basics of how to use BiodiversityObservationNetworks.jl. We'll start by loading the package.
 
 # ## Installing and loading
 
-# Install the package from the Julia REPL:
+# To install BONS.jl, use either Pkg  
+
 # ```julia
 # using Pkg; Pkg.add("BiodiversityObservationNetworks")
 # ```
-# Then load it:
+
+# or the REPL Pkg mode.
+
+# Then load it via
 # ```julia
 # using BiodiversityObservationNetworks
 # ```
 
 # ## Your first sample
 
-# The core function in BONs.jl is [`sample`](@ref). [`sample`](@ref) works by taking at minimum a sampling algorithm (a type of [`BONSampler`](@ref)) and a *domain*, which represents the region from which to select sampling points. 
+# The core function in BONs.jl is [`sample`](@ref). [`sample`](@ref) works by taking a **sampling algorithm** (a type of [`BONSampler`](@ref)) and a **sampling domain**, which represents the region from which to select sampling points. 
 
-# The core pattern is to call `sample(algorithm, domain)`, with additional arguments available depending on the specific algorithm used.  
+# The core pattern for selecting sites is to call `sample(algorithm, domain)`, with additional arguments available depending on the specific algorithm used.  
 
 # BONs.jl supports a variety of domains, including raster and vector data. The simplest domain is a plain Julia `Matrix`:
 
-mat = rand(50, 50);   # 50×50 grid of random values (e.g. an elevation raster with very weird topography)
+mat = rand(50, 50); 
 
 # The simplest sampler is [`SimpleRandom`](@ref), which randomly selects sites without replacement.
 
 result = sample(SimpleRandom(), mat)
 
-# [`sample`](@ref) returns a [`BiodiversityObservationNetwork`](@ref), which stores the selected
-# site indices, their coordinates, and (if available) the values of auxiliary variables at the selected sites.
+# [`sample`](@ref) returns a [`BiodiversityObservationNetwork`](@ref), which stores the indices of the selected sites within the domain, their (geospatial, if applicable) coordinates, and the values of auxiliary variables at the selected sites  (if available).
 
-# By default, all algorihtms will select 50 sites. This is changed simply by passing an integer value to the sampler, e.g.
+# By default, all algorihtms will select 50 sites. This is changed simply by passing an integer value to the sampler. For example
 
 result = sample(SimpleRandom(10), mat)
 
-# will yield 10 sites. 
+# will yield 10 selected sites. 
 
 # ## Visualizing Results
 
-# To plot the results, we use Makie, a very feature-rich package in Julia for data visualization.
+# To plot the results, we use Makie, a feature-rich package in Julia for data visualization.
 
 # BONs.jl functionality for Makie relies on a Julia extension, meaning it is only activated if Makie is loaded in the same environment.
 
@@ -71,7 +75,7 @@ scatter(result; color = :green, marker = :star5, markersize = 15, axis=(;aspect=
 
 # The [`BiodiversityObservationNetwork`](@ref) type stores a variety of information about the sample. 
 
-# The first is `sites`, which are the indices in the original domain for the selected sites (typically as a vector of `CartesianIndex`s)
+# The first is `sites`, which are the indices in the original domain for the selected sites (typically a vector of `CartesianIndex`s)
 
 result.sites
 
@@ -79,13 +83,9 @@ result.sites
 
 result.coordinates
 
-# At first, this may seem to be redundant as the same information is stored in `sites`,
-# but this allows for storing both the Cartesian indices of selected sites a raster, and their corresponding 
-# geospatial coordinates when using supported geospatial domains from [`SpeciesDistributionToolkit.jl`](https://poisotlab.github.io/SpeciesDistributionToolkit.jl). You can read
-# more about the different types of domains [`here`](/tutorials/domains). 
+# At first, this may seem to be redundant as the same information is stored in `sites`, but this allows for storing both the Cartesian indices of selected sites a raster, and their corresponding  geospatial coordinates when using supported geospatial domains from [`SpeciesDistributionToolkit.jl`](https://poisotlab.github.io/SpeciesDistributionToolkit.jl). You can read more about the different types of domains [`in the next tutorial`](/tutorials/domains). 
 
-# When the domain is a single matrix (like `mat`), the auxiliary variables in the [`BiodiversityObservationNetwork`](@ref) 
-# are simply the values of the original matrix at each selected, which are stored in a matrix called `features`
+# When the domain is a single matrix (like `mat`), the auxiliary variables in the [`BiodiversityObservationNetwork`](@ref) are simply the values of the original matrix at each selected, which are stored in a matrix called `features`
 
 result.features
 
@@ -93,8 +93,7 @@ result.features
 
 mat[result.sites[begin]]
 
-# When using multiple rasters/matrices as a domain, the auxiliary variables are the values across each of those rasters.
-# For example, 
+# When using multiple rasters/matrices as a domain, the auxiliary variables are the values across each of those rasters. For example, 
 
 multilayer_domain = [rand(30,20) for i in 1:5]
 multilayer_result = sample(SimpleRandom(10), multilayer_domain)
@@ -106,7 +105,7 @@ multilayer_result.features
 # ## Masking sites
 
 # Use the `mask` keyword to restrict sampling to a subset of the grid.
-# A `true` value in the mask means the cell is *valid* (i.e. can be included in a sampled result):
+# A `true` value in the mask means the cell is **valid** (i.e. can be included in a sampled result).
 
 # As an example, lets build a mask that restricts points to the center 30x30 region of a 50x50 matrix.
 
@@ -132,13 +131,13 @@ current_figure() #hide
 
 # For example, lets make it so the inclusion probability increases as we move from left to right across the domain. This can be done via
 
-inclusion_probability = [1.1^i for i in 1:50, j in 1:50];
+inclusion_probability = [1.15^i for i in 1:50, j in 1:50];
 
 # Let's plot this matrix to verify this is what we get
 
 heatmap(inclusion_probability)
 
-# Now we can sample with these custom inclusion probabilities using the `inclusion` keyword argument
+# Now we can sample with sites with these custom inclusion probabilities using the `inclusion` keyword argument
 
 result = sample(SimpleRandom(), inclusion_probability, inclusion = inclusion_probability)
 
@@ -157,13 +156,13 @@ scatter(result)
  
 # Note that the inclusion probability matrix doesn't _have_ to be the domain. 
 # Different inclusion probabilities and domains can be used as long as they are compatible,
-# meaning they are equally sized matrices, or a SDMLayer with matching size, extent, and crs if using the SDMLayers extension.
+# meaning they are equally sized matrices, _or_ a SDMLayer with matching size, extent, and coordinate-representation-system (crs).
 
 # For example
 
 result = sample(SimpleRandom(), rand(50, 50); inclusion = inclusion_probability)
 
-# is also valid.
+# is also valid because the domain is also a 50 x 50 matrix.
 
 # ## Custom Inclusion Probabilities with Masks
 
