@@ -282,21 +282,21 @@ module SDTExtension
         return spatial_grad
     end 
 
-    function BiodiversityObservationNetworks.velocity(::Loarie2009, years, timeseries::Vector{<:SDMLayer})
+    function BiodiversityObservationNetworks.evaluate(::Loarie2009, years, timeseries::Vector{<:SDMLayer})
         sg = spatial_gradient(timeseries[1])
         tg = temporal_gradient(years, timeseries)
         vel = tg / sg
         return quantize(vel)
     end
 
-    function BiodiversityObservationNetworks.velocity(metric::Loarie2009, years, timeseries::Vector{<:Vector{<:SDMLayer}}; max_pca_dim = 5)
+    function BiodiversityObservationNetworks.evaluate(metric::Loarie2009, years, timeseries::Vector{<:Vector{<:SDMLayer}}; max_pca_dim = 5)
         # PCA then do velocity on each pair separately
         baseline = timeseries[begin]
         pca = fit(PCA, baseline; maxoutdim=max_pca_dim)
         pca_timeseries = [SpeciesDistributionToolkit.predict(pca, L) for L in timeseries]
 
         velos = [
-            BiodiversityObservationNetworks.velocity(
+            BiodiversityObservationNetworks.evaluate(
                 metric,
                 years,
                 [pca_timeseries[i][j] for i in eachindex(pca_timeseries)]
@@ -318,9 +318,9 @@ module SDTExtension
     end
 
     """
-        spatialbalance(::MoransI, domain::SDMLayer, bon::BiodiversityObservationNetwork)
+        evaluate(::MoransI, domain::SDMLayer, bon::BiodiversityObservationNetwork)
     """
-    function BiodiversityObservationNetworks.spatialbalance(
+    function BiodiversityObservationNetworks.evaluate(
         ::MoransI, 
         domain::SDMLayer,
         bon::BiodiversityObservationNetworks.BiodiversityObservationNetwork
@@ -332,7 +332,7 @@ module SDTExtension
         BiodiversityObservationNetworks._morans_i(coords, inclusion_indicator, bon)
     end
 
-    function BiodiversityObservationNetworks.spatialbalance(::VoronoiVariance, domain::SDMLayer, bon::BiodiversityObservationNetworks.BiodiversityObservationNetwork)
+    function BiodiversityObservationNetworks.evaluate(::VoronoiVariance, domain::SDMLayer, bon::BiodiversityObservationNetworks.BiodiversityObservationNetwork)
         bon_coordinates = BiodiversityObservationNetworks._FLOAT_TYPE.(bon.coordinates)
         Es, Ns = eastings(domain), northings(domain)
         domain_coordinates = hcat([[Es[i], Ns[j]] for i in eachindex(Es), j in eachindex(Ns) if domain.indices[i,j]]...)
