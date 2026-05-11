@@ -1,6 +1,8 @@
-# # Targeting Unique and High-Velocity Climates for Sampling
+# # Targeting Unique Climates for Sampling
 
-# This tutorial will focus on using the utilities in BiodiversityObservationNetworks.jl to use environmental data to compute rarity (how unique the environmental conditions in a location are) and velocity (how quickly environmental conditions are changing), and using those results to target spatially balanced samples toward rare climates, high-velocity climates, or both. 
+# This tutorial will focus on using the utilities in BiodiversityObservationNetworks.jl to use environmental data to compute rarity (how unique the environmental conditions in a location are).
+
+# It will also demonstrate how inclusion probabilities can be used to target spatially balanced samples toward rare climates, which is applicable more broadly toward targeting any specific variable of interest. 
 
 # ## Acquiring climate data
 
@@ -45,62 +47,154 @@ current_figure() #hide
 
 # ### Distance to median climate
 
-# The simplest is [`DistanceToMedian`](@ref), which is each pixel's distance in environmental space to the median environmental condiations.
+# The simplest is [`DistanceToMedian`](@ref), which is each pixel's distance in environmental space to the median environmental conditions across the domain.
+
+# All rarity, velocity, and evaluation metrics are built around the [`evaluate`](@ref) method.
+
+# The API is structured similarly to [`sample`](@ref).
+
+```julia
+evaluate(::SamplingMetric, domain)
+```
+
+# or 
+
+```julia
+evaluate(::SamplingMetric, bon, domain)
+```
+
+# for metrics that involve a BON in addition to the domain.
+
+# For [`DistanceToMedian`](@ref), this looks like
+
 rar = evaluate(
     DistanceToMedian(), 
     bioclim
 )
-heatmap(rar)
 
+
+# Which we can then visualize
+
+#
+# fig-dist-to-med
+f = Figure()
+ax = Axis(f[1,1], aspect=DataAspect())
+hm = heatmap!(ax, rar)
+Colorbar(f[1,2], hm, label="Distance to Median Environment")
+f
 
 
 # ### MultivariateEnvironmentalSimilarity
 
-# Consider 
+# A second metric for environmental uniqueness is [`MultivariateEnvironmentalSimilarity`], which is derived from [Mesgaran2014HereBe](@cite).
+
+# This is a _similarity_ score, so **higher values indicate similarity, lower values indicate rarity**.
+
+# This can be run via 
 
 mess = evaluate(
     MultivariateEnvironmentalSimilarity(),
     bioclim
 )
-heatmap(quantize(mess))
 
+# and visualized
+
+#
+# fig-mess
+f = Figure()
+ax = Axis(f[1,1], aspect=DataAspect())
+hm = heatmap!(ax, mess)
+Colorbar(f[1,2], hm, label="Similarity to typical environment")
+f
 
 
 # ### Distance to Analog Node
 
-# Physical distance to closest node in environment space
+# Another metric for climate rarity is comparing the environmental conditions across a domain to the conditions at an existing [`BiodiversityObservationNetwork`](@ref).
+
+# [`DistanceToAnalogNode`](@ref) measures the _physical distance_ of every pixel in the domain to the closest BON site in _environmental space_.
+
+# We can demonstrate this by first sampling a BON
 
 bon = sample(SimpleRandom(), bioclim)
 
-rar = evaluate(
+# and running
+
+dist_to_analog = evaluate(
     DistanceToAnalogNode(), 
-    bon,
-    bioclim;
+    bioclim,
+    bon
 )
 
-heatmap(quantize(rar))
-scatter!(bon, color=:red)
-current_figure()
+# which we can then visualize
+
+# fig-dist-to-analog
+f = Figure()
+ax = Axis(f[1,1], aspect=DataAspect())
+hm = heatmap!(ax, dist_to_analog)
+Colorbar(f[1,2], hm, label="Relative physical distance to closest proxy node")
+f
 
 
-rar = evaluate(
+# ### Within Range
+
+# A simpler method for assessing a BON's coverage in environmental space is [`WithinRange`](@ref), which determines if each pixel in the domain is within the extrema of the environmental variables at each BON -- i.e. if the environmental conditions at a pixel are at least "bounded" by those at the BON sites.
+
+withinrange = evaluate(
     WithinRange(), 
-    bon,
-    bioclim;
+    bioclim,
+    bon
 )
-heatmap(rar)
+
+# fig-dist-to-analog
+f = Figure()
+ax = Axis(f[1,1], aspect=DataAspect())
+hidespines!(ax)
+hidedecorations!(ax)
+hm = heatmap!(ax, withinrange, colormap=[:grey80, :seagreen4])
+scatter!(ax, bon, color=:white, strokewidth=1, strokecolor=:black)
+Legend(f[2,1], [PolyElement(color=:grey80), PolyElement(color=:seagreen4)], ["Outside Range", "Within Range"], orientation=:horizontal)
+f
+
 
 
 # ## Targeting Rare Climates for Sampling 
+
+# We can use these climate rarity metrics to target regions of high rarity for sampling.
+
+# We will do this using [`BalancedAcceptance`](@ref) with custom inclusion probabilities, which can be used more generally to target any variable of interest.
+
+# We'll start by using [`DistanceToMedian`](@ref) to compute rarity.
 
 rar = evaluate(
     DistanceToMedian(), 
     bioclim
 )
 
-# # Target rare environments with BAS w/ inclusion 
+# We can sample a BON with inclusion proportional to rarity as follows
+
+bon = sample(BalancedAcceptance(), rar, inclusion = rar)
+
+# Let's visualize this
+
+#
+# fig-bas-rarity
+f = Figure()
+ax = Axis(f[1,1], aspect=DataAspect())
+hidespines!(ax)
+heatmap!(ax, rar)
+scatter!(ax, bon, color=:white, strokewidth=1, strokecolor=:black)
+current_figure() #hide
+
+
+# We see the points are generally more concentrated toward the left side of the map, where the environmental conditions are more rare. 
+
+# Pragmatically, this may not be skewed "enough" toward rare regions, so we can adjust the relative inclusion probabilities by applying an exponential transformation with a parameter $\alpha$ adjustsing the "strength" of this transform.
+
 αs = [5, 3, 1]
 bons = [sample(BalancedAcceptance(), rar, inclusion=exp.(αs[i] * rar)) for i in eachindex(αs)]
+
+# We can then visualize to see the impact of this transform
 
 #
 # fig-bas-rarity
@@ -110,24 +204,6 @@ for i in eachindex(αs)
     heatmap!(axes[i], rar)
     scatter!(axes[i], bons[i], color=:white, strokewidth=1, strokecolor=:black)
 end
+hidespines!.(axes)
+hidedecorations!.(axes)
 current_figure() #hide
-
-
-# ## Velocity
-
-# Loarie 2009 climate velocity cite.
-
-future_bioclim = [
-    SDMLayer(RasterData(CHELSA1, BioClim), Projection(RCP45, ACCESS1_0); 
-    SpeciesDistributionToolkit.SimpleSDMPolygons.boundingbox(aoi)..., layer = i) 
-    for i in 1:19
-]
-mask!(future_bioclim, aoi)
-
-
-vel = evaluate(Loarie2009(), [2000, 2050], [bioclim[1], future_bioclim[1]])
-heatmap(vel)
-
-vel = evaluate(Loarie2009(), [2000, 2050], [bioclim, future_bioclim])
-heatmap(vel)
-

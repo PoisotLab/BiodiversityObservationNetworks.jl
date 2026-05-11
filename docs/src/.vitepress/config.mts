@@ -44,10 +44,8 @@ export default defineConfig({
                 items: [
                     { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
                     { text: "Geospatial Domains", link: "/tutorials/domains.md"},
-                    { text: "Unique and High-Velocity Climates", link: "/tutorials/climate.md"},
-                    { text: "Evaluating Sites", link: "/tutorials/evaluation.md"},
-                    { text: "Including Legacy Sites", link: "/tutorials/legacy.md"},
-                    { text: "Case Study: Adaptive Sampling", link: "/tutorials/adaptive.md"},
+                    { text: "Targeting Unique Climates", link: "/tutorials/climate.md"},
+                    { text: "Evaluating BON Sites", link: "/tutorials/evaluation.md"},
                 ],
             },
             { 

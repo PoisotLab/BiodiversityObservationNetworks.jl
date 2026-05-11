@@ -97,9 +97,9 @@ For each cell, compute the distance in z-scored feature space to the nearest
 selected BON node in `layers`. Optionally apply a shared PCA transform first.
 """
 function evaluate(
-    ::DistanceToAnalogNode, 
-    bon::BiodiversityObservationNetwork,
-    layers::Vector{<:Matrix};
+    ::DistanceToAnalogNode,
+    layers::Vector{<:Matrix},
+    bon::BiodiversityObservationNetwork;
     mask = trues(size(first(layers)))
 )
 
@@ -147,8 +147,8 @@ rectangle spanned by the per-feature minima and maxima of the BON nodes.
 """
 function evaluate(
     ::WithinRange, 
-    bon::BiodiversityObservationNetwork,
-    layers::Vector{<:Matrix};
+    layers::Vector{<:Matrix},
+    bon::BiodiversityObservationNetwork;
     mask = trues(size(first(layers))) 
 )
     Xbon = bon.features

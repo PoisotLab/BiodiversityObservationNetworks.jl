@@ -224,14 +224,14 @@ module SDTExtension
     """
     function BiodiversityObservationNetworks.evaluate(
         metric::RarityMetric, 
-        bon::BiodiversityObservationNetwork,
-        layers::Vector{<:SDMLayer};
+        layers::Vector{<:SDMLayer},
+        bon::BiodiversityObservationNetwork;
         kwargs...
     )
         rar = BiodiversityObservationNetworks.evaluate(
             metric,
-            bon,
-            [l.grid for l in layers];
+            [l.grid for l in layers],
+            bon;
             mask = layers[1].indices,
             kwargs...
         )

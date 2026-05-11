@@ -40,7 +40,7 @@ module BiodiversityObservationNetworks
 
     include(joinpath("utilities", "evaluation.jl"))
 
-    #include("show.jl")
+    include("show.jl")
 
     export sample 
     export CandidatePool
