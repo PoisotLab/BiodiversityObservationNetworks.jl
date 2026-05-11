@@ -81,8 +81,8 @@ result.coordinates
 
 # At first, this may seem to be redundant as the same information is stored in `sites`,
 # but this allows for storing both the Cartesian indices of selected sites a raster, and their corresponding 
-# geospatial coordinates when using supported geospatial domains from [`SpeciesDistributionToolkit.jl`](TODO). You can read
-# more about the different types of domains [`here`](TODO). 
+# geospatial coordinates when using supported geospatial domains from [`SpeciesDistributionToolkit.jl`](https://poisotlab.github.io/SpeciesDistributionToolkit.jl). You can read
+# more about the different types of domains [`here`](/tutorials/domains). 
 
 # When the domain is a single matrix (like `mat`), the auxiliary variables in the [`BiodiversityObservationNetwork`](@ref) 
 # are simply the values of the original matrix at each selected, which are stored in a matrix called `features`

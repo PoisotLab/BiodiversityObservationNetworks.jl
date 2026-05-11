@@ -55,7 +55,6 @@ including [`SDMLayer`]s from the [`SimpleSDMLayers`] subpackage, which represent
 with geospatial metadata, and vector data types from the [`SimpleSDMPolygons`] subpackage.
 The support for these types are included as extensions, meaning their functionality is only
 loaded once [`SpeciesDistributionToolkit`] (or one of the corresponding subpackages) is loaded.
-For more information on this functionality, see [this]() TODO how-to. 
 """
 function sample end
 

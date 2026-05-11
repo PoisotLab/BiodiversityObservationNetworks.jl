@@ -86,7 +86,8 @@ end
 """
     DistanceToAnalogNode <: RarityMetric
 
-TODO
+For each pixel, compute the distance in z-scored feature space to the nearest
+BON node.
 """
 struct DistanceToAnalogNode <: RarityMetric end
 

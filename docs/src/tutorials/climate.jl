@@ -32,6 +32,8 @@ mask!(bioclim, aoi)
 # fig-washington-temp
 f = Figure() 
 ax = Axis(f[1,1], aspect=DataAspect())
+hidedecorations!(ax)
+hidespines!(ax)
 heatmap!(ax, bioclim[1])
 lines!(ax, aoi)
 current_figure() #hide
@@ -75,9 +77,11 @@ rar = evaluate(
 # fig-dist-to-med
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
+hidedecorations!(ax)
+hidespines!(ax)
 hm = heatmap!(ax, rar)
-Colorbar(f[1,2], hm, label="Distance to Median Environment")
-f
+Colorbar(f[2,1], hm, vertical = false, label="Distance to Median Environment")
+current_figure() #hide
 
 
 # ### MultivariateEnvironmentalSimilarity
@@ -100,8 +104,10 @@ mess = evaluate(
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, mess)
-Colorbar(f[1,2], hm, label="Similarity to typical environment")
-f
+hidedecorations!(ax)
+hidespines!(ax)
+Colorbar(f[2,1], hm, vertical = false, label="Similarity to typical environment")
+current_figure() #hide
 
 
 # ### Distance to Analog Node
@@ -127,9 +133,11 @@ dist_to_analog = evaluate(
 # fig-dist-to-analog
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
+hidedecorations!(ax)
+hidespines!(ax)
 hm = heatmap!(ax, dist_to_analog)
-Colorbar(f[1,2], hm, label="Environmental distance to closest proxy node")
-f
+Colorbar(f[2,1], hm, vertical = false, label="Environmental distance to closest proxy node")
+current_figure() #hide
 
 
 # ### Within Range
@@ -142,6 +150,7 @@ withinrange = evaluate(
     bon
 )
 
+#
 # fig-dist-to-analog
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
@@ -150,7 +159,7 @@ hidedecorations!(ax)
 hm = heatmap!(ax, withinrange, colormap=[:grey80, :seagreen4])
 scatter!(ax, bon, color=:white, strokewidth=1, strokecolor=:black)
 Legend(f[2,1], [PolyElement(color=:grey80), PolyElement(color=:seagreen4)], ["Outside Range", "Within Range"], orientation=:horizontal)
-f
+current_figure() #hide
 
 
 
@@ -178,8 +187,10 @@ bon = sample(BalancedAcceptance(), rar, inclusion = rar)
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hidespines!(ax)
+hidedecorations!(ax)
 heatmap!(ax, rar)
 scatter!(ax, bon, color=:white, strokewidth=1, strokecolor=:black)
+Colorbar(f[2,1], hm, vertical = false, label="Distance to Median Environment")
 current_figure() #hide
 
 
@@ -187,19 +198,24 @@ current_figure() #hide
 
 # Pragmatically, this may not be skewed "enough" toward rare regions, so we can adjust the relative inclusion probabilities by applying an exponential transformation with a parameter $\alpha$ adjustsing the "strength" of this transform.
 
-αs = [5, 3, 1]
+αs = [1,3,5,10]
 bons = [sample(BalancedAcceptance(), rar, inclusion=exp.(αs[i] * rar)) for i in eachindex(αs)]
 
 # We can then visualize to see the impact of this transform
 
 #
 # fig-bas-alpha-comparison
-f = Figure(size=(1000, 400))
-axes = [Axis(f[1,i], title = "α = $(αs[i])", aspect=DataAspect()) for i in 1:3]
-for i in eachindex(αs)
+f = Figure(size=(1000, 600))
+axes = [Axis(f[ci[2],ci[1]], title = "α = $(αs[i])", aspect=DataAspect()) for (i,ci) in enumerate(CartesianIndices((1:2,1:2)))]
+for i in eachindex(axes)
     heatmap!(axes[i], rar)
     scatter!(axes[i], bons[i], color=:white, strokewidth=1, strokecolor=:black)
 end
 hidespines!.(axes)
 hidedecorations!.(axes)
 current_figure() #hide
+
+
+# ## Next steps
+
+# In the [next tutorial](/tutorials/evaluation), we'll cover how to evaluate the spatial balance and environmental representativeness of a particular BON.

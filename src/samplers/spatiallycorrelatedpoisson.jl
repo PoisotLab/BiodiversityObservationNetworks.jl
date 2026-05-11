@@ -9,9 +9,6 @@ Implements Spatially Correlated Poisson Sampling (SCPS) from [Grafstrom2012SpaCo
 # Description
 Iterates through units, selecting them based on inclusion probabilities, and 
 dynamically adjusting the probabilities of neighboring units to maintain spatial balance.
-
-# References
-- TODO set up refs
 """
 @kwdef struct SpatiallyCorrelatedPoisson <: BONSampler
     n::Int = 50
