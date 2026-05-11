@@ -1,50 +1,77 @@
-#=
-
 """
-    SpatiallyStratified
+    Stratified <: BONSampler
 
-`SpatiallyStratified` performs stratified random sampling over discrete
-categories present in the domain. Each pool element belongs to a stratum given
-by `domain[x]`. The number of draws allocated to each stratum is proportional
-to the stratum size (via the multinomial distribution), and units are then sampled without replacement from each stratum.
+Stratified sampling. The first feature row of the `CandidatePool` is
+treated as a discrete stratum label. Draws are allocated across strata via a
+`Multinomial` draw on the stratum weights; within each stratum, sites are drawn
+without replacement.
+
+Recommended usage is to pass a single matrix/SDMLayer of discrete integer stratum labels.
+
+# Fields
+- `n::Int`: number of sites to select 
+- `weights::Union{Vector, Missing}`: per-stratum weights. Index corresponds to label.
+  `missing` (default) uses weights proportional to area.
+
+# Notes
+Does not guarantee exactly `n` selected sites when a Multinomial draw allocates
+more draws to a stratum than it has candidates. In that case the stratum is
+exhausted and the total falls short.
+
+# Usage
+```julia
+weights = [0.1, 0.2, 0.5, 0.1, 0.1]
+domain = rand(1:5, (30, 30))
+sample(Stratified(weights = weights), domain)
+```
 """
-@kwdef struct SpatiallyStratified <: BONSampler
-    num_nodes = _DEFAULT_NUM_NODES
+@kwdef struct Stratified <: BONSampler
+    n::Int = 50
+    weights::Union{Vector, Missing} = missing
+end
+
+requires_features(::Stratified) = true
+
+function _sample(rng::AbstractRNG, sampler::Stratified, cpool::CandidatePool)
+    labels = cpool.features[1, :]
+    unique_labels = sort(unique(labels))
+
+    strata = [findall(isequal(l), labels) for l in unique_labels]
+
+    # Use area-based weights
+    if ismissing(sampler.weights)
+        w = length.(strata) ./ cpool.n
+    else
+        w = sampler.weights
+        s = sum(w)
+        s > 0 || throw(ArgumentError("Stratum weights must have a positive sum"))
+        if s != 1 
+            @info "Weights do not sum to one. Renormalize weights and proceeding"
+            w ./= s
+        end 
+    end
+
+    alloc = rand(rng, Distributions.Multinomial(sampler.n, w))
+
+    selected = Int[]
+    for (stratum_indices, k) in zip(strata, alloc)
+        k == 0 && continue
+        k = min(k, length(stratum_indices)) # in case allocated sites are greater than available number
+        push!(selected, StatsBase.sample(rng, stratum_indices, k; replace=false)...)
+    end
+
+    return selected
 end
 
 
-"""
-    _sample(sampler::SpatiallyStratified, domain; inclusion=nothing)
-
-Draw a stratified random sample across unique values in `domain`.
-
-Arguments:
-- `sampler.num_nodes`: total number of units to sample across all strata
-- `domain`: sampling domain; must support `getpool(domain)` and indexing `domain[x]`
-
-Returns a `BiodiversityObservationNetwork`.
-"""
-function _sample(
-    sampler::SpatiallyStratified,
-    domain;
-    inclusion = nothing
-)
-    
-    pool = getpool(domain)
-    vals = [domain[x] for x in pool]
-    unique_vals = unique(vals)
-
-    stratified_pool = [pool[findall(isequal(v), vals)] for v in unique_vals]
-
-    area_weights = length.(stratified_pool) ./ length(pool)
-
-    samples_per_stratum = rand(Multinomial(sampler.num_nodes, area_weights))
-
-    nodes = vcat([SB.sample(stratified_pool[i], samples_per_stratum[i], replace=false) for i in eachindex(samples_per_stratum)]...)
-
-    return nodes, domain[nodes]
+@testitem "StratifiedRandom requires features" begin
+    cp = CandidatePool(rand(10, 10))
+    cp_nofeats = CandidatePool(cp.n, cp.keys, cp.coordinates, missing, cp.inclusion)
+    @test_throws ArgumentError sample(Stratified(n=5), cp_nofeats)
 end
 
-
-
-=#
+@testitem "StratifiedRandom custom weights" begin
+    cp = CandidatePool(rand(1:3, (20, 20)))
+    result = sample(Stratified(n=20, weights=[0.4, 0.3, 0.3]), cp)
+    @test result isa BiodiversityObservationNetwork
+end

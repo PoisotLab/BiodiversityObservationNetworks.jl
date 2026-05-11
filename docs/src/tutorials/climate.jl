@@ -8,10 +8,6 @@
 
 # We will use SpeciesDistributionToolkit.jl to download climate data. 
 
-using Pkg
-
-@info Pkg.status()
-
 using BiodiversityObservationNetworks
 using SpeciesDistributionToolkit
 using CairoMakie
@@ -112,7 +108,7 @@ f
 
 # Another metric for climate rarity is comparing the environmental conditions across a domain to the conditions at an existing [`BiodiversityObservationNetwork`](@ref).
 
-# [`DistanceToAnalogNode`](@ref) measures the _physical distance_ of every pixel in the domain to the closest BON site in _environmental space_.
+# [`DistanceToAnalogNode`](@ref) measures the distance of every pixel in the domain to the closest BON site in _environmental space_.
 
 # We can demonstrate this by first sampling a BON
 
@@ -132,7 +128,7 @@ dist_to_analog = evaluate(
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hm = heatmap!(ax, dist_to_analog)
-Colorbar(f[1,2], hm, label="Relative physical distance to closest proxy node")
+Colorbar(f[1,2], hm, label="Environmental distance to closest proxy node")
 f
 
 
@@ -197,7 +193,7 @@ bons = [sample(BalancedAcceptance(), rar, inclusion=exp.(αs[i] * rar)) for i in
 # We can then visualize to see the impact of this transform
 
 #
-# fig-bas-rarity
+# fig-bas-alpha-comparison
 f = Figure(size=(1000, 400))
 axes = [Axis(f[1,i], title = "α = $(αs[i])", aspect=DataAspect()) for i in 1:3]
 for i in eachindex(αs)

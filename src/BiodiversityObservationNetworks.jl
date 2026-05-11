@@ -34,6 +34,7 @@ module BiodiversityObservationNetworks
     include(joinpath("samplers", "grts.jl"))
     include(joinpath("samplers", "adaptivehotspot.jl"))
     include(joinpath("samplers", "cubesampling.jl"))
+    include(joinpath("samplers", "stratified.jl"))
 
     include(joinpath("utilities", "rarity.jl"))
     include(joinpath("utilities", "velocity.jl"))
@@ -47,7 +48,7 @@ module BiodiversityObservationNetworks
     export BiodiversityObservationNetwork
 
     export BONSampler
-    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal, BalancedAcceptance, GRTS, AdaptiveHotspot, CubeSampling
+    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal, BalancedAcceptance, GRTS, AdaptiveHotspot, CubeSampling, Stratified
 
     export rarity
     export RarityMetric, DistanceToMedian, MultivariateEnvironmentalSimilarity, DistanceToAnalogNode, WithinRange

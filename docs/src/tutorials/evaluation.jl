@@ -63,7 +63,8 @@ current_figure() #hide
 # These polygons can then be used to assess the spatial balance of a sample. In an _ideally_ balanced sample, the sum of the inclusion probabilities within each polygon $i$ would equal 1, because in expectation exactly one unit would be sampled in that region. 
 
 # If we define $v_i$ as the total inclusion probability across Voronoi polygon `i`, i.e.
-# $$v_i = \int_{j \in i} \\pi_j dj$$
+
+# $$v_i = \int_{j \in i} \pi_j dj$$
 
 # then we can assess the spatial balance of a sample by measuring the distance of $v_i$ from 1 for each polygon.  
 
@@ -135,7 +136,7 @@ f = Figure()
 ax = Axis(f[1,1], xlabel = "Jensen-Shannon Divergence", ylabel = "Number of Samples")
 hist!(bas, color=(:dodgerblue, 0.7), label = "Balanced Acceptance")
 hist!(srs, color=(:purple, 0.7), label="Simple Random")
-annotation!(ax, 150, 0, 0.02, 35,
+annotation!(ax, 80, 0, 0.015, 35,
     text = "More representative",
     style = Ann.Styles.LineArrow()
 )

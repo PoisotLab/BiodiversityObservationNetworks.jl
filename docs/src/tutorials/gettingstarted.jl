@@ -6,10 +6,10 @@
 # It also includes a variety of utilities for quantifying a sample's spatial balance and how representative a sample is of auxiliary environmental variables.
 
 using BiodiversityObservationNetworks
-import Random
 using CairoMakie
+import Random #hide
 Random.seed!(1234567890); #hide
-CairoMakie.activate!(; px_per_unit = 3) #hide
+CairoMakie.activate!(; px_per_unit = 3); #hide
 
 # In this tutorial, we will cover the basics of how to use BiodiversityObservationNetworks.jl. We'll start by loading the package.
 

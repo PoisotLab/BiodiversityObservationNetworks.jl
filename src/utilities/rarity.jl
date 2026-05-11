@@ -91,10 +91,10 @@ TODO
 struct DistanceToAnalogNode <: RarityMetric end
 
 """
-    rarity(::DistanceToAnalogNode, bon, layers; pca=false)
+    rarity(::DistanceToAnalogNode, bon, layers; mask)
 
 For each cell, compute the distance in z-scored feature space to the nearest
-selected BON node in `layers`. Optionally apply a shared PCA transform first.
+selected BON node in `layers`. 
 """
 function evaluate(
     ::DistanceToAnalogNode,
@@ -128,7 +128,8 @@ end
 """
     WithinRange <: RarityMetric
 
-TODO
+Boolean rarity surface indicating whether each cell lies within the hyper-
+rectangle spanned by the per-feature minima and maxima of the BON nodes.
 """
 struct WithinRange <: RarityMetric end
 
@@ -141,9 +142,6 @@ end
 
 """
     rarity(::WithinRange, bon, layers)
-
-Boolean rarity surface indicating whether each cell lies within the hyper-
-rectangle spanned by the per-feature minima and maxima of the BON nodes.
 """
 function evaluate(
     ::WithinRange, 
