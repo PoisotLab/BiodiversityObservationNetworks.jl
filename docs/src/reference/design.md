@@ -14,6 +14,15 @@ Then, sampling is done in three stages. *First*, callign `validate(sampler, cand
 
 *Finally*, the `_sample` method returns the indices of the selected sites within the `candidatepool.keys` vector, and this is used to construct the [`BiodiversityObservationNetwork`](@ref) type.
 
+```
+Domain -> CandidatePool -> Algorithm -> Selected Indices
+                |                             |
+                | ----------------------------|
+                                              |         
+                                              ↓
+                                             BON
+```
+
 ## Core Types
 
 ### [`CandidatePool`](@ref)

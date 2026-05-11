@@ -187,12 +187,9 @@ current_figure() #hide
 
 # This covers the basic functionality of BONs.jl. More advanced functionality is explored in the following tutorials, which we recommend following in the below order:
 #  - [Geospatial Domains with SpeciesDistributionToolkit](./domains)
-#  - [Multistage Samplers](./tutorials/multistage)
-#  - [Targeting unique climates or regions with high climate velocity](./climate) 
+#  - [Targeting samplers toward rare climates](./climate) 
 #  - [Evaluating selected sites](./evaluation)
-#  - [Including Legacy Sampling Sites](./legacy)
-#  - [Adaptive Sampling of Species Distributions](./adaptive)
 
-# In addition, full descriptions of each of the *supported algorithms for sampling* can be found [here](TODO).
+# In addition, full descriptions of each of the *supported algorithms for sampling* can be found [here](/samplers).
 
-# Description of the various utilities in BONs.jl can be found [here](), and a design document describing how the internals of the package are designed (primarily aimed for contributors to the package) can be found [here](TODO).
+# Description of the various utilities in BONs.jl can be found [here](/reference/utilities), and a design document describing how the internals of the package are designed (primarily aimed for contributors to the package) can be found [here](/reference/design).
