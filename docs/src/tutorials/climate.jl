@@ -58,7 +58,7 @@ current_figure() #hide
 # or 
 
 # ```julia
-# evaluate(::SamplingMetric, bon, domain)
+# evaluate(::SamplingMetric, domain, bon)
 # ```
 
 # for metrics that involve a BON in addition to the domain.
