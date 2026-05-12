@@ -43,72 +43,24 @@ export default defineConfig({
                 text: "Tutorials", 
                 items: [
                     { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
-                    { text: "Building Multistage Samplers", link: "/tutorials/multistage.md"},
-                    { text: "Measuring Spatial Balance", link: "/tutorials/spatialbalance.md"},
-                    { text: "Measuring Environmental Representativeness", link: "/tutorials/envdistance.md"},
-                    { text: "Designing a National BON", link: "/tutorials/canbon.md"},
+                    { text: "Geospatial Domains", link: "/tutorials/domains.md"},
+                    { text: "Targeting Unique Climates", link: "/tutorials/climate.md"},
+                    { text: "Evaluating BON Sites", link: "/tutorials/evaluation.md"},
                 ],
             },
             { 
-                text: "How-to", 
-                link: "/howto",
+                text: "Samplers", 
+                link: "/samplers",
             },
             { 
                 text: "Reference", 
                 items: [
-                    { text: "Samplers", link: "/reference/samplers" },
                     { text: "Utilities", link: "/reference/utilities" },
+                    { text: "Package Design", link: "/reference/design" },
                     { text: "API Reference", link: "/reference/api" },
                 ]
             }
         ],
-        sidebar: {
-            "/tutorials/": [
-                {
-                    text: "Tutorials",
-                    items: [
-                        { text: "Getting Started with BONs.jl", link: "/tutorials/gettingstarted.md"},
-                        { text: "Building Multistage Samplers", link: "/tutorials/multistage.md"},
-                        { text: "Measuring Spatial Balance", link: "/tutorials/spatialbalance.md"},
-                        { text: "Measuring Environmental Representativeness", link: "/tutorials/envdistance.md"},
-                        { text: "Designing a National BON", link: "/tutorials/canbon.md"},
-                    ],
-                }
-            ],
-            "/howto/": [
-                {
-                    text: "How-to",
-                    items: [],
-                }
-            ],
-            "/reference/": [
-                {
-                    text: "Samplers",
-                    collapsed: false,
-                    items: [
-                        { text: "Simple Random Sampling", link: "/reference/samplers/simplerandom" },
-                        { text: "Balanced Acceptance Sampling", link: "/reference/samplers/balancedacceptance" },
-                        { text: "Generalized Random Tessellated Stratified Sampling", link: "/reference/samplers/grts" },
-                        { text: "Cube Sampling", link: "/reference/samplers/cube" },
-                        { text: "Adaptive Hotspot Detection", link: "/reference/samplers/adaptivehotspot" },
-                    ]
-                },
-                {
-                    text: "Utilities",
-                    collapsed: false,
-                    items: [
-                        { text: "Spatial Balance", link: "/reference/utilities/spatialbalance.md"},
-                        { text: "Environmental Distance", link: "/reference/utilities/envdistance.md"},
-                        { text: "Climate Rarity", link: "/reference/utilities/rarity.md"},
-                        { text: "Climate Velocity", link: "/reference/utilities/velocity.md"},
-                    ]
-                },
-                {
-                    text: "Full API",
-                    link: "/reference/api"
-                }
-            ]
-        },
         editLink: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
         socialLinks: [
             { icon: 'github', link: 'REPLACE_ME_DOCUMENTER_VITEPRESS' }

@@ -1,0 +1,10 @@
+{
+  "name": "bon-docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "vitepress": "^1.0.0",
+    "vitepress-plugin-tabs": "^0.5.0"
+  }
+}

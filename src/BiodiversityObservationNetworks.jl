@@ -1,79 +1,60 @@
 module BiodiversityObservationNetworks
-    using DelaunayTriangulation
-    using Distances
-    using Distributions
-    using Extents
-    using GeometryOps
-    using HaltonSequences
-    using HiGHS
-    using JuMP
-    using LinearAlgebra
-    using MultivariateStats
-    using NearestNeighbors
-    using SparseArrays
-    using SpecialFunctions
-    using SpeciesDistributionToolkit
+    using Random 
     using StatsBase
     using TestItems
+    using Distributions
+    using LinearAlgebra
+    using NearestNeighbors
+    using SpecialFunctions
+    using Distances
+    using HaltonSequences
+    using JuMP
+    using HiGHS
+    using Crayons
+    using MultivariateStats
+    using DelaunayTriangulation
 
-    const DT = DelaunayTriangulation
-    const SB = StatsBase
-    const GO = GeometryOps
-    
-    """
-        BONSampler
-    """
-    abstract type BONSampler end
-    allows_custom_inclusion(::BONSampler) = false
+    if Sys.WORD_SIZE == 64
+        const _FLOAT_TYPE = Float64
+    else
+        const _FLOAT_TYPE = Float32
+    end
 
-    _DEFAULT_NUM_NODES = 50
+    include("sampler.jl")
+    include("bon.jl")
+    include("pool.jl")
+    include("sample.jl")
 
-    export sample
-    export RasterDomain, PolygonDomain, RasterStack
-    export extent, contains
+    include(joinpath("utilities", "nearestneighbors.jl"))
 
-    export voronoi
+    include(joinpath("samplers", "simplerandom.jl"))
+    include(joinpath("samplers", "spatiallycorrelatedpoisson.jl"))
+    include(joinpath("samplers", "pivotal.jl"))
+    include(joinpath("samplers", "balancedacceptance.jl"))
+    include(joinpath("samplers", "grts.jl"))
+    include(joinpath("samplers", "adaptivehotspot.jl"))
+    include(joinpath("samplers", "cubesampling.jl"))
+    include(joinpath("samplers", "stratified.jl"))
 
-    export spatialbalance
-    export VoronoiVariance, MoransI
+    include(joinpath("utilities", "rarity.jl"))
+    include(joinpath("utilities", "velocity.jl"))
+    include(joinpath("utilities", "evaluation.jl"))
 
-    export rarity
-    export DistanceToAnalogNode, WithinRange, MultivariateEnvironmentalSimilarity, DistanceToMedian
+    include("show.jl")
 
-    export jensenshannon
-
+    export sample 
+    export CandidatePool
     export BiodiversityObservationNetwork
 
     export BONSampler
-    export AdaptiveHotspot, BalancedAcceptance, CubeSampling, GeneralizedRandomTesselated, Gridded, Pivotal, SimpleRandom, SpatiallyCorrelatedPoisson, UncertaintySampling, SpatiallyStratified
+    export SimpleRandom, SpatiallyCorrelatedPoisson, Pivotal, BalancedAcceptance, GRTS, AdaptiveHotspot, CubeSampling, Stratified
 
-    include(joinpath("domains", "raster.jl"))
-    include(joinpath("domains", "stack.jl"))
-    include(joinpath("domains", "bon.jl"))
-    include(joinpath("domains", "polygon.jl"))
-    include(joinpath("domains", "conversion.jl"))
+    export rarity
+    export RarityMetric, DistanceToMedian, MultivariateEnvironmentalSimilarity, DistanceToAnalogNode, WithinRange
 
-    include(joinpath("mask.jl"))
-    include(joinpath("inclusion.jl"))
+    export velocity
+    export ClosestAnalogue, Loarie2009
 
-    include(joinpath("utilities", "nearestneighbors.jl"))
-    include(joinpath("utilities", "voronoi.jl"))
-    include(joinpath("utilities", "spatialbalance.jl"))
-    include(joinpath("utilities", "tilting.jl"))
-    include(joinpath("utilities", "distances.jl"))
-    include(joinpath("utilities", "clustering.jl"))
-    include(joinpath("utilities", "rarity.jl"))
-
-
-    include(joinpath("sample.jl"))
-    include(joinpath("samplers", "simplerandom.jl"))
-    include(joinpath("samplers", "spatiallycorrelatedpoisson.jl"))
-    include(joinpath("samplers", "cubesampling.jl"))
-    include(joinpath("samplers", "balancedacceptance.jl"))
-    include(joinpath("samplers", "grts.jl"))
-    include(joinpath("samplers", "pivotal.jl"))
-    include(joinpath("samplers", "adaptivehotspot.jl"))
-    include(joinpath("samplers", "stratified.jl"))
-
-
+    export spatialbalance, evaluate
+    export SamplingMetric, MoransI, VoronoiVariance, JensenShannon
 end     
