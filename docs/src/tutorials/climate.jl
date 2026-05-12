@@ -86,7 +86,7 @@ current_figure() #hide
 
 # ### MultivariateEnvironmentalSimilarity
 
-# A second metric for environmental uniqueness is [`MultivariateEnvironmentalSimilarity`], which is derived from [Mesgaran2014HereBe](@cite).
+# A second metric for environmental uniqueness is [`MultivariateEnvironmentalSimilarity`](@ref), which is derived from [Mesgaran2014HereBe](@cite).
 
 # This is a _similarity_ score, so **higher values indicate similarity, lower values indicate rarity**.
 
