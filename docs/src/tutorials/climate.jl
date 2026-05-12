@@ -151,7 +151,7 @@ withinrange = evaluate(
 )
 
 #
-# fig-dist-to-analog
+# fig-within-range
 f = Figure()
 ax = Axis(f[1,1], aspect=DataAspect())
 hidespines!(ax)
